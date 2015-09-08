@@ -1,0 +1,54 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "removeComments": false,
+        "preserveConstEnums": false,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "outDir": "web/src/spacewar"
+
+    },
+
+    "files": [
+      "lib/src/artemis.d.ts",
+      "lib/src/cocos2d-3.1.6x.d.ts",
+      "lib/src/cclib-dev.ts",
+      "lib/src/core/Constants",
+      "lib/src/components/Bounds.ts",
+      "lib/src/components/ColorAnimation.ts",
+      "lib/src/components/Enemy.ts",
+      "lib/src/components/Expires.ts",
+      "lib/src/components/Health.ts",
+      "lib/src/components/ParallaxStar.ts",
+      "lib/src/components/Player.ts",
+      "lib/src/components/Position.ts",
+      "lib/src/components/ScaleAnimation.ts",
+      "lib/src/components/SoundEffect.ts",
+      "lib/src/components/Sprite.ts",
+      "lib/src/components/Velocity.ts",
+      "lib/src/templates/EnemyShipTemplate.ts",
+      "lib/src/templates/ExplosionTemplate.ts",
+      "lib/src/templates/ParticleTemplate.ts",
+      "lib/src/templates/PlayerBulletTemplate.ts",
+      "lib/src/templates/PlayerTemplate.ts",
+      "lib/src/templates/StarTemplate.ts",
+      "lib/src/systems/CollisionSystem.ts",
+      "lib/src/systems/ColorAnimationSystem.ts",
+      "lib/src/systems/EntitySpawningTimerSystem.ts",
+      "lib/src/systems/ExpiringSystem.ts",
+      "lib/src/systems/HealthRenderSystem.ts",
+      "lib/src/systems/HudRenderSystem.ts",
+      "lib/src/systems/MovementSystem.ts",
+      "lib/src/systems/ParallaxStarRepeatingSystem.ts",
+      "lib/src/systems/PlayerInputSystem.ts",
+      "lib/src/systems/RemoveOffscreenShipsSystem.ts",
+      "lib/src/systems/ScaleAnimationSystem.ts",
+      "lib/src/systems/SoundEffectSystem.ts",
+      "lib/src/systems/SpriteRenderSystem.ts",
+      "lib/src/core/GameScreen.ts",
+      "lib/src/core/SpaceshipWarrior.ts"
+   ]
+	
+}

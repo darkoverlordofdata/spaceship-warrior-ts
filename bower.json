@@ -1,0 +1,33 @@
+{
+  "name": "spacewar",
+  "version": "0.0.1",
+  "authors": [
+    "darkoverlordofdata@gmail.com"
+  ],
+  "description": "Artemis Spaceship Warrior TS",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "tmp",
+    "build",
+    "node_modules",
+    "packages",
+    "src",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "artemists":"git://github.com/darkoverlordofdata/artemists",
+    "closure-compiler": "~0.2.7",
+    "google-closure-library": "*"
+  },
+  "dependencies": {},
+  "install": {
+    "ignore": ["closure-compiler", "google-closure-library"],
+    "path": "web/src",
+    "sources": {
+      "artemists": "packages/artemists/build/artemis.js"
+    }
+  }
+}
