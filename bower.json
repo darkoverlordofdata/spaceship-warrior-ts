@@ -20,14 +20,16 @@
   "devDependencies": {
     "artemists":"git://github.com/darkoverlordofdata/artemists",
     "closure-compiler": "~0.2.7",
-    "google-closure-library": "*"
+    "google-closure-library": "*",
+    "pixi.js": "~3.0.7"
   },
   "dependencies": {},
   "install": {
     "ignore": ["closure-compiler", "google-closure-library"],
     "path": "web/src",
     "sources": {
-      "artemists": "packages/artemists/build/artemis.js"
+      "artemists": "packages/artemists/build/artemis.js",
+      "pixi.js": "packages/pixi.js/bin/pixi.js"
     }
   }
 }
