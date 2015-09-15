@@ -1393,18 +1393,21 @@ var example;
                 this.timeToFire = 0;
                 this.onTouchStart = function (event) {
                     event = event.changedTouches ? event.changedTouches[0] : event;
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen();
+                    try {
+                        if (document.documentElement.requestFullscreen) {
+                            document.documentElement.requestFullscreen();
+                        }
+                        else if (document.documentElement.mozRequestFullScreen) {
+                            document.documentElement.mozRequestFullScreen();
+                        }
+                        else if (document.documentElement.webkitRequestFullscreen) {
+                            document.documentElement.webkitRequestFullscreen();
+                        }
+                        else if (document.documentElement.msRequestFullscreen) {
+                            document.documentElement.msRequestFullscreen();
+                        }
                     }
-                    else if (document.documentElement.mozRequestFullScreen) {
-                        document.documentElement.mozRequestFullScreen();
-                    }
-                    else if (document.documentElement.webkitRequestFullscreen) {
-                        document.documentElement.webkitRequestFullscreen();
-                    }
-                    else if (document.documentElement.msRequestFullscreen) {
-                        document.documentElement.msRequestFullscreen();
-                    }
+                    catch (e) { }
                     _this.shoot = true;
                     _this.mouseVector = {
                         x: parseInt(event.clientX),
