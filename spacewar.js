@@ -1159,12 +1159,12 @@ var example;
 (function (example) {
     var systems;
     (function (systems) {
+        var Bounds = example.components.Bounds;
         var Health = example.components.Health;
         var Position = example.components.Position;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
-        var Constants = example.core.Constants;
         var HealthRenderSystem = (function (_super) {
             __extends(HealthRenderSystem, _super);
             function HealthRenderSystem(game) {
@@ -1173,24 +1173,25 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
-                //var b:PIXI.extras.BitmapText = new PIXI.extras.BitmapText('100%',  { font: '20px Normal', align: 'right' });
-                //b.scale = new PIXI.Point(.5, .5);
-                //this.game.addChild(b);
-                //this.texts[e.uuid] = b;
+                var b = new PIXI.extras.BitmapText('100%', { font: 'OpenDyslexic', align: 'right' });
+                b.scale = new PIXI.Point(.5, .5);
+                this.game.addChild(b);
+                this.texts[e.uuid] = b;
             };
             HealthRenderSystem.prototype.removed = function (e) {
-                //this.game.removeChild(this.texts[e.uuid]);
-                //this.texts[e.uuid] = null;
-                //delete this.texts[e.uuid];
+                this.game.removeChild(this.texts[e.uuid]);
+                this.texts[e.uuid] = null;
+                delete this.texts[e.uuid];
             };
             HealthRenderSystem.prototype.processEach = function (e) {
                 // update the text element on the sprite
                 if (this.texts[e.uuid]) {
                     var position = this.pm.get(e);
                     var health = this.hm.get(e);
+                    var bounds = this.bm.get(e);
                     var text = this.texts[e.uuid];
                     var percentage = Math.round(health.health / health.maximumHealth * 100);
-                    text.position = new PIXI.Point(position.x * 2, Constants.FRAME_HEIGHT - position.y);
+                    text.position = new PIXI.Point(position.x * 2 + bounds.radius, position.y + bounds.radius);
                     text.text = percentage + "%";
                 }
             };
@@ -1200,6 +1201,9 @@ var example;
             __decorate([
                 Mapper(Health)
             ], HealthRenderSystem.prototype, "hm");
+            __decorate([
+                Mapper(Bounds)
+            ], HealthRenderSystem.prototype, "bm");
             return HealthRenderSystem;
         })(EntityProcessingSystem);
         systems.HealthRenderSystem = HealthRenderSystem;

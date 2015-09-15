@@ -21138,6 +21138,7 @@ Object.defineProperties(BitmapText.prototype, {
                 value = value.split(' ');
 
                 this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
+                console.log(this._font.name, BitmapText.fonts);
                 this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
             }
             else {
