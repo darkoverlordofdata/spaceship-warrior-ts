@@ -845,12 +845,12 @@ var example;
             function StarTemplate() {
             }
             StarTemplate.prototype.buildEntity = function (entity, world) {
-                var x = MathUtils.nextInt(Constants.FRAME_WIDTH / 2);
+                var x = MathUtils.nextInt(Constants.FRAME_WIDTH);
                 var y = MathUtils.nextInt(Constants.FRAME_HEIGHT);
                 entity.addComponent(Position, x, y);
                 entity.addComponent(Velocity, 0, MathUtils.random(-10, -60));
                 entity.addComponent(ParallaxStar);
-                entity.addComponent(Sprite, 'particle', 0xffd800, function (sprite) {
+                entity.addComponent(Sprite, 'particle', 0xffd800ff, function (sprite) {
                     var s = MathUtils.random(0.5, 1);
                     sprite.scale = new PIXI.Point(s, s);
                     sprite.alpha = MathUtils.nextDouble() * 127;
@@ -919,9 +919,6 @@ var example;
                         for (var i = 0; 4 > i; i++) {
                             _this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
                         }
-                        //TODO: calling bullet.deleteFromWorld() was causing null pointer exceptions in ExpiringSystem and CollisionStstem because it did not exist anymore.
-                        //TODO: This did not happen in vanilla artemis.
-                        //TODO: is this a Is this a bug in artemis-odb's DelayedEntityProcessingSystem?
                         bullet.deleteFromWorld();
                         var health = _this.hm.get(ship);
                         var position = _this.pm.get(ship);
@@ -1165,6 +1162,7 @@ var example;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
+        var BitmapText = PIXI.extras.BitmapText;
         var HealthRenderSystem = (function (_super) {
             __extends(HealthRenderSystem, _super);
             function HealthRenderSystem(game) {
@@ -1173,7 +1171,7 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
-                var b = new PIXI.extras.BitmapText('100%', { font: 'OpenDyslexic', align: 'right' });
+                var b = new BitmapText('100%', { font: 'OpenDyslexic', align: 'right' });
                 b.scale = new PIXI.Point(.5, .5);
                 this.game.addChild(b);
                 this.texts[e.uuid] = b;
@@ -1191,7 +1189,7 @@ var example;
                     var bounds = this.bm.get(e);
                     var text = this.texts[e.uuid];
                     var percentage = Math.round(health.health / health.maximumHealth * 100);
-                    text.position = new PIXI.Point(position.x * 2 + bounds.radius, position.y + bounds.radius);
+                    text.position = new PIXI.Point(position.x * 2 + (bounds.radius / 2), position.y + (bounds.radius / 2));
                     text.text = percentage + "%";
                 }
             };
@@ -1232,6 +1230,8 @@ var example;
         var Sprite = example.components.Sprite;
         var VoidEntitySystem = artemis.systems.VoidEntitySystem;
         var Mapper = artemis.annotations.Mapper;
+        var BitmapText = PIXI.extras.BitmapText;
+        var Point = PIXI.Point;
         var HudRenderSystem = (function (_super) {
             __extends(HudRenderSystem, _super);
             function HudRenderSystem(game) {
@@ -1239,24 +1239,21 @@ var example;
                 this.game = game;
             }
             HudRenderSystem.prototype.initialize = function () {
-                //cc.LabelBMFont
-                //
-                //this.activeEntities = new cc.LabelBMFont("Active entities: ", "res/fonts/normal.fnt", 200, cc.TEXT_ALIGNMENT_LEFT);
-                //this.totalCreated = new cc.LabelBMFont("Total created: ", "res/fonts/normal.fnt", 200, cc.TEXT_ALIGNMENT_LEFT);
-                //this.totalDeleted = new cc.LabelBMFont("Total deleted: ", "res/fonts/normal.fnt", 200, cc.TEXT_ALIGNMENT_LEFT);
-                //
-                //this.activeEntities.setPosition(cc.p(80,140));
-                //this.totalCreated.setPosition(cc.p(80, 160));
-                //this.totalDeleted.setPosition(cc.p(80, 180));
-                //
-                //this.game.addChild(this.activeEntities);
-                //this.game.addChild(this.totalCreated);
-                //this.game.addChild(this.totalDeleted);
+                var font = { font: 'OpenDyslexic', align: 'left' };
+                this.activeEntities = new BitmapText('Active entities: ', font);
+                this.totalCreated = new BitmapText('Total created: ', font);
+                this.totalDeleted = new BitmapText('Total deleted: ', font);
+                this.activeEntities.position = new Point(0, 40);
+                this.totalCreated.position = new Point(0, 60);
+                this.totalDeleted.position = new Point(0, 80);
+                this.game.addChild(this.activeEntities);
+                this.game.addChild(this.totalCreated);
+                this.game.addChild(this.totalDeleted);
             };
             HudRenderSystem.prototype.processSystem = function () {
-                //this.activeEntities.setString("Active entities: "+this.world.getEntityManager().getActiveEntityCount());
-                //this.totalCreated.setString("Active entities: "+this.world.getEntityManager().getTotalCreated());
-                //this.totalDeleted.setString("Active entities: "+this.world.getEntityManager().getTotalDeleted());
+                this.activeEntities.text = 'Active entities: ' + this.world.getEntityManager().getActiveEntityCount();
+                this.totalCreated.text = 'Total created: ' + this.world.getEntityManager().getTotalCreated();
+                this.totalDeleted.text = 'Total deleted: ' + this.world.getEntityManager().getTotalDeleted();
             };
             __decorate([
                 Mapper(Position)
@@ -1393,17 +1390,17 @@ var example;
                 this.onTouchStart = function (event) {
                     event = event.changedTouches ? event.changedTouches[0] : event;
                     try {
-                        if (document.documentElement.requestFullscreen) {
-                            document.documentElement.requestFullscreen();
+                        if (document.documentElement['requestFullscreen']) {
+                            document.documentElement['requestFullscreen']();
                         }
-                        else if (document.documentElement.mozRequestFullScreen) {
-                            document.documentElement.mozRequestFullScreen();
+                        else if (document.documentElement['mozRequestFullScreen']) {
+                            document.documentElement['mozRequestFullScreen']();
                         }
-                        else if (document.documentElement.webkitRequestFullscreen) {
-                            document.documentElement.webkitRequestFullscreen();
+                        else if (document.documentElement['webkitRequestFullscreen']) {
+                            document.documentElement['webkitRequestFullscreen']();
                         }
-                        else if (document.documentElement.msRequestFullscreen) {
-                            document.documentElement.msRequestFullscreen();
+                        else if (document.documentElement['msRequestFullscreen']) {
+                            document.documentElement['msRequestFullscreen']();
                         }
                     }
                     catch (e) { }
@@ -1706,7 +1703,7 @@ var example;
             SpriteRenderSystem.prototype.inserted = function (e) {
                 var _this = this;
                 var sprite = this.sm.get(e);
-                //this.regionsByEntity.set(e.getId(), this.regions.get(sprite.name));
+                this.regionsByEntity.set(e.getId(), this.regions.get(sprite.name));
                 // sortedEntities.add(e);
                 this.sortedEntities.push(e);
                 this.sortedEntities.sort(function (e1, e2) {
@@ -1718,9 +1715,9 @@ var example;
             SpriteRenderSystem.prototype.removed = function (e) {
                 var c = e.getComponentByType(Sprite);
                 c.removeFrom(this.game);
-                //this.regionsByEntity.set(e.getId(), null);
+                this.regionsByEntity.set(e.getId(), null);
                 var index = this.sortedEntities.indexOf(e);
-                if (index != -1) {
+                if (index !== -1) {
                     this.sortedEntities.splice(index, 1);
                 }
             };
@@ -1735,6 +1732,35 @@ var example;
         systems.SpriteRenderSystem = SpriteRenderSystem;
     })(systems = example.systems || (example.systems = {}));
 })(example || (example = {}));
+/**
+ * TODO: sprites not layered in correct order. Use this:>
+ *
+ * @see https://github.com/pixijs/pixi.js/issues/300
+ *
+ * var mapContainer = new PIXI.DisplayObjectContainer(),
+ unitsContainer = new PIXI.DisplayObjectContainer(),
+ menuContainer = new PIXI.DisplayObjectContainer();
+
+ mapContainer.zIndex = 5;
+ unitsContainer.zIndex = 10;
+ menuContainer.zIndex = 20;
+
+ /* adding children, no matter in which order * /
+stage.addChild(mapContainer);
+stage.addChild(menuContainer);
+stage.addChild(unitsContainer);
+
+/* call this function whenever you added a new layer/container * /
+stage.updateLayersOrder = function () {
+  stage.children.sort(function(a,b) {
+    a.zIndex = a.zIndex || 0;
+    b.zIndex = b.zIndex || 0;
+    return b.zIndex - a.zIndex
+  });
+};
+
+stage.updateLayersOrder();
+ */ 
 //# sourceMappingURL=SpriteRenderSystem.js.map
 var example;
 (function (example) {
@@ -1745,6 +1771,7 @@ var example;
         var EntitySpawningTimerSystem = example.systems.EntitySpawningTimerSystem;
         var ExpiringSystem = example.systems.ExpiringSystem;
         var HealthRenderSystem = example.systems.HealthRenderSystem;
+        var HudRenderSystem = example.systems.HudRenderSystem;
         var MovementSystem = example.systems.MovementSystem;
         var ParallaxStarRepeatingSystem = example.systems.ParallaxStarRepeatingSystem;
         var PlayerInputSystem = example.systems.PlayerInputSystem;
@@ -1770,6 +1797,7 @@ var example;
                 world.setSystem(new RemoveOffscreenShipsSystem());
                 this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(game, resources), true);
                 this.healthRenderSystem = world.setSystem(new HealthRenderSystem(game), true);
+                this.hudRenderSystem = world.setSystem(new HudRenderSystem(game), true);
                 world.initialize();
                 world.createEntityFromTemplate('player').addToWorld();
                 for (var i = 0; 500 > i; i++) {
@@ -1781,6 +1809,7 @@ var example;
                 this.world.process();
                 this.spriteRenderSystem.process();
                 this.healthRenderSystem.process();
+                this.hudRenderSystem.process();
             };
             return GameScreen;
         })();
