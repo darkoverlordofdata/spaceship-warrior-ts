@@ -5,8 +5,8 @@ var example;
         var Constants = (function () {
             function Constants() {
             }
-            Constants.FRAME_WIDTH = 800;
-            Constants.FRAME_HEIGHT = 450;
+            Constants.FRAME_WIDTH = 480;
+            Constants.FRAME_HEIGHT = 320;
             Constants.Groups = {
                 PLAYER_BULLETS: "player bullets",
                 PLAYER_SHIP: "player ship",
@@ -1385,35 +1385,43 @@ var example;
         var Aspect = artemis.Aspect;
         var Mapper = artemis.annotations.Mapper;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
-        var Constants = example.core.Constants;
         var PlayerInputSystem = (function (_super) {
             __extends(PlayerInputSystem, _super);
             function PlayerInputSystem(game) {
+                var _this = this;
                 _super.call(this, Aspect.getAspectForAll(Position, Velocity, Player));
                 this.timeToFire = 0;
+                this.onTouchStart = function (event) {
+                    event = event.changedTouches ? event.changedTouches[0] : event;
+                    _this.shoot = true;
+                    _this.mouseVector = {
+                        x: parseInt(event.clientX),
+                        y: parseInt(event.clientY)
+                    };
+                    return true;
+                };
+                this.onTouchMove = function (event) {
+                    event = event.changedTouches ? event.changedTouches[0] : event;
+                    //this.shoot = true;
+                    _this.mouseVector = {
+                        x: parseInt(event.clientX),
+                        y: parseInt(event.clientY)
+                    };
+                    return true;
+                };
+                this.onTouchEnd = function (event) {
+                    console.log('touchend', event);
+                    _this.shoot = false;
+                };
                 this.game = game;
             }
             PlayerInputSystem.prototype.initialize = function () {
-                //var listener = cc.EventListener.create({
-                //  event: cc.EventListener.TOUCH_ONE_BY_ONE,
-                //  swallowTouches: true,
-                //  onTouchBegan: (touch, event) => {
-                //    this.shoot = true;
-                //    this.mouseVector = touch.getLocation();
-                //    return true;
-                //  },
-                //  onTouchMoved: (touch, event) => {
-                //    this.shoot = true;
-                //    this.mouseVector = touch.getLocation();
-                //    return true;
-                //  },
-                //  onTouchEnded: (touch, event) => {
-                //    this.shoot = false;
-                //    this.mouseVector = touch.getLocation();
-                //  }
-                //});
-                //cc.eventManager.addListener(listener, this.game);
-                //
+                document.addEventListener('touchstart', this.onTouchStart, true);
+                document.addEventListener('touchmove', this.onTouchMove, true);
+                document.addEventListener('touchend', this.onTouchEnd, true);
+                document.addEventListener('mousedown', this.onTouchStart, true);
+                document.addEventListener('mousemove', this.onTouchMove, true);
+                document.addEventListener('mouseup', this.onTouchEnd, true);
             };
             PlayerInputSystem.prototype.processEach = function (e) {
                 if (this.mouseVector === undefined)
@@ -1425,7 +1433,8 @@ var example;
                 if (destinationX === undefined || destinationY === undefined)
                     return;
                 position.x = this.mouseVector.x / 2;
-                position.y = Constants.FRAME_HEIGHT - this.mouseVector.y;
+                //position.y = Constants.FRAME_HEIGHT-this.mouseVector.y;
+                position.y = this.mouseVector.y;
                 if (this.shoot) {
                     if (this.timeToFire <= 0) {
                         this.world.createEntityFromTemplate('bullet', position.x - 27, position.y + 2).addToWorld();
