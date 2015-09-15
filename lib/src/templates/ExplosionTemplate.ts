@@ -23,10 +23,10 @@ module example.templates {
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Expires, 0.5);
-      entity.addComponent(Sprite, 'explosion', cc.color(255, 216, 0, 128), (sprite:Sprite) => {
-        sprite.scaleX = sprite.scaleY = scale;
+      entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
+        sprite.scale = new PIXI.Point(scale, scale);
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<cc.Layer>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;

@@ -9,7 +9,13 @@
     <meta name="screen-orientation" content="portrait"/>
     <meta name="x5-fullscreen" content="true"/>
     <meta name="360-fullscreen" content="true"/>
+    <link href='http://fonts.googleapis.com/css?family=Orbitron:900' rel='stylesheet' type='text/css'>
     <style>
+        body {
+            padding:0;
+            margin: 0;
+            background: #000;
+        }
         body, canvas, div {
             -moz-user-select: none;
             -webkit-user-select: none;
@@ -19,10 +25,44 @@
         }
     </style>
 </head>
-<body style="padding:0; margin: 0; background: #000;">
-<script src="res/loading.js"></script>
-<canvas id="gameCanvas" width="800" height="450"></canvas>
-<script src="frameworks/cocos2d-html5/CCBoot.js"></script>
-<script cocos src="main.js"></script>
-</body>
+<body></body>
+<!--<script src="res/loading.js"></script>-->
+<script src="stats.min.js"></script>
+<script src="src/pixi.js/pixi.js"></script>
+<script src="src/artemists/artemis.js"></script>
+<script src="src/spacewar/core/Constants.js"></script>
+<script src="src/spacewar/components/Bounds.js"></script>
+<script src="src/spacewar/components/ColorAnimation.js"></script>
+<script src="src/spacewar/components/Enemy.js"></script>
+<script src="src/spacewar/components/Expires.js"></script>
+<script src="src/spacewar/components/Health.js"></script>
+<script src="src/spacewar/components/ParallaxStar.js"></script>
+<script src="src/spacewar/components/Player.js"></script>
+<script src="src/spacewar/components/Position.js"></script>
+<script src="src/spacewar/components/ScaleAnimation.js"></script>
+<script src="src/spacewar/components/SoundEffect.js"></script>
+<script src="src/spacewar/components/Sprite.js"></script>
+<script src="src/spacewar/components/Velocity.js"></script>
+<script src="src/spacewar/templates/EnemyShipTemplate.js"></script>
+<script src="src/spacewar/templates/ExplosionTemplate.js"></script>
+<script src="src/spacewar/templates/ParticleTemplate.js"></script>
+<script src="src/spacewar/templates/PlayerBulletTemplate.js"></script>
+<script src="src/spacewar/templates/PlayerTemplate.js"></script>
+<script src="src/spacewar/templates/StarTemplate.js"></script>
+<script src="src/spacewar/systems/CollisionSystem.js"></script>
+<script src="src/spacewar/systems/ColorAnimationSystem.js"></script>
+<script src="src/spacewar/systems/EntitySpawningTimerSystem.js"></script>
+<script src="src/spacewar/systems/ExpiringSystem.js"></script>
+<script src="src/spacewar/systems/HealthRenderSystem.js"></script>
+<script src="src/spacewar/systems/HudRenderSystem.js"></script>
+<script src="src/spacewar/systems/MovementSystem.js"></script>
+<script src="src/spacewar/systems/ParallaxStarRepeatingSystem.js"></script>
+<script src="src/spacewar/systems/PlayerInputSystem.js"></script>
+<script src="src/spacewar/systems/RemoveOffscreenShipsSystem.js"></script>
+<script src="src/spacewar/systems/ScaleAnimationSystem.js"></script>
+<script src="src/spacewar/systems/SoundEffectSystem.js"></script>
+<script src="src/spacewar/systems/SpriteRenderSystem.js"></script>
+<script src="src/spacewar/core/GameScreen.js"></script>
+<script src="src/spacewar/core/SpaceshipWarrior.js"></script>
+<script src="main.js"></script>
 </html>

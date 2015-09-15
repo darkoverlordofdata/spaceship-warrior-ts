@@ -11,12 +11,12 @@ module example.systems {
 	
 	export class EntitySpawningTimerSystem extends VoidEntitySystem {
 	
-		private game:CCLayer;
+		private game:PIXI.Container;
 		private timer1:Timer;
 		private timer2:Timer;
 		private timer3:Timer;
 	
-		constructor(game:CCLayer) {
+		constructor(game:PIXI.Container) {
 			super();
 			this.game = game;
 			

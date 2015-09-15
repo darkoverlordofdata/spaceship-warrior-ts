@@ -1,29 +1,30 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/bin/node',
-1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli [ '/home/bruce/.nvm/v0.10.38/bin/node',
+1 verbose cli   '/home/bruce/.nvm/v0.10.38/bin/npm',
 1 verbose cli   'run',
-1 verbose cli   '_vscode_build' ]
+1 verbose cli   'build' ]
 2 info using npm@1.4.28
 3 info using node@v0.10.38
-4 verbose run-script [ 'pre_vscode_build', '_vscode_build', 'post_vscode_build' ]
-5 info pre_vscode_build asteroidts@0.0.1
-6 info _vscode_build asteroidts@0.0.1
-7 verbose unsafe-perm in lifecycle true
-8 info asteroidts@0.0.1 Failed to exec _vscode_build script
-9 error asteroidts@0.0.1 _vscode_build: `tsc`
-9 error Exit status 2
-10 error Failed at the asteroidts@0.0.1 _vscode_build script.
-10 error This is most likely a problem with the asteroidts package,
-10 error not with npm itself.
-10 error Tell the author that this fails on your system:
-10 error     tsc
-10 error You can get their info via:
-10 error     npm owner ls asteroidts
-10 error There is likely additional logging output above.
-11 error System Linux 3.13.0-24-generic
-12 error command "/usr/local/bin/node" "/usr/local/bin/npm" "run" "_vscode_build"
-13 error cwd /home/bruce/Git/asteroidts
-14 error node -v v0.10.38
-15 error npm -v 1.4.28
-16 error code ELIFECYCLE
-17 verbose exit [ 1, true ]
+4 verbose run-script [ 'prebuild', 'build', 'postbuild' ]
+5 info prebuild spacewar@0.0.1
+6 verbose unsafe-perm in lifecycle true
+7 info build spacewar@0.0.1
+8 verbose unsafe-perm in lifecycle true
+9 info spacewar@0.0.1 Failed to exec build script
+10 error spacewar@0.0.1 build: `cp -f web/main.js build/web/main.js && cp -f web/stats.min.js build/web/stats.min.js && cp -f web/index_build.html build/web/index.html && mkdir -p build/web/src && cp -fr web/src/artemists build/web/src && cp -fr web/src/pixi.js build/web/src && cp -fr web/res build/web && cat web/src/spacewar/core/Constants.js LF web/src/spacewar/components/Bounds.js LF web/src/spacewar/components/ColorAnimation.js LF web/src/spacewar/components/Enemy.js LF web/src/spacewar/components/Expires.js LF web/src/spacewar/components/Health.js LF web/src/spacewar/components/ParallaxStar.js LF web/src/spacewar/components/Player.js LF web/src/spacewar/components/Position.js LF web/src/spacewar/components/ScaleAnimation.js LF web/src/spacewar/components/SoundEffect.js LF web/src/spacewar/components/Sprite.js LF web/src/spacewar/components/Velocity.js LF web/src/spacewar/templates/EnemyShipTemplate.js LF web/src/spacewar/templates/ExplosionTemplate.js LF web/src/spacewar/templates/ParticleTemplate.js LF web/src/spacewar/templates/PlayerBulletTemplate.js LF web/src/spacewar/templates/PlayerTemplate.js LF web/src/spacewar/templates/StarTemplate.js LF web/src/spacewar/systems/CollisionSystem.js LF web/src/spacewar/systems/ColorAnimationSystem.js LF web/src/spacewar/systems/EntitySpawningTimerSystem.js LF web/src/spacewar/systems/ExpiringSystem.js LF web/src/spacewar/systems/HealthRenderSystem.js LF web/src/spacewar/systems/HudRenderSystem.js LF web/src/spacewar/systems/MovementSystem.js LF web/src/spacewar/systems/ParallaxStarRepeatingSystem.js LF web/src/spacewar/systems/PlayerInputSystem.js LF web/src/spacewar/systems/RemoveOffscreenShipsSystem.js LF web/src/spacewar/systems/ScaleAnimationSystem.js LF web/src/spacewar/systems/SoundEffectSystem.js LF web/src/spacewar/systems/SpriteRenderSystem.js LF web/src/spacewar/core/GameScreen.js LF web/src/spacewar/core/SpaceshipWarrior.js > build/spacewar.js  && cat web/src/spacewar/core/Constants.js LF web/src/spacewar/components/Bounds.js LF web/src/spacewar/components/ColorAnimation.js LF web/src/spacewar/components/Enemy.js LF web/src/spacewar/components/Expires.js LF web/src/spacewar/components/Health.js LF web/src/spacewar/components/ParallaxStar.js LF web/src/spacewar/components/Player.js LF web/src/spacewar/components/Position.js LF web/src/spacewar/components/ScaleAnimation.js LF web/src/spacewar/components/SoundEffect.js LF web/src/spacewar/components/Sprite.js LF web/src/spacewar/components/Velocity.js LF web/src/spacewar/templates/EnemyShipTemplate.js LF web/src/spacewar/templates/ExplosionTemplate.js LF web/src/spacewar/templates/ParticleTemplate.js LF web/src/spacewar/templates/PlayerBulletTemplate.js LF web/src/spacewar/templates/PlayerTemplate.js LF web/src/spacewar/templates/StarTemplate.js LF web/src/spacewar/systems/CollisionSystem.js LF web/src/spacewar/systems/ColorAnimationSystem.js LF web/src/spacewar/systems/EntitySpawningTimerSystem.js LF web/src/spacewar/systems/ExpiringSystem.js LF web/src/spacewar/systems/HealthRenderSystem.js LF web/src/spacewar/systems/HudRenderSystem.js LF web/src/spacewar/systems/MovementSystem.js LF web/src/spacewar/systems/ParallaxStarRepeatingSystem.js LF web/src/spacewar/systems/PlayerInputSystem.js LF web/src/spacewar/systems/RemoveOffscreenShipsSystem.js LF web/src/spacewar/systems/ScaleAnimationSystem.js LF web/src/spacewar/systems/SoundEffectSystem.js LF web/src/spacewar/systems/SpriteRenderSystem.js LF web/src/spacewar/core/GameScreen.js LF web/src/spacewar/core/SpaceshipWarrior.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/spacewar.min,js`
+10 error Exit status 1
+11 error Failed at the spacewar@0.0.1 build script.
+11 error This is most likely a problem with the spacewar package,
+11 error not with npm itself.
+11 error Tell the author that this fails on your system:
+11 error     cp -f web/main.js build/web/main.js && cp -f web/stats.min.js build/web/stats.min.js && cp -f web/index_build.html build/web/index.html && mkdir -p build/web/src && cp -fr web/src/artemists build/web/src && cp -fr web/src/pixi.js build/web/src && cp -fr web/res build/web && cat web/src/spacewar/core/Constants.js LF web/src/spacewar/components/Bounds.js LF web/src/spacewar/components/ColorAnimation.js LF web/src/spacewar/components/Enemy.js LF web/src/spacewar/components/Expires.js LF web/src/spacewar/components/Health.js LF web/src/spacewar/components/ParallaxStar.js LF web/src/spacewar/components/Player.js LF web/src/spacewar/components/Position.js LF web/src/spacewar/components/ScaleAnimation.js LF web/src/spacewar/components/SoundEffect.js LF web/src/spacewar/components/Sprite.js LF web/src/spacewar/components/Velocity.js LF web/src/spacewar/templates/EnemyShipTemplate.js LF web/src/spacewar/templates/ExplosionTemplate.js LF web/src/spacewar/templates/ParticleTemplate.js LF web/src/spacewar/templates/PlayerBulletTemplate.js LF web/src/spacewar/templates/PlayerTemplate.js LF web/src/spacewar/templates/StarTemplate.js LF web/src/spacewar/systems/CollisionSystem.js LF web/src/spacewar/systems/ColorAnimationSystem.js LF web/src/spacewar/systems/EntitySpawningTimerSystem.js LF web/src/spacewar/systems/ExpiringSystem.js LF web/src/spacewar/systems/HealthRenderSystem.js LF web/src/spacewar/systems/HudRenderSystem.js LF web/src/spacewar/systems/MovementSystem.js LF web/src/spacewar/systems/ParallaxStarRepeatingSystem.js LF web/src/spacewar/systems/PlayerInputSystem.js LF web/src/spacewar/systems/RemoveOffscreenShipsSystem.js LF web/src/spacewar/systems/ScaleAnimationSystem.js LF web/src/spacewar/systems/SoundEffectSystem.js LF web/src/spacewar/systems/SpriteRenderSystem.js LF web/src/spacewar/core/GameScreen.js LF web/src/spacewar/core/SpaceshipWarrior.js > build/spacewar.js  && cat web/src/spacewar/core/Constants.js LF web/src/spacewar/components/Bounds.js LF web/src/spacewar/components/ColorAnimation.js LF web/src/spacewar/components/Enemy.js LF web/src/spacewar/components/Expires.js LF web/src/spacewar/components/Health.js LF web/src/spacewar/components/ParallaxStar.js LF web/src/spacewar/components/Player.js LF web/src/spacewar/components/Position.js LF web/src/spacewar/components/ScaleAnimation.js LF web/src/spacewar/components/SoundEffect.js LF web/src/spacewar/components/Sprite.js LF web/src/spacewar/components/Velocity.js LF web/src/spacewar/templates/EnemyShipTemplate.js LF web/src/spacewar/templates/ExplosionTemplate.js LF web/src/spacewar/templates/ParticleTemplate.js LF web/src/spacewar/templates/PlayerBulletTemplate.js LF web/src/spacewar/templates/PlayerTemplate.js LF web/src/spacewar/templates/StarTemplate.js LF web/src/spacewar/systems/CollisionSystem.js LF web/src/spacewar/systems/ColorAnimationSystem.js LF web/src/spacewar/systems/EntitySpawningTimerSystem.js LF web/src/spacewar/systems/ExpiringSystem.js LF web/src/spacewar/systems/HealthRenderSystem.js LF web/src/spacewar/systems/HudRenderSystem.js LF web/src/spacewar/systems/MovementSystem.js LF web/src/spacewar/systems/ParallaxStarRepeatingSystem.js LF web/src/spacewar/systems/PlayerInputSystem.js LF web/src/spacewar/systems/RemoveOffscreenShipsSystem.js LF web/src/spacewar/systems/ScaleAnimationSystem.js LF web/src/spacewar/systems/SoundEffectSystem.js LF web/src/spacewar/systems/SpriteRenderSystem.js LF web/src/spacewar/core/GameScreen.js LF web/src/spacewar/core/SpaceshipWarrior.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/spacewar.min,js
+11 error You can get their info via:
+11 error     npm owner ls spacewar
+11 error There is likely additional logging output above.
+12 error System Linux 3.13.0-24-generic
+13 error command "/home/bruce/.nvm/v0.10.38/bin/node" "/home/bruce/.nvm/v0.10.38/bin/npm" "run" "build"
+14 error cwd /home/bruce/Git/spaceship-warrior-ts
+15 error node -v v0.10.38
+16 error npm -v 1.4.28
+17 error code ELIFECYCLE
+18 verbose exit [ 1, true ]

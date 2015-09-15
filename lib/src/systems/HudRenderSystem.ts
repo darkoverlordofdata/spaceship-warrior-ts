@@ -15,13 +15,13 @@ module example.systems {
 		@Mapper(Position) pm:ComponentMapper<Position>;
 		@Mapper(Sprite) sm:ComponentMapper<Sprite>;
 	
-    private activeEntities:cc.LabelBMFont;
-    private totalCreated:cc.LabelBMFont;
-    private totalDeleted:cc.LabelBMFont;
+    private activeEntities:Object;
+    private totalCreated:Object;
+    private totalDeleted:Object;
 
-    private game:CCLayer;
+    private game:PIXI.Container;
 
-    constructor(game:CCLayer) {
+    constructor(game:PIXI.Container) {
 			super();
       this.game = game;
 		}

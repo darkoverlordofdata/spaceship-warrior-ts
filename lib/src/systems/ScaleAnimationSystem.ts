@@ -25,14 +25,14 @@ module example.systems {
 			if (scaleAnimation.active) {
 				var sprite:Sprite = this.sm.get(e);
 
-				sprite.scaleX += scaleAnimation.speed * this.world.delta;
-				sprite.scaleY = sprite.scaleX;
+				sprite.scale.x += scaleAnimation.speed * this.world.delta;
+				sprite.scale.y = sprite.scale.x;
 	
-				if (sprite.scaleX > scaleAnimation.max) {
-					sprite.scaleX = scaleAnimation.max;
+				if (sprite.scale.x > scaleAnimation.max) {
+					sprite.scale.x = scaleAnimation.max;
 					scaleAnimation.active = false;
-				} else if (sprite.scaleX < scaleAnimation.min) {
-					sprite.scaleX = scaleAnimation.min;
+				} else if (sprite.scale.x < scaleAnimation.min) {
+					sprite.scale.x = scaleAnimation.min;
 					scaleAnimation.active = false;
 				}
 			}

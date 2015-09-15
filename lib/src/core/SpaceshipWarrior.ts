@@ -1,38 +1,44 @@
 module example.core {
-  
-  export class SpaceshipWarrior extends CCLayer {
-  
-    public gameScreen:GameScreen;
-  
-    /**
-      * Start the menu
-      * @return {cc.Scene} the menu scene
-      */
-    public static start(): cc.Scene {
-        var scene = new cc.Scene();
-        scene.addChild(new SpaceshipWarrior(scene));
-        return scene;
-    }
-      
-    /**
-     *
-     * @constructor
-     * @extends {cc.Layer}
-     * @param {cc.Scene} scene
-     */
-    constructor(public scene) {
-        super();
-        return new (cc.Layer.extend(this));
-    }
- 
-    ctor() {
-        this._super();
-        this.gameScreen = new GameScreen(this);
-        this.scheduleUpdate();
-    }
-  
-    update(time:number) {
-      this.gameScreen.render(time);
+
+  import GameScreen = example.core.GameScreen;
+  import Constants = example.core.Constants;
+
+  export class SpaceshipWarrior extends PIXI.Container {
+
+    constructor(resources) {
+      super();
+
+      var renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
+      renderer.view.style.position = "absolute";
+      document.body.appendChild(renderer.view);
+
+      var monitor = new window['Stats']();
+      monitor.setMode(0);
+      monitor.domElement.style.position = "absolute";
+      monitor.domElement.style.top = "0px";
+      document.body.appendChild(monitor.domElement);
+
+      var delta = 0;
+      var previousTime = 0;
+      var gameScreen = new GameScreen(this, resources);
+
+      /**
+       * Game Loop
+       * @param time
+       */
+      var update = (time:number) => {
+
+        delta = previousTime || time;
+        previousTime = time;
+
+        monitor.begin();
+        gameScreen.render((time - delta) * 0.001);
+        renderer.render(this);
+        requestAnimationFrame(update);
+        monitor.end();
+
+      };
+      requestAnimationFrame(update);
     }
   }
 }

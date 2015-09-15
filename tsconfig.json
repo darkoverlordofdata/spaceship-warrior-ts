@@ -13,8 +13,7 @@
 
     "files": [
       "lib/src/artemis.d.ts",
-      "lib/src/cocos2d-3.1.6x.d.ts",
-      "lib/src/cclib-dev.ts",
+      "lib/src/pixi.js.d.ts",
       "lib/src/core/Constants",
       "lib/src/components/Bounds.ts",
       "lib/src/components/ColorAnimation.ts",

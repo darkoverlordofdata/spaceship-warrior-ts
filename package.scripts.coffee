@@ -195,11 +195,9 @@ module.exports = (project, options = {}) ->
   """
 
   ### update the cocos2d project file? ###
-  postbuild: do ->
-    if isCocos2d
-      return "cp -f web/project_build.json build/web/project.json"
-    else
-      return ""
+  postbuild: """
+    cp -f build/#{LIB_NAME}.js build/web/#{LIB_NAME}.js
+  """
 
   postclosure: """
     cp -f web/asteroids.min.js build/web

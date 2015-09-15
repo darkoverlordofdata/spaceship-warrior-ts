@@ -23,9 +23,9 @@ module example.systems {
       var sprite:Sprite = this.sm.get(e);
 
       if(c.alphaAnimate) {
-        sprite.a += c.alphaSpeed * this.world.delta;
+        sprite.alpha += c.alphaSpeed * this.world.delta;
 
-        if(sprite.a > c.alphaMax || sprite.a < c.alphaMin) {
+        if(sprite.alpha > c.alphaMax || sprite.alpha < c.alphaMin) {
           if(c.repeat) {
             c.alphaSpeed = -c.alphaSpeed;
           } else {

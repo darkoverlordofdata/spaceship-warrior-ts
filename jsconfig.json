@@ -1,7 +1,38 @@
 {
-    "files": [
-    ], 
-    "example": [
-    ]
-	
+  "files": [
+    "web/src/spacewar/core/Constants.js",
+    "web/src/spacewar/components/Bounds.js",
+    "web/src/spacewar/components/ColorAnimation.js",
+    "web/src/spacewar/components/Enemy.js",
+    "web/src/spacewar/components/Expires.js",
+    "web/src/spacewar/components/Health.js",
+    "web/src/spacewar/components/ParallaxStar.js",
+    "web/src/spacewar/components/Player.js",
+    "web/src/spacewar/components/Position.js",
+    "web/src/spacewar/components/ScaleAnimation.js",
+    "web/src/spacewar/components/SoundEffect.js",
+    "web/src/spacewar/components/Sprite.js",
+    "web/src/spacewar/components/Velocity.js",
+    "web/src/spacewar/templates/EnemyShipTemplate.js",
+    "web/src/spacewar/templates/ExplosionTemplate.js",
+    "web/src/spacewar/templates/ParticleTemplate.js",
+    "web/src/spacewar/templates/PlayerBulletTemplate.js",
+    "web/src/spacewar/templates/PlayerTemplate.js",
+    "web/src/spacewar/templates/StarTemplate.js",
+    "web/src/spacewar/systems/CollisionSystem.js",
+    "web/src/spacewar/systems/ColorAnimationSystem.js",
+    "web/src/spacewar/systems/EntitySpawningTimerSystem.js",
+    "web/src/spacewar/systems/ExpiringSystem.js",
+    "web/src/spacewar/systems/HealthRenderSystem.js",
+    "web/src/spacewar/systems/HudRenderSystem.js",
+    "web/src/spacewar/systems/MovementSystem.js",
+    "web/src/spacewar/systems/ParallaxStarRepeatingSystem.js",
+    "web/src/spacewar/systems/PlayerInputSystem.js",
+    "web/src/spacewar/systems/RemoveOffscreenShipsSystem.js",
+    "web/src/spacewar/systems/ScaleAnimationSystem.js",
+    "web/src/spacewar/systems/SoundEffectSystem.js",
+    "web/src/spacewar/systems/SpriteRenderSystem.js",
+    "web/src/spacewar/core/GameScreen.js",
+    "web/src/spacewar/core/SpaceshipWarrior.js"
+  ]
 }

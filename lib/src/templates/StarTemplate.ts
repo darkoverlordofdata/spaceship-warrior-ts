@@ -25,11 +25,12 @@ module example.templates {
       entity.addComponent(Position, x, y);
       entity.addComponent(Velocity, 0, MathUtils.random(-10, -60));
       entity.addComponent(ParallaxStar);
-      entity.addComponent(Sprite, 'particle', cc.color(255, 216, 0, 255), (sprite:Sprite) => {
-        sprite.scaleX = sprite.scaleY = MathUtils.random(0.5, 1);
-        sprite.a = MathUtils.random(127);
+      entity.addComponent(Sprite, 'particle',  0xffd800, (sprite:Sprite) => {
+        var s = MathUtils.random(0.5, 1);
+        sprite.scale = new PIXI.Point(s, s);
+        sprite.alpha = MathUtils.nextDouble()*127;
         sprite.layer = Layer.BACKGROUND;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<cc.Layer>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
       });
       entity.addComponent(ColorAnimation, (colorAnimation:ColorAnimation) => {
         colorAnimation.alphaAnimate = true;

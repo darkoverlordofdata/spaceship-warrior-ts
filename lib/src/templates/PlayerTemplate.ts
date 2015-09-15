@@ -21,15 +21,15 @@ module example.templates {
     public buildEntity(entity:Entity, world:World):Entity {
 
       var x = Constants.FRAME_WIDTH/4;
-      var y = Constants.FRAME_HEIGHT-80;
+      var y = 80;
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Velocity, 0, 0);
       entity.addComponent(Bounds, 43);
       entity.addComponent(Player);
-      entity.addComponent(Sprite, 'fighter', cc.color(93, 255, 129), (sprite:Sprite) => {
+      entity.addComponent(Sprite, 'fighter', 0x5dff81, (sprite:Sprite) => {
           sprite.layer = Layer.ACTORS_3;
-          sprite.addTo(EntitySystem.blackBoard.getEntry<cc.Layer>('game'));
+          sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_SHIP);
       return entity;

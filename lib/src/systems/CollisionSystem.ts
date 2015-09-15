@@ -31,9 +31,9 @@ module example.systems {
     @Mapper(Expires) ex:ComponentMapper<Expires>;
 
     private collisionPairs:Bag<CollisionPair>;
-    private game:CCLayer;
+    private game:PIXI.Container;
 
-    constructor(game:CCLayer) {
+    constructor(game:PIXI.Container) {
       super(Aspect.getAspectForAll(Position, Bounds));
       this.game = game;
     }
@@ -70,7 +70,7 @@ module example.systems {
 
 
     protected processEntities(entities:ImmutableBag<Entity>) {
-      console.log('this.collisionPairs.size()', this.collisionPairs.size());
+      //console.log('this.collisionPairs.size()', this.collisionPairs.size());
       for (var i = 0; this.collisionPairs.size() > i; i++) {
         this.collisionPairs.get(i).checkForCollisions();
       }

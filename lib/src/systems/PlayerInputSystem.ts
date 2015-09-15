@@ -20,9 +20,9 @@ module example.systems {
     private shoot:boolean;
     private timeToFire:number=0;
     private mouseVector;
-    private game:CCLayer;
+    private game:PIXI.Container;
 
-    constructor(game:CCLayer) {
+    constructor(game:PIXI.Container) {
       super(Aspect.getAspectForAll(Position, Velocity, Player));
       this.game = game;
     }
@@ -30,26 +30,26 @@ module example.systems {
 
     public initialize() {
 
-      var listener = cc.EventListener.create({
-        event: cc.EventListener.TOUCH_ONE_BY_ONE,
-        swallowTouches: true,
-        onTouchBegan: (touch, event) => {
-          this.shoot = true;
-          this.mouseVector = touch.getLocation();
-          return true;
-        },
-        onTouchMoved: (touch, event) => {
-          this.shoot = true;
-          this.mouseVector = touch.getLocation();
-          return true;
-        },
-        onTouchEnded: (touch, event) => {
-          this.shoot = false;
-          this.mouseVector = touch.getLocation();
-        }
-      });
-      cc.eventManager.addListener(listener, this.game);
-
+      //var listener = cc.EventListener.create({
+      //  event: cc.EventListener.TOUCH_ONE_BY_ONE,
+      //  swallowTouches: true,
+      //  onTouchBegan: (touch, event) => {
+      //    this.shoot = true;
+      //    this.mouseVector = touch.getLocation();
+      //    return true;
+      //  },
+      //  onTouchMoved: (touch, event) => {
+      //    this.shoot = true;
+      //    this.mouseVector = touch.getLocation();
+      //    return true;
+      //  },
+      //  onTouchEnded: (touch, event) => {
+      //    this.shoot = false;
+      //    this.mouseVector = touch.getLocation();
+      //  }
+      //});
+      //cc.eventManager.addListener(listener, this.game);
+      //
 
     }
 

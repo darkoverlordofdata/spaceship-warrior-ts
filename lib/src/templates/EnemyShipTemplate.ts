@@ -21,9 +21,9 @@ module example.templates {
       entity.addComponent(Velocity, velocityX, velocityY);
       entity.addComponent(Bounds, boundsRadius);
       entity.addComponent(Health, health, health);
-      entity.addComponent(Sprite, name, cc.color(255, 0, 142), (sprite:Sprite) => {
+      entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
         sprite.layer = layer;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<cc.Layer>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.ENEMY_SHIPS);
       return entity;
