@@ -1393,6 +1393,7 @@ var example;
                 this.timeToFire = 0;
                 this.onTouchStart = function (event) {
                     event = event.changedTouches ? event.changedTouches[0] : event;
+                    document.body.requestFullscreen();
                     _this.shoot = true;
                     _this.mouseVector = {
                         x: parseInt(event.clientX),
