@@ -5,8 +5,8 @@ var example;
         var Constants = (function () {
             function Constants() {
             }
-            Constants.FRAME_WIDTH = 480;
-            Constants.FRAME_HEIGHT = 320;
+            Constants.FRAME_WIDTH = 480 * 2;
+            Constants.FRAME_HEIGHT = 320 * 2;
             Constants.Groups = {
                 PLAYER_BULLETS: "player bullets",
                 PLAYER_SHIP: "player ship",
