@@ -19,13 +19,13 @@ module example.templates {
 
     public buildEntity(entity:artemis.Entity, world:artemis.World):artemis.Entity {
 
-      var x = MathUtils.nextInt(Constants.FRAME_WIDTH/2);
+      var x = MathUtils.nextInt(Constants.FRAME_WIDTH);
       var y = MathUtils.nextInt(Constants.FRAME_HEIGHT);
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Velocity, 0, MathUtils.random(-10, -60));
       entity.addComponent(ParallaxStar);
-      entity.addComponent(Sprite, 'particle',  0xffd800, (sprite:Sprite) => {
+      entity.addComponent(Sprite, 'particle',  0xffd800ff, (sprite:Sprite) => {
         var s = MathUtils.random(0.5, 1);
         sprite.scale = new PIXI.Point(s, s);
         sprite.alpha = MathUtils.nextDouble()*127;

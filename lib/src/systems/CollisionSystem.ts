@@ -52,9 +52,6 @@ module example.systems {
 
             }
 
-            //TODO: calling bullet.deleteFromWorld() was causing null pointer exceptions in ExpiringSystem and CollisionStstem because it did not exist anymore.
-            //TODO: This did not happen in vanilla artemis.
-            //TODO: is this a Is this a bug in artemis-odb's DelayedEntityProcessingSystem?
             bullet.deleteFromWorld();
             var health:Health = this.hm.get(ship);
             var position:Position = this.pm.get(ship);

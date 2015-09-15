@@ -30,28 +30,53 @@ module example.systems {
 
     public initialize() {
 
-      //var listener = cc.EventListener.create({
-      //  event: cc.EventListener.TOUCH_ONE_BY_ONE,
-      //  swallowTouches: true,
-      //  onTouchBegan: (touch, event) => {
-      //    this.shoot = true;
-      //    this.mouseVector = touch.getLocation();
-      //    return true;
-      //  },
-      //  onTouchMoved: (touch, event) => {
-      //    this.shoot = true;
-      //    this.mouseVector = touch.getLocation();
-      //    return true;
-      //  },
-      //  onTouchEnded: (touch, event) => {
-      //    this.shoot = false;
-      //    this.mouseVector = touch.getLocation();
-      //  }
-      //});
-      //cc.eventManager.addListener(listener, this.game);
-      //
+      document.addEventListener('touchstart', this.onTouchStart, true);
+      document.addEventListener('touchmove', this.onTouchMove, true);
+      document.addEventListener('touchend', this.onTouchEnd, true);
+
+      document.addEventListener('mousedown', this.onTouchStart, true);
+      document.addEventListener('mousemove', this.onTouchMove, true);
+      document.addEventListener('mouseup', this.onTouchEnd, true);
 
     }
+    
+    private onTouchStart = (event) => {
+      event = event.changedTouches ? event.changedTouches[0] : event;
+
+      try {
+        if (document.documentElement['requestFullscreen']) {
+          document.documentElement['requestFullscreen']();
+        } else if (document.documentElement['mozRequestFullScreen']) {
+          document.documentElement['mozRequestFullScreen']();
+        } else if (document.documentElement['webkitRequestFullscreen']) {
+          document.documentElement['webkitRequestFullscreen']();
+        } else if (document.documentElement['msRequestFullscreen']) {
+          document.documentElement['msRequestFullscreen']();
+        }
+      } catch (e) {}
+
+      this.shoot = true;
+      this.mouseVector = {
+        x: parseInt(event.clientX),
+        y: parseInt(event.clientY)
+      };
+      return true;
+    };
+
+    private onTouchMove = (event) => {
+      event = event.changedTouches ? event.changedTouches[0] : event;
+      //this.shoot = true;
+      this.mouseVector = {
+        x: parseInt(event.clientX),
+        y: parseInt(event.clientY)
+      };
+      return true;
+    };
+
+    private onTouchEnd = (event) => {
+      console.log('touchend', event);
+      this.shoot = false;
+    };
 
     protected processEach(e:Entity) {
 
@@ -66,7 +91,8 @@ module example.systems {
       if (destinationX === undefined || destinationY === undefined) return;
 
       position.x = this.mouseVector.x/2;
-      position.y = Constants.FRAME_HEIGHT-this.mouseVector.y;
+      //position.y = Constants.FRAME_HEIGHT-this.mouseVector.y;
+      position.y = this.mouseVector.y;
 
 
       if (this.shoot) {

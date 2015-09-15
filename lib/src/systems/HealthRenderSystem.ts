@@ -1,5 +1,6 @@
 module example.systems {
-	
+
+  import Bounds = example.components.Bounds;
 	import Health = example.components.Health;
 	import Position = example.components.Position;
   import Sprite = example.components.Sprite;
@@ -12,14 +13,17 @@ module example.systems {
 	import Mapper = artemis.annotations.Mapper;
   import Constants = example.core.Constants;
 
-  interface ILabelBMFont {
-    [key: string]: Object;
+  import BitmapText = PIXI.extras.BitmapText;
+
+  interface IBitmapText {
+    [key: string]: BitmapText;
   }
 	export class HealthRenderSystem extends EntityProcessingSystem {
 		@Mapper(Position) pm:ComponentMapper<Position>;
 		@Mapper(Health) hm:ComponentMapper<Health>;
-		
-    private texts:ILabelBMFont;
+    @Mapper(Bounds) bm:ComponentMapper<Bounds>;
+
+    private texts:IBitmapText;
     private game:PIXI.Container;
 
     constructor(game:PIXI.Container) {
@@ -29,34 +33,29 @@ module example.systems {
 		}
 		
     public inserted(e:Entity) {
-      //// add a text element to the sprite
-      //var c:Sprite = <Sprite>e.getComponentByType(Sprite);
-      //var b:cc.LabelBMFont = new cc.LabelBMFont('100%', "res/fonts/normal.fnt");
-      //b.setScale(1/2);
-      //
-      //this.game.addChild(b);
-      //this.texts[e.uuid] = b;
+      var b:BitmapText = new BitmapText('100%',  {font: '6px CarrierCommand'});
+      this.game.addChild(b);
+      this.texts[e.uuid] = b;
 
     }
     protected removed(e:Entity) {
-      //// remove the text element from the sprite
-      //var c:Sprite = <Sprite>e.getComponentByType(Sprite);
-      //this.game.removeChild(this.texts[e.uuid]);
-      //this.texts[e.uuid] = null;
-      //delete this.texts[e.uuid];
+      this.game.removeChild(this.texts[e.uuid]);
+      this.texts[e.uuid] = null;
+      delete this.texts[e.uuid];
     }
 
 		public processEach(e:Entity) {
-      //// update the text element on the sprite
-      //if (this.texts[e.uuid]) {
-      //  var position:Position = this.pm.get(e);
-      //  var health:Health = this.hm.get(e);
-      //  var text:cc.LabelBMFont = this.texts[e.uuid];
-      //
-      //  var percentage:number = Math.round(health.health / health.maximumHealth * 100);
-      //  text.setPosition(cc.p(position.x*2, Constants.FRAME_HEIGHT - position.y));
-      //  text.setString(`${percentage}%`);
-      //}
+      // update the text element on the sprite
+      if (this.texts[e.uuid]) {
+        var position:Position = this.pm.get(e);
+        var health:Health = this.hm.get(e);
+        var bounds:Bounds = this.bm.get(e);
+        var text:BitmapText = this.texts[e.uuid];
+
+        var percentage:number = Math.round(health.health / health.maximumHealth * 100);
+        text.position = new PIXI.Point(position.x*2+(bounds.radius/2), position.y+(bounds.radius/2));
+        text.text = `${percentage}%`;
+      }
 		}
 
 	}

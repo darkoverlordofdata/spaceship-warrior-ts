@@ -26,6 +26,7 @@ module example.core {
 
     private spriteRenderSystem:SpriteRenderSystem;
     private healthRenderSystem:HealthRenderSystem;
+    private hudRenderSystem:HudRenderSystem;
 
     constructor(game, resources) {
 
@@ -47,6 +48,7 @@ module example.core {
 
       this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(game, resources), true);
       this.healthRenderSystem = world.setSystem(new HealthRenderSystem(game), true);
+      this.hudRenderSystem = world.setSystem(new HudRenderSystem(game), true);
 
       world.initialize();
       world.createEntityFromTemplate('player').addToWorld();
@@ -63,6 +65,7 @@ module example.core {
 
       this.spriteRenderSystem.process();
       this.healthRenderSystem.process();
+      this.hudRenderSystem.process();
     }
 
 

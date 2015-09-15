@@ -74,7 +74,7 @@ module example.systems {
     public inserted(e:Entity) {
       var sprite:Sprite = this.sm.get(e);
 
-      //this.regionsByEntity.set(e.getId(), this.regions.get(sprite.name));
+      this.regionsByEntity.set(e.getId(), this.regions.get(sprite.name));
 
       // sortedEntities.add(e);
       this.sortedEntities.push(e);
@@ -92,9 +92,9 @@ module example.systems {
       var c:Sprite = <Sprite> e.getComponentByType(Sprite);
       c.removeFrom(this.game);
 
-      //this.regionsByEntity.set(e.getId(), null);
+      this.regionsByEntity.set(e.getId(), null);
       var index = this.sortedEntities.indexOf(e);
-      if (index != -1) {
+      if (index !== -1) {
         this.sortedEntities.splice(index, 1);
       }
     }
@@ -102,3 +102,32 @@ module example.systems {
   }
 }
 
+/**
+ * TODO: sprites not layered in correct order. Use this:>
+ *
+ * @see https://github.com/pixijs/pixi.js/issues/300
+ *
+ * var mapContainer = new PIXI.DisplayObjectContainer(),
+ unitsContainer = new PIXI.DisplayObjectContainer(),
+ menuContainer = new PIXI.DisplayObjectContainer();
+
+ mapContainer.zIndex = 5;
+ unitsContainer.zIndex = 10;
+ menuContainer.zIndex = 20;
+
+ /* adding children, no matter in which order * /
+stage.addChild(mapContainer);
+stage.addChild(menuContainer);
+stage.addChild(unitsContainer);
+
+/* call this function whenever you added a new layer/container * /
+stage.updateLayersOrder = function () {
+  stage.children.sort(function(a,b) {
+    a.zIndex = a.zIndex || 0;
+    b.zIndex = b.zIndex || 0;
+    return b.zIndex - a.zIndex
+  });
+};
+
+stage.updateLayersOrder();
+ */

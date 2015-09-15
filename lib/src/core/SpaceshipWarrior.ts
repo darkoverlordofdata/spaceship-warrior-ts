@@ -8,9 +8,23 @@ module example.core {
     constructor(resources) {
       super();
 
+
       var renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
       renderer.view.style.position = "absolute";
       document.body.appendChild(renderer.view);
+
+      var onResize = () => {
+        var height = window.innerHeight;
+        var width = window.innerWidth;
+        //this.scale = new PIXI.Point(window.devicePixelRatio, window.devicePixelRatio);
+        //renderer.view.style.left = width + "px";
+        //renderer.view.style.top = height + "px";
+        renderer.resize(width, height);
+      };
+      window.addEventListener('resize', onResize, true);
+      window.onorientationchange = onResize;
+
+
 
       var monitor = new window['Stats']();
       monitor.setMode(0);
@@ -40,6 +54,7 @@ module example.core {
       };
       requestAnimationFrame(update);
     }
+
   }
 }
 
