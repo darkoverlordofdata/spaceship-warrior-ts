@@ -5,8 +5,8 @@ var example;
         var Constants = (function () {
             function Constants() {
             }
-            Constants.FRAME_WIDTH = 480;
-            Constants.FRAME_HEIGHT = 320;
+            Constants.FRAME_WIDTH = window.innerWidth;
+            Constants.FRAME_HEIGHT = window.innerHeight;
             Constants.Groups = {
                 PLAYER_BULLETS: "player bullets",
                 PLAYER_SHIP: "player ship",
@@ -1164,6 +1164,7 @@ var example;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
+        var Constants = example.core.Constants;
         var HealthRenderSystem = (function (_super) {
             __extends(HealthRenderSystem, _super);
             function HealthRenderSystem(game) {
@@ -1172,32 +1173,26 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
-                //// add a text element to the sprite
-                //var c:Sprite = <Sprite>e.getComponentByType(Sprite);
-                //var b:cc.LabelBMFont = new cc.LabelBMFont('100%', "res/fonts/normal.fnt");
-                //b.setScale(1/2);
-                //
+                //var b:PIXI.extras.BitmapText = new PIXI.extras.BitmapText('100%',  { font: '20px Normal', align: 'right' });
+                //b.scale = new PIXI.Point(.5, .5);
                 //this.game.addChild(b);
                 //this.texts[e.uuid] = b;
             };
             HealthRenderSystem.prototype.removed = function (e) {
-                //// remove the text element from the sprite
-                //var c:Sprite = <Sprite>e.getComponentByType(Sprite);
                 //this.game.removeChild(this.texts[e.uuid]);
                 //this.texts[e.uuid] = null;
                 //delete this.texts[e.uuid];
             };
             HealthRenderSystem.prototype.processEach = function (e) {
-                //// update the text element on the sprite
-                //if (this.texts[e.uuid]) {
-                //  var position:Position = this.pm.get(e);
-                //  var health:Health = this.hm.get(e);
-                //  var text:cc.LabelBMFont = this.texts[e.uuid];
-                //
-                //  var percentage:number = Math.round(health.health / health.maximumHealth * 100);
-                //  text.setPosition(cc.p(position.x*2, Constants.FRAME_HEIGHT - position.y));
-                //  text.setString(`${percentage}%`);
-                //}
+                // update the text element on the sprite
+                if (this.texts[e.uuid]) {
+                    var position = this.pm.get(e);
+                    var health = this.hm.get(e);
+                    var text = this.texts[e.uuid];
+                    var percentage = Math.round(health.health / health.maximumHealth * 100);
+                    text.position = new PIXI.Point(position.x * 2, Constants.FRAME_HEIGHT - position.y);
+                    text.text = percentage + "%";
+                }
             };
             __decorate([
                 Mapper(Position)
@@ -1812,7 +1807,7 @@ var example;
                 var onResize = function () {
                     var height = window.innerHeight;
                     var width = window.innerWidth;
-                    _this.scale = new PIXI.Point(2, 2);
+                    //this.scale = new PIXI.Point(window.devicePixelRatio, window.devicePixelRatio);
                     //renderer.view.style.left = width + "px";
                     //renderer.view.style.top = height + "px";
                     renderer.resize(width, height);
