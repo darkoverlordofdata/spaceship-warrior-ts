@@ -1393,7 +1393,18 @@ var example;
                 this.timeToFire = 0;
                 this.onTouchStart = function (event) {
                     event = event.changedTouches ? event.changedTouches[0] : event;
-                    document.body.requestFullscreen();
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    }
+                    else if (document.documentElement.mozRequestFullScreen) {
+                        document.documentElement.mozRequestFullScreen();
+                    }
+                    else if (document.documentElement.webkitRequestFullscreen) {
+                        document.documentElement.webkitRequestFullscreen();
+                    }
+                    else if (document.documentElement.msRequestFullscreen) {
+                        document.documentElement.msRequestFullscreen();
+                    }
                     _this.shoot = true;
                     _this.mouseVector = {
                         x: parseInt(event.clientX),
@@ -1795,6 +1806,16 @@ var example;
                 var renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, { backgroundColor: 0x000000 });
                 renderer.view.style.position = "absolute";
                 document.body.appendChild(renderer.view);
+                var onResize = function () {
+                    var height = window.innerHeight;
+                    var width = window.innerWidth;
+                    _this.scale = new PIXI.Point(2, 2);
+                    //renderer.view.style.left = width + "px";
+                    //renderer.view.style.top = height + "px";
+                    renderer.resize(width, height);
+                };
+                window.addEventListener('resize', onResize, true);
+                window.onorientationchange = onResize;
                 var monitor = new window['Stats']();
                 monitor.setMode(0);
                 monitor.domElement.style.position = "absolute";
