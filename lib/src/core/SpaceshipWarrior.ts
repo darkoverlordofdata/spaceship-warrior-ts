@@ -16,9 +16,6 @@ module example.core {
       var onResize = () => {
         var height = window.innerHeight;
         var width = window.innerWidth;
-        //this.scale = new PIXI.Point(window.devicePixelRatio, window.devicePixelRatio);
-        //renderer.view.style.left = width + "px";
-        //renderer.view.style.top = height + "px";
         renderer.resize(width, height);
       };
       window.addEventListener('resize', onResize, true);

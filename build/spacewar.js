@@ -1171,8 +1171,7 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
-                var b = new BitmapText('100%', { font: 'OpenDyslexic', align: 'right' });
-                b.scale = new PIXI.Point(.5, .5);
+                var b = new BitmapText('100%', { font: '10px Radio Stars' });
                 this.game.addChild(b);
                 this.texts[e.uuid] = b;
             };
@@ -1239,13 +1238,13 @@ var example;
                 this.game = game;
             }
             HudRenderSystem.prototype.initialize = function () {
-                var font = { font: 'OpenDyslexic', align: 'left' };
+                var font = { font: '14px Radio Stars', align: 'left' };
                 this.activeEntities = new BitmapText('Active entities: ', font);
                 this.totalCreated = new BitmapText('Total created: ', font);
                 this.totalDeleted = new BitmapText('Total deleted: ', font);
-                this.activeEntities.position = new Point(0, 40);
-                this.totalCreated.position = new Point(0, 60);
-                this.totalDeleted.position = new Point(0, 80);
+                this.activeEntities.position = new Point(0, 60);
+                this.totalCreated.position = new Point(0, 80);
+                this.totalDeleted.position = new Point(0, 100);
                 this.game.addChild(this.activeEntities);
                 this.game.addChild(this.totalCreated);
                 this.game.addChild(this.totalDeleted);
@@ -1840,9 +1839,6 @@ var example;
                 var onResize = function () {
                     var height = window.innerHeight;
                     var width = window.innerWidth;
-                    //this.scale = new PIXI.Point(window.devicePixelRatio, window.devicePixelRatio);
-                    //renderer.view.style.left = width + "px";
-                    //renderer.view.style.top = height + "px";
                     renderer.resize(width, height);
                 };
                 window.addEventListener('resize', onResize, true);

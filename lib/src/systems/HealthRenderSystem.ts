@@ -33,7 +33,7 @@ module example.systems {
 		}
 		
     public inserted(e:Entity) {
-      var b:BitmapText = new BitmapText('100%',  {font: '6px CarrierCommand'});
+      var b:BitmapText = new BitmapText('100%',  {font: '10px Radio Stars'});
       this.game.addChild(b);
       this.texts[e.uuid] = b;
 

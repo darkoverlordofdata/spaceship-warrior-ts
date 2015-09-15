@@ -1,6 +1,5 @@
 module example.systems {
 
-
   import HashMap = artemis.utils.HashMap;
 
   import Position = example.components.Position;
@@ -32,7 +31,7 @@ module example.systems {
 
 
     public initialize() {
-      var font = {font: '10px CarrierCommand', align: 'left'};
+      var font = {font: '14px Radio Stars', align: 'left'};
 
       this.activeEntities = new BitmapText('Active entities: ', font);
       this.totalCreated = new BitmapText('Total created: ', font);
@@ -53,9 +52,6 @@ module example.systems {
       this.activeEntities.text = 'Active entities: ' + this.world.getEntityManager().getActiveEntityCount();
       this.totalCreated.text = 'Total created: ' + this.world.getEntityManager().getTotalCreated();
       this.totalDeleted.text = 'Total deleted: ' + this.world.getEntityManager().getTotalDeleted();
-
     }
-
-
   }
 }
