@@ -1171,7 +1171,7 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
-                var b = new BitmapText('100%', { font: '6px CarrierCommand' });
+                var b = new BitmapText('100%', { font: '10px Radio Stars' });
                 this.game.addChild(b);
                 this.texts[e.uuid] = b;
             };
@@ -1238,7 +1238,7 @@ var example;
                 this.game = game;
             }
             HudRenderSystem.prototype.initialize = function () {
-                var font = { font: '10px CarrierCommand', align: 'left' };
+                var font = { font: '14px Radio Stars', align: 'left' };
                 this.activeEntities = new BitmapText('Active entities: ', font);
                 this.totalCreated = new BitmapText('Total created: ', font);
                 this.totalDeleted = new BitmapText('Total deleted: ', font);
