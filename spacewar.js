@@ -1276,6 +1276,7 @@ var example;
                 this.totalDeleted = new BitmapText('Total deleted: ', font);
                 var scale = 1 / window.devicePixelRatio;
                 this.framesPerSecond.scale = new Point(scale, scale);
+                this.activeEntities.scale = new Point(scale, scale);
                 this.totalCreated.scale = new Point(scale, scale);
                 this.totalDeleted.scale = new Point(scale, scale);
                 this.framesPerSecond.position = new Point(0, 20);
