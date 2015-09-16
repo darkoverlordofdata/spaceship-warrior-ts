@@ -21,8 +21,9 @@ module example.systems {
       var position:Position = this.pm.get(e);
       var velocity:Velocity = this.vm.get(e);
 
-      position.x += velocity.vectorX * this.world.delta;
-      position.y -= velocity.vectorY * this.world.delta;
+      var delta = 1 / window.devicePixelRatio * this.world.delta;;
+      position.x += velocity.vectorX * delta;
+      position.y -= velocity.vectorY * delta;
     }
   }
 }

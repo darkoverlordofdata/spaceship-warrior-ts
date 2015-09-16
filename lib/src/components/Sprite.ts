@@ -25,13 +25,14 @@ module example.components {
     public layer:Layer;
 
     public name_:string;
-    public rotation_:number;
     public sprite_:PIXI.Sprite;
 
     initialize(name?:string, color?, lambda?) {
       this.name_ = name;
       this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(`${name}.png`));
-      this.sprite_.scale = new Point(0.5, 0.5);
+      var scale = 1/window.devicePixelRatio;
+      this.sprite_.scale = new Point(scale, scale);
+      this.sprite_.anchor = new Point(0.5, 0.5);
       if (color !== undefined && color !== null) {
         this.color = color;
       }
@@ -58,6 +59,14 @@ module example.components {
 
     set rotation(value:number) {
       this.sprite_.rotation = value;
+    }
+
+    get position():Point {
+      return this.sprite_.position;
+    }
+
+    set position(value:Point) {
+      this.sprite_.position = value;
     }
 
     get color():number {

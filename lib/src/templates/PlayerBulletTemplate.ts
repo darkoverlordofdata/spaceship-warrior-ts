@@ -1,13 +1,8 @@
 module example.templates {
 
-  /**
-   * Position
-   * Sprite
-   * Velocity
-   * Bounds
-   * Expires
-   * SoundEffect
-   */
+  import Point = PIXI.Point;
+  import Container = PIXI.Container;
+
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Velocity = example.components.Velocity;
@@ -23,7 +18,6 @@ module example.templates {
   import IEntityTemplate = artemis.IEntityTemplate;
 
   @EntityTemplate('bullet')
-
   export class PlayerBulletTemplate implements IEntityTemplate {
 
     public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number):artemis.Entity {
@@ -34,8 +28,9 @@ module example.templates {
       entity.addComponent(Expires, 5);
       entity.addComponent(SoundEffect, EFFECT.PEW);
       entity.addComponent(Sprite, 'bullet', 0xffffff, (sprite:Sprite) => {
+        sprite.position = new Point(x*2,y);
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_BULLETS);
       return entity;

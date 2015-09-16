@@ -1,5 +1,8 @@
 module example.templates {
 
+  import Point = PIXI.Point;
+  import Container = PIXI.Container;
+
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Velocity = example.components.Velocity;
@@ -17,6 +20,9 @@ module example.templates {
   import IEntityTemplate = artemis.IEntityTemplate;
 
 
+  /**
+   * Base Explosion Template
+   */
   class ExplosionTemplate implements IEntityTemplate {
 
     public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, scale:number):artemis.Entity {
@@ -24,9 +30,10 @@ module example.templates {
       entity.addComponent(Position, x, y);
       entity.addComponent(Expires, 0.5);
       entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
-        sprite.scale = new PIXI.Point(scale, scale);
+        sprite.scale = new Point(scale, scale);
+        sprite.position = new Point(x*2, y);
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;
@@ -39,6 +46,9 @@ module example.templates {
     }
   }
 
+  /**
+   * Small Explosion
+   */
   @EntityTemplate('small')
   export class SmallExplosionTemplate extends ExplosionTemplate {
 
@@ -54,6 +64,9 @@ module example.templates {
     }
   }
 
+  /**
+   * Big Explosion
+   */
   @EntityTemplate('big')
   export class BigExplosionTemplate extends ExplosionTemplate {
 

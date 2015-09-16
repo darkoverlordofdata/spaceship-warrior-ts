@@ -1,5 +1,8 @@
 module example.templates {
 
+  import Point = PIXI.Point;
+  import Container = PIXI.Container;
+
   import MathUtils = artemis.utils.MathUtils;
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
@@ -27,10 +30,11 @@ module example.templates {
       entity.addComponent(ParallaxStar);
       entity.addComponent(Sprite, 'particle',  0xffd800ff, (sprite:Sprite) => {
         var s = MathUtils.random(0.5, 1);
-        sprite.scale = new PIXI.Point(s, s);
+        sprite.scale = new Point(s, s);
+        sprite.position = new Point(x*2,y);
         sprite.alpha = MathUtils.nextDouble()*127;
         sprite.layer = Layer.BACKGROUND;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       entity.addComponent(ColorAnimation, (colorAnimation:ColorAnimation) => {
         colorAnimation.alphaAnimate = true;

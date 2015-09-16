@@ -32,11 +32,9 @@ module example.systems {
     @Mapper(Expires) ex:ComponentMapper<Expires>;
 
     private collisionPairs:Bag<CollisionPair>;
-    private sprites:Container;
 
-    constructor(sprites:Container) {
+    constructor(private sprites:Container) {
       super(Aspect.getAspectForAll(Position, Bounds));
-      this.sprites = sprites;
     }
 
 
@@ -47,15 +45,15 @@ module example.systems {
 
           handleCollision: (bullet:Entity, ship:Entity) => {
             var bp:Position = this.pm.get(bullet);
+            var health:Health = this.hm.get(ship);
+            var position:Position = this.pm.get(ship);
+
             this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
             for (var i = 0; 4 > i; i++) {
               this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
-
             }
 
             bullet.deleteFromWorld();
-            var health:Health = this.hm.get(ship);
-            var position:Position = this.pm.get(ship);
             health.health -= 1;
             if (health.health < 0) {
               health.health = 0;

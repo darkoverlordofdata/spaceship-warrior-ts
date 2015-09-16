@@ -1,5 +1,9 @@
 module example.systems {
 
+  import BitmapText = PIXI.extras.BitmapText;
+  import Container = PIXI.Container;
+  import Point = PIXI.Point;
+
   import Bounds = example.components.Bounds;
 	import Health = example.components.Health;
 	import Position = example.components.Position;
@@ -12,9 +16,7 @@ module example.systems {
 	import MathUtils = artemis.utils.MathUtils;
 	import Mapper = artemis.annotations.Mapper;
   import Constants = example.core.Constants;
-  import Container = PIXI.Container;
 
-  import BitmapText = PIXI.extras.BitmapText;
 
   interface IBitmapText {
     [key: string]: BitmapText;
@@ -24,19 +26,18 @@ module example.systems {
 		@Mapper(Health) hm:ComponentMapper<Health>;
     @Mapper(Bounds) bm:ComponentMapper<Bounds>;
 
-    private texts:IBitmapText;
-    private sprites:Container;
+    private texts:IBitmapText = {};
 
-    constructor(sprites:Container) {
+    constructor(private sprites:Container) {
 			super(Aspect.getAspectForAll(Position, Health));
-      this.sprites = sprites;
-      this.texts = {};
 		}
 		
     public inserted(e:Entity) {
-      var b:BitmapText = new BitmapText('100%',  {font: '10px Radio Stars'});
-      this.sprites.addChild(b);
-      this.texts[e.uuid] = b;
+      var text:BitmapText = new BitmapText('100%',  {font: '20px Radio Stars'});
+      var scale = 1/window.devicePixelRatio;
+      text.scale = new Point(scale, scale);
+      this.sprites.addChild(text);
+      this.texts[e.uuid] = text;
 
     }
     protected removed(e:Entity) {
@@ -54,7 +55,7 @@ module example.systems {
         var text:BitmapText = this.texts[e.uuid];
 
         var percentage:number = Math.round(health.health / health.maximumHealth * 100);
-        text.position = new PIXI.Point(position.x*2+(bounds.radius/2), position.y+(bounds.radius/2));
+        text.position = new PIXI.Point(position.x*2, position.y);
         text.text = `${percentage}%`;
       }
 		}

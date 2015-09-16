@@ -40,7 +40,7 @@ module example.core {
       //world.setSystem(new SoundEffectSystem());
       world.setSystem(new CollisionSystem(sprites));
       world.setSystem(new ExpiringSystem());
-      world.setSystem(new EntitySpawningTimerSystem(sprites));
+      world.setSystem(new EntitySpawningTimerSystem());
       world.setSystem(new ParallaxStarRepeatingSystem());
       world.setSystem(new ColorAnimationSystem());
       world.setSystem(new ScaleAnimationSystem());
@@ -60,6 +60,7 @@ module example.core {
     }
 
     public render(delta:number) {
+
       this.world.setDelta(delta);
       this.world.process();
 

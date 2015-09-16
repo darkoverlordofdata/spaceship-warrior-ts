@@ -1,5 +1,8 @@
 module example.templates {
 
+  import Point = PIXI.Point;
+  import Container = PIXI.Container;
+
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Velocity = example.components.Velocity;
@@ -22,8 +25,9 @@ module example.templates {
       entity.addComponent(Bounds, boundsRadius);
       entity.addComponent(Health, health, health);
       entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
+        sprite.position = new Point(x*2,y);
         sprite.layer = layer;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.ENEMY_SHIPS);
       return entity;

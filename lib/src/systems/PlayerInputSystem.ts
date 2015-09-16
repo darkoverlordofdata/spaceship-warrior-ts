@@ -21,11 +21,9 @@ module example.systems {
     private shoot:boolean;
     private timeToFire:number=0;
     private mouseVector;
-    private sprites:Container;
 
-    constructor(sprites:Container) {
+    constructor(private sprites:Container) {
       super(Aspect.getAspectForAll(Position, Velocity, Player));
-      this.sprites = sprites;
     }
 
 
@@ -75,7 +73,6 @@ module example.systems {
     };
 
     private onTouchEnd = (event) => {
-      console.log('touchend', event);
       this.shoot = false;
     };
 

@@ -24,13 +24,8 @@ module example.systems {
     private regionsByEntity:Bag<Object>;
     private sortedEntities:Array<Entity>;
 
-    private sprites:Container;
-    private resources;
-
-    constructor(sprites:Container, resources) {
+    constructor(private sprites:Container, private resources) {
       super(Aspect.getAspectForAll(Position, Sprite));
-      this.sprites = sprites;
-      this.resources = resources;
     }
 
 
@@ -66,8 +61,7 @@ module example.systems {
       if (this.pm.has(e)) {
         var position:Position = this.pm.getSafe(e);
         var sprite:Sprite = this.sm.get(e);
-
-        sprite.sprite_.position = new PIXI.Point(position.x * 2, position.y);
+        sprite.position = new PIXI.Point(position.x * 2, position.y);
       }
     }
 

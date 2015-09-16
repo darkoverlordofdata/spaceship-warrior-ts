@@ -12,15 +12,13 @@ module example.systems {
 	
 	export class EntitySpawningTimerSystem extends VoidEntitySystem {
 	
-		private sprites:Container;
 		private timer1:Timer;
 		private timer2:Timer;
 		private timer3:Timer;
 	
-		constructor(sprites:Container) {
+		constructor() {
 			super();
-			this.sprites = sprites;
-			
+
 			this.timer1 = new Timer(2, true);
 				
 			this.timer1.execute = () => {

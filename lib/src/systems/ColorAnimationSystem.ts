@@ -22,11 +22,11 @@ module example.systems {
 			var c:ColorAnimation = this.cam.get(e);
       var sprite:Sprite = this.sm.get(e);
 
-      if(c.alphaAnimate) {
+      if (c.alphaAnimate) {
         sprite.alpha += c.alphaSpeed * this.world.delta;
 
-        if(sprite.alpha > c.alphaMax || sprite.alpha < c.alphaMin) {
-          if(c.repeat) {
+        if (sprite.alpha > c.alphaMax || sprite.alpha < c.alphaMin) {
+          if (c.repeat) {
             c.alphaSpeed = -c.alphaSpeed;
           } else {
             c.alphaAnimate = false;

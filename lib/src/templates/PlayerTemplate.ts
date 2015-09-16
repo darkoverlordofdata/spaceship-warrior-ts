@@ -1,5 +1,8 @@
 module example.templates {
 
+  import Point = PIXI.Point;
+  import Container = PIXI.Container;
+
   import GroupManager = artemis.managers.GroupManager;
   import EntitySystem = artemis.EntitySystem;
   import EntityTemplate = artemis.annotations.EntityTemplate;
@@ -28,8 +31,9 @@ module example.templates {
       entity.addComponent(Bounds, 43);
       entity.addComponent(Player);
       entity.addComponent(Sprite, 'fighter', 0x5dff81, (sprite:Sprite) => {
-          sprite.layer = Layer.ACTORS_3;
-          sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
+        sprite.position = new Point(x*2,y);
+        sprite.layer = Layer.ACTORS_3;
+        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_SHIP);
       return entity;
