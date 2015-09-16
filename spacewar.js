@@ -439,6 +439,16 @@ var example;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(Sprite.prototype, "position", {
+                get: function () {
+                    return this.sprite_.position;
+                },
+                set: function (value) {
+                    this.sprite_.position = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(Sprite.prototype, "color", {
                 get: function () {
                     return this.sprite_.tint;
@@ -537,6 +547,7 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
+        var Point = PIXI.Point;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
         var Velocity = example.components.Velocity;
@@ -555,6 +566,7 @@ var example;
                 entity.addComponent(Bounds, boundsRadius);
                 entity.addComponent(Health, health, health);
                 entity.addComponent(Sprite, name, 0xff008e, function (sprite) {
+                    sprite.position = new Point(x * 2, y);
                     sprite.layer = layer;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -609,6 +621,7 @@ var example;
                 entity.addComponent(Expires, 0.5);
                 entity.addComponent(Sprite, 'explosion', 0xffd80080, function (sprite) {
                     sprite.scale = new Point(scale, scale);
+                    sprite.position = new Point(x * 2, y);
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -695,16 +708,18 @@ var example;
             function ParticleTemplate() {
             }
             ParticleTemplate.prototype.buildEntity = function (entity, world, x, y) {
-                var radians = MathUtils.random(Tau);
-                var magnitude = MathUtils.random(400);
+                var radians = Math.random() * Tau; // MathUtils.random(Tau);
+                var magnitude = MathUtils.random(200);
                 var velocityX = magnitude * Math.cos(radians);
                 var velocityY = magnitude * Math.sin(radians);
                 entity.addComponent(Position, x, y);
                 entity.addComponent(Velocity, velocityX, velocityY);
                 entity.addComponent(Expires, 1);
+                //0xffd800ff
                 entity.addComponent(Sprite, 'particle', 0xffd800ff, function (sprite) {
                     var s = MathUtils.random(0.5, 1);
                     sprite.scale = new Point(s, s);
+                    sprite.position = new Point(x * 2, y);
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -738,6 +753,7 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
+        var Point = PIXI.Point;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
         var Velocity = example.components.Velocity;
@@ -760,6 +776,7 @@ var example;
                 entity.addComponent(Expires, 5);
                 entity.addComponent(SoundEffect, EFFECT.PEW);
                 entity.addComponent(Sprite, 'bullet', 0xffffff, function (sprite) {
+                    sprite.position = new Point(x * 2, y);
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -787,6 +804,7 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
+        var Point = PIXI.Point;
         var GroupManager = artemis.managers.GroupManager;
         var EntitySystem = artemis.EntitySystem;
         var EntityTemplate = artemis.annotations.EntityTemplate;
@@ -808,6 +826,7 @@ var example;
                 entity.addComponent(Bounds, 43);
                 entity.addComponent(Player);
                 entity.addComponent(Sprite, 'fighter', 0x5dff81, function (sprite) {
+                    sprite.position = new Point(x * 2, y);
                     sprite.layer = Layer.ACTORS_3;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -858,6 +877,7 @@ var example;
                 entity.addComponent(Sprite, 'particle', 0xffd800ff, function (sprite) {
                     var s = MathUtils.random(0.5, 1);
                     sprite.scale = new Point(s, s);
+                    sprite.position = new Point(x * 2, y);
                     sprite.alpha = MathUtils.nextDouble() * 127;
                     sprite.layer = Layer.BACKGROUND;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -920,13 +940,13 @@ var example;
                 this.collisionPairs.add(new CollisionPair(this, Constants.Groups.PLAYER_BULLETS, Constants.Groups.ENEMY_SHIPS, {
                     handleCollision: function (bullet, ship) {
                         var bp = _this.pm.get(bullet);
+                        var health = _this.hm.get(ship);
+                        var position = _this.pm.get(ship);
                         _this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
                         for (var i = 0; 4 > i; i++) {
                             _this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
                         }
                         bullet.deleteFromWorld();
-                        var health = _this.hm.get(ship);
-                        var position = _this.pm.get(ship);
                         health.health -= 1;
                         if (health.health < 0) {
                             health.health = 0;
@@ -1441,7 +1461,6 @@ var example;
                     return true;
                 };
                 this.onTouchEnd = function (event) {
-                    console.log('touchend', event);
                     _this.shoot = false;
                 };
             }
@@ -1716,7 +1735,7 @@ var example;
                 if (this.pm.has(e)) {
                     var position = this.pm.getSafe(e);
                     var sprite = this.sm.get(e);
-                    sprite.sprite_.position = new PIXI.Point(position.x * 2, position.y);
+                    sprite.position = new PIXI.Point(position.x * 2, position.y);
                 }
             };
             SpriteRenderSystem.prototype.inserted = function (e) {
@@ -1884,8 +1903,8 @@ var example;
              * Load assets and start
              */
             SpaceshipWarrior.main = function () {
-                for (var i in SpaceshipWarrior.assets) {
-                    PIXI.loader.add(SpaceshipWarrior.assets[i]);
+                for (var asset in SpaceshipWarrior.assets) {
+                    PIXI.loader.add(SpaceshipWarrior.assets[asset]);
                 }
                 PIXI.loader.load(function (loader, resources) { return new SpaceshipWarrior(resources); });
             };
