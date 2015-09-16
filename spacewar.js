@@ -1347,8 +1347,9 @@ var example;
             MovementSystem.prototype.processEach = function (e) {
                 var position = this.pm.get(e);
                 var velocity = this.vm.get(e);
-                position.x += velocity.vectorX * this.world.delta;
-                position.y -= velocity.vectorY * this.world.delta;
+                var scale = 1 / window.devicePixelRatio;
+                position.x += velocity.vectorX * scale * this.world.delta;
+                position.y -= velocity.vectorY * scale * this.world.delta;
             };
             __decorate([
                 Mapper(Position)
