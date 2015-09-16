@@ -404,7 +404,9 @@ var example;
             Sprite.prototype.initialize = function (name, color, lambda) {
                 this.name_ = name;
                 this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(name + ".png"));
-                this.sprite_.scale = new Point(0.5, 0.5);
+                var scale = 1 / window.devicePixelRatio;
+                this.sprite_.scale = new Point(scale, scale);
+                this.sprite_.anchor = new Point(0.5, 0.5);
                 if (color !== undefined && color !== null) {
                     this.color = color;
                 }
@@ -1180,13 +1182,14 @@ var example;
 (function (example) {
     var systems;
     (function (systems) {
+        var BitmapText = PIXI.extras.BitmapText;
+        var Point = PIXI.Point;
         var Bounds = example.components.Bounds;
         var Health = example.components.Health;
         var Position = example.components.Position;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
-        var BitmapText = PIXI.extras.BitmapText;
         var HealthRenderSystem = (function (_super) {
             __extends(HealthRenderSystem, _super);
             function HealthRenderSystem(sprites) {
@@ -1195,9 +1198,11 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
-                var b = new BitmapText('100%', { font: '10px Radio Stars' });
-                this.sprites.addChild(b);
-                this.texts[e.uuid] = b;
+                var text = new BitmapText('100%', { font: '20px Radio Stars' });
+                var scale = 1 / window.devicePixelRatio;
+                text.scale = new Point(scale, scale);
+                this.sprites.addChild(text);
+                this.texts[e.uuid] = text;
             };
             HealthRenderSystem.prototype.removed = function (e) {
                 this.sprites.removeChild(this.texts[e.uuid]);
@@ -1212,7 +1217,7 @@ var example;
                     var bounds = this.bm.get(e);
                     var text = this.texts[e.uuid];
                     var percentage = Math.round(health.health / health.maximumHealth * 100);
-                    text.position = new PIXI.Point(position.x * 2 + (bounds.radius / 2), position.y + (bounds.radius / 2));
+                    text.position = new PIXI.Point(position.x * 2, position.y);
                     text.text = percentage + "%";
                 }
             };
@@ -1264,11 +1269,15 @@ var example;
                 this.frameNumber = 0;
             }
             HudRenderSystem.prototype.initialize = function () {
-                var font = { font: '14px Radio Stars', align: 'left' };
-                this.framesPerSecond = new BitmapText('FPS: 0', font);
+                var font = { font: '20px Radio Stars', align: 'left' };
+                this.framesPerSecond = new BitmapText('FPS: 60', font);
                 this.activeEntities = new BitmapText('Active entities: ', font);
                 this.totalCreated = new BitmapText('Total created: ', font);
                 this.totalDeleted = new BitmapText('Total deleted: ', font);
+                var scale = 1 / window.devicePixelRatio;
+                this.framesPerSecond.scale = new Point(scale, scale);
+                this.totalCreated.scale = new Point(scale, scale);
+                this.totalDeleted.scale = new Point(scale, scale);
                 this.framesPerSecond.position = new Point(0, 20);
                 this.activeEntities.position = new Point(0, 40);
                 this.totalCreated.position = new Point(0, 60);
