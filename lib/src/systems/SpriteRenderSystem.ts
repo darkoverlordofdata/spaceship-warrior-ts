@@ -13,6 +13,7 @@ module example.systems {
   import ImmutableBag = artemis.utils.ImmutableBag;
   import Mapper = artemis.annotations.Mapper;
   import Constants = example.core.Constants;
+  import Container = PIXI.Container;
 
   export class SpriteRenderSystem extends EntitySystem {
     @Mapper(Position) pm:ComponentMapper<Position>;
@@ -23,12 +24,12 @@ module example.systems {
     private regionsByEntity:Bag<Object>;
     private sortedEntities:Array<Entity>;
 
-    private game:PIXI.Container;
+    private sprites:Container;
     private resources;
 
-    constructor(game:PIXI.Container, resources) {
+    constructor(sprites:Container, resources) {
       super(Aspect.getAspectForAll(Position, Sprite));
-      this.game = game;
+      this.sprites = sprites;
       this.resources = resources;
     }
 
@@ -90,7 +91,7 @@ module example.systems {
 
     protected removed(e:Entity) {
       var c:Sprite = <Sprite> e.getComponentByType(Sprite);
-      c.removeFrom(this.game);
+      c.removeFrom(this.sprites);
 
       this.regionsByEntity.set(e.getId(), null);
       var index = this.sortedEntities.indexOf(e);

@@ -26,7 +26,7 @@ module example.templates {
       entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
         sprite.scale = new PIXI.Point(scale, scale);
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;

@@ -4,6 +4,7 @@ module example.systems {
 	import Sprite = example.components.Sprite;
 	import Layer = example.components.Layer;
 	import Constants = example.core.Constants;
+	import Container = PIXI.Container;
 
 	import VoidEntitySystem = artemis.systems.VoidEntitySystem;
 	
@@ -11,14 +12,14 @@ module example.systems {
 	
 	export class EntitySpawningTimerSystem extends VoidEntitySystem {
 	
-		private game:PIXI.Container;
+		private sprites:Container;
 		private timer1:Timer;
 		private timer2:Timer;
 		private timer3:Timer;
 	
-		constructor(game:PIXI.Container) {
+		constructor(sprites:Container) {
 			super();
-			this.game = game;
+			this.sprites = sprites;
 			
 			this.timer1 = new Timer(2, true);
 				

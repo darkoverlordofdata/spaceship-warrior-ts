@@ -4,6 +4,7 @@ module example.components {
   import PooledComponent = artemis.PooledComponent;
   import Pooled = artemis.annotations.Pooled;
   import Point = PIXI.Point;
+  import Container = PIXI.Container;
 
   export enum Layer {
     DEFAULT,
@@ -76,11 +77,11 @@ module example.components {
       this.sprite_.alpha = value;
     }
 
-    addTo(layer:PIXI.Container) {
+    addTo(layer:Container) {
       layer.addChild(this.sprite_);
     }
 
-    removeFrom(layer:PIXI.Container) {
+    removeFrom(layer:Container) {
       layer.removeChild(this.sprite_);
     }
 

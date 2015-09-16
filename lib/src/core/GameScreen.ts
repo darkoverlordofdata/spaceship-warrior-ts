@@ -28,27 +28,27 @@ module example.core {
     private healthRenderSystem:HealthRenderSystem;
     private hudRenderSystem:HudRenderSystem;
 
-    constructor(game, resources) {
+    constructor(sprites, resources) {
 
-      EntitySystem.blackBoard.setEntry('game', game);
+      EntitySystem.blackBoard.setEntry('sprites', sprites);
 
       var world:World = this.world = new artemis.World();
 
       world.setManager(new GroupManager());
       world.setSystem(new MovementSystem());
-      world.setSystem(new PlayerInputSystem(game));
+      world.setSystem(new PlayerInputSystem(sprites));
       //world.setSystem(new SoundEffectSystem());
-      world.setSystem(new CollisionSystem(game));
+      world.setSystem(new CollisionSystem(sprites));
       world.setSystem(new ExpiringSystem());
-      world.setSystem(new EntitySpawningTimerSystem(game));
+      world.setSystem(new EntitySpawningTimerSystem(sprites));
       world.setSystem(new ParallaxStarRepeatingSystem());
       world.setSystem(new ColorAnimationSystem());
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
-      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(game, resources), true);
-      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(game), true);
-      this.hudRenderSystem = world.setSystem(new HudRenderSystem(game), true);
+      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites, resources), true);
+      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
+      this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
 
       world.initialize();
       world.createEntityFromTemplate('player').addToWorld();

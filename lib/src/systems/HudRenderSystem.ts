@@ -22,11 +22,11 @@ module example.systems {
     private totalCreated:BitmapText;
     private totalDeleted:BitmapText;
 
-    private game:PIXI.Container;
+    private sprites:Container;
 
-    constructor(game:PIXI.Container) {
+    constructor(sprites:Container) {
       super();
-      this.game = game;
+      this.sprites = sprites;
     }
 
 
@@ -41,9 +41,9 @@ module example.systems {
       this.totalCreated.position = new Point(0, 80);
       this.totalDeleted.position = new Point(0, 100);
 
-      this.game.addChild(this.activeEntities);
-      this.game.addChild(this.totalCreated);
-      this.game.addChild(this.totalDeleted);
+      this.sprites.addChild(this.activeEntities);
+      this.sprites.addChild(this.totalCreated);
+      this.sprites.addChild(this.totalDeleted);
     }
 
 

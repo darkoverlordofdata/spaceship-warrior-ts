@@ -29,7 +29,7 @@ module example.templates {
       entity.addComponent(Player);
       entity.addComponent(Sprite, 'fighter', 0x5dff81, (sprite:Sprite) => {
           sprite.layer = Layer.ACTORS_3;
-          sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
+          sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_SHIP);
       return entity;

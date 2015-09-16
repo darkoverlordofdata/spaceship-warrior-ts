@@ -23,7 +23,7 @@ module example.templates {
       entity.addComponent(Health, health, health);
       entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
         sprite.layer = layer;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.ENEMY_SHIPS);
       return entity;

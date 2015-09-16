@@ -22,6 +22,7 @@ module example.systems {
   import Aspect = artemis.Aspect;
   import Entity = artemis.Entity;
   import GroupManager = artemis.managers.GroupManager;
+  import Container = PIXI.Container;
 
 
   export class CollisionSystem extends EntitySystem {
@@ -31,11 +32,11 @@ module example.systems {
     @Mapper(Expires) ex:ComponentMapper<Expires>;
 
     private collisionPairs:Bag<CollisionPair>;
-    private game:PIXI.Container;
+    private sprites:Container;
 
-    constructor(game:PIXI.Container) {
+    constructor(sprites:Container) {
       super(Aspect.getAspectForAll(Position, Bounds));
-      this.game = game;
+      this.sprites = sprites;
     }
 
 

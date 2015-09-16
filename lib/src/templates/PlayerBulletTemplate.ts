@@ -35,7 +35,7 @@ module example.templates {
       entity.addComponent(SoundEffect, EFFECT.PEW);
       entity.addComponent(Sprite, 'bullet', 0xffffff, (sprite:Sprite) => {
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_BULLETS);
       return entity;

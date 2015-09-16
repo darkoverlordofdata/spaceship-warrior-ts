@@ -31,7 +31,7 @@ module example.templates {
         var s = MathUtils.random(0.5, 1);
         sprite.scale = new PIXI.Point(s, s);
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('game'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<PIXI.Container>('sprites'));
       });
       entity.addComponent(ColorAnimation, (colorAnimation:ColorAnimation) => {
         colorAnimation.alphaAnimate = true;

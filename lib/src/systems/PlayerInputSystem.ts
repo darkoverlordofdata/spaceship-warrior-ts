@@ -10,6 +10,7 @@ module example.systems {
   import Mapper = artemis.annotations.Mapper;
   import EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
   import Constants = example.core.Constants;
+  import Container = PIXI.Container;
 
   export class PlayerInputSystem extends EntityProcessingSystem  {
     private static FireRate = 0.1;
@@ -20,11 +21,11 @@ module example.systems {
     private shoot:boolean;
     private timeToFire:number=0;
     private mouseVector;
-    private game:PIXI.Container;
+    private sprites:Container;
 
-    constructor(game:PIXI.Container) {
+    constructor(sprites:Container) {
       super(Aspect.getAspectForAll(Position, Velocity, Player));
-      this.game = game;
+      this.sprites = sprites;
     }
 
 

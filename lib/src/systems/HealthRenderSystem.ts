@@ -12,6 +12,7 @@ module example.systems {
 	import MathUtils = artemis.utils.MathUtils;
 	import Mapper = artemis.annotations.Mapper;
   import Constants = example.core.Constants;
+  import Container = PIXI.Container;
 
   import BitmapText = PIXI.extras.BitmapText;
 
@@ -24,22 +25,22 @@ module example.systems {
     @Mapper(Bounds) bm:ComponentMapper<Bounds>;
 
     private texts:IBitmapText;
-    private game:PIXI.Container;
+    private sprites:Container;
 
-    constructor(game:PIXI.Container) {
+    constructor(sprites:Container) {
 			super(Aspect.getAspectForAll(Position, Health));
-      this.game = game;
+      this.sprites = sprites;
       this.texts = {};
 		}
 		
     public inserted(e:Entity) {
       var b:BitmapText = new BitmapText('100%',  {font: '10px Radio Stars'});
-      this.game.addChild(b);
+      this.sprites.addChild(b);
       this.texts[e.uuid] = b;
 
     }
     protected removed(e:Entity) {
-      this.game.removeChild(this.texts[e.uuid]);
+      this.sprites.removeChild(this.texts[e.uuid]);
       this.texts[e.uuid] = null;
       delete this.texts[e.uuid];
     }
