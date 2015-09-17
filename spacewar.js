@@ -1347,9 +1347,10 @@ var example;
             MovementSystem.prototype.processEach = function (e) {
                 var position = this.pm.get(e);
                 var velocity = this.vm.get(e);
-                var scale = 1 / window.devicePixelRatio;
-                position.x += velocity.vectorX * scale * this.world.delta;
-                position.y -= velocity.vectorY * scale * this.world.delta;
+                var delta = 1 / window.devicePixelRatio * this.world.delta;
+                ;
+                position.x += velocity.vectorX * delta;
+                position.y -= velocity.vectorY * delta;
             };
             __decorate([
                 Mapper(Position)
@@ -1652,30 +1653,31 @@ var example;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
-        // import  = badlogic.gdx.Gdx;
-        // import  = badlogic.gdx.audio.Sound;
         var SoundEffectSystem = (function (_super) {
             __extends(SoundEffectSystem, _super);
-            //@SuppressWarnings("unchecked")
             function SoundEffectSystem() {
                 _super.call(this, Aspect.getAspectForAll(SoundEffect));
             }
-            // pew:Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/pew.wav"));
-            // asplode:Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/asplode.wav"));
-            // smallasplode:Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/smallasplode.wav"));
             SoundEffectSystem.prototype.initialize = function () {
+                var Howl = window['Howl'];
+                this.pew = new Howl({ urls: ['res/sounds/pew.ogg'] });
+                this.asplode = new Howl({ urls: ['res/sounds/asplode.ogg'] });
+                this.smallasplode = new Howl({ urls: ['res/sounds/smallasplode.ogg'] });
             };
             SoundEffectSystem.prototype.processEach = function (e) {
                 var soundEffect = this.se.get(e);
                 switch (soundEffect.effect) {
                     case EFFECT.PEW:
-                        //pew.play();
+                        console.log('pew');
+                        this.pew.play();
                         break;
                     case EFFECT.ASPLODE:
-                        //asplode.play();
+                        console.log('asplode');
+                        this.asplode.play();
                         break;
                     case EFFECT.SMALLASPLODE:
-                        //smallasplode.play();
+                        console.log('smallasplode');
+                        this.smallasplode.play();
                         break;
                     default:
                         break;
@@ -1826,6 +1828,7 @@ var example;
         var PlayerInputSystem = example.systems.PlayerInputSystem;
         var RemoveOffscreenShipsSystem = example.systems.RemoveOffscreenShipsSystem;
         var ScaleAnimationSystem = example.systems.ScaleAnimationSystem;
+        var SoundEffectSystem = example.systems.SoundEffectSystem;
         var SpriteRenderSystem = example.systems.SpriteRenderSystem;
         var GroupManager = artemis.managers.GroupManager;
         var EntitySystem = artemis.EntitySystem;
@@ -1836,7 +1839,7 @@ var example;
                 world.setManager(new GroupManager());
                 world.setSystem(new MovementSystem());
                 world.setSystem(new PlayerInputSystem(sprites));
-                //world.setSystem(new SoundEffectSystem());
+                world.setSystem(new SoundEffectSystem());
                 world.setSystem(new CollisionSystem(sprites));
                 world.setSystem(new ExpiringSystem());
                 world.setSystem(new EntitySpawningTimerSystem());
@@ -1923,9 +1926,9 @@ var example;
                 'res/images.json',
                 'res/fonts/normal.fnt',
                 'res/fonts/hud.fnt',
-                'res/sounds/asplode.wav',
-                'res/sounds/pew.wav',
-                'res/sounds/smallasplode.wav'
+                'res/sounds/asplode.ogg',
+                'res/sounds/pew.ogg',
+                'res/sounds/smallasplode.ogg'
             ];
             return SpaceshipWarrior;
         })();
