@@ -11,9 +11,9 @@ module example.core {
       'res/images.json',
       'res/fonts/normal.fnt',
       'res/fonts/hud.fnt',
-      'res/sounds/asplode.wav',
-      'res/sounds/pew.wav',
-      'res/sounds/smallasplode.wav'
+      'res/sounds/asplode.ogg',
+      'res/sounds/pew.ogg',
+      'res/sounds/smallasplode.ogg'
     ];
 
     public sprites:Container;

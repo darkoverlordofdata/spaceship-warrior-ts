@@ -1,0 +1,1 @@
+example.core.SpaceshipWarrior.main();

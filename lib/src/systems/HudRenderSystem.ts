@@ -37,7 +37,7 @@ module example.systems {
       this.totalCreated = new BitmapText('Total created: ', font);
       this.totalDeleted = new BitmapText('Total deleted: ', font);
 
-      var scale = 1/window.devicePixelRatio;
+      var scale = 1 / window.devicePixelRatio;
       this.framesPerSecond.scale = new Point(scale, scale);
       this.activeEntities.scale = new Point(scale, scale);
       this.totalCreated.scale = new Point(scale, scale);

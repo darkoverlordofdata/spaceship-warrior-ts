@@ -18,18 +18,24 @@
     "tests"
   ],
   "devDependencies": {
-    "artemists":"git://github.com/darkoverlordofdata/artemists",
     "closure-compiler": "~0.2.7",
-    "google-closure-library": "*",
+    "google-closure-library": "*"
+  },
+  "dependencies": {
+    "artemists": "git://github.com/darkoverlordofdata/artemists",
+    "howler.js": "~1.1.26",
     "pixi.js": "~3.0.7"
   },
-  "dependencies": {},
   "install": {
-    "ignore": ["closure-compiler", "google-closure-library"],
+    "ignore": [
+      "closure-compiler",
+      "google-closure-library"
+    ],
     "path": "web/src",
     "sources": {
-      "artemists": "packages/artemists/build/artemis.js",
-      "pixi.js": "packages/pixi.js/bin/pixi.js"
+      "artemists": "packages/artemists/build/artemis.min.js",
+      "howler.js": "packages/howler.js/howler.min.js",
+      "pixi.js": "packages/pixi.js/bin/pixi.min.js"
     }
   }
 }

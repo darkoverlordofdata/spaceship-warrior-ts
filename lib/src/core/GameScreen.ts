@@ -37,7 +37,7 @@ module example.core {
       world.setManager(new GroupManager());
       world.setSystem(new MovementSystem());
       world.setSystem(new PlayerInputSystem(sprites));
-      //world.setSystem(new SoundEffectSystem());
+      world.setSystem(new SoundEffectSystem());
       world.setSystem(new CollisionSystem(sprites));
       world.setSystem(new ExpiringSystem());
       world.setSystem(new EntitySpawningTimerSystem());
