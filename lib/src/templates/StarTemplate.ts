@@ -30,8 +30,12 @@ module example.templates {
       entity.addComponent(ParallaxStar);
       entity.addComponent(Sprite, 'particle',  0xffd800ff, (sprite:Sprite) => {
         var s = MathUtils.random(0.5, 1);
-        sprite.scale = new Point(s, s);
-        sprite.position = new Point(x*2,y);
+        var scale = sprite.scale;
+        scale.x = s;
+        scale.y = s;
+        var pos = sprite.position;
+        pos.x = x*2;
+        pos.y = y;
         sprite.alpha = MathUtils.nextDouble()*127;
         sprite.layer = Layer.BACKGROUND;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

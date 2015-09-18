@@ -31,7 +31,9 @@ module example.templates {
       entity.addComponent(Bounds, 43);
       entity.addComponent(Player);
       entity.addComponent(Sprite, 'fighter', 0x5dff81, (sprite:Sprite) => {
-        sprite.position = new Point(x*2,y);
+        var pos = sprite.position;
+        pos.x = x*2;
+        pos.y = y;
         sprite.layer = Layer.ACTORS_3;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });

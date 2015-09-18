@@ -29,15 +29,18 @@ module example.templates {
       var velocityX = magnitude * Math.cos(radians);
       var velocityY = magnitude * Math.sin(radians);
 
-
       entity.addComponent(Position, x, y);
       entity.addComponent(Velocity, velocityX, velocityY);
       entity.addComponent(Expires, 1);
       //0xffd800ff
       entity.addComponent(Sprite, 'particle', 0xffd800ff, (sprite:Sprite) => {
         var s = MathUtils.random(0.5, 1);
-        sprite.scale = new Point(s, s);
-        sprite.position = new Point(x*2, y);
+        var scale = sprite.scale;
+        scale.x = s;
+        scale.y = s;
+        var pos = sprite.position;
+        pos.x = x*2;
+        pos.y = y;
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });

@@ -25,20 +25,24 @@ module example.templates {
    */
   class ExplosionTemplate implements IEntityTemplate {
 
-    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, scale:number):artemis.Entity {
+    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, s:number):artemis.Entity {
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Expires, 0.5);
       entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
-        sprite.scale = new Point(scale, scale);
-        sprite.position = new Point(x*2, y);
+        var scale = sprite.scale;
+        scale.x = s;
+        scale.y = s;
+        var pos = sprite.position;
+        pos.x = x*2;
+        pos.y = y;
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;
-        scaleAnimation.max = scale;
-        scaleAnimation.min = scale/100;
+        scaleAnimation.max = s;
+        scaleAnimation.min = s/100;
         scaleAnimation.speed = -3.0;
         scaleAnimation.repeat = false;
       });

@@ -30,9 +30,13 @@ module example.components {
     initialize(name?:string, color?, lambda?) {
       this.name_ = name;
       this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(`${name}.png`));
-      var scale = 1/window.devicePixelRatio;
-      this.sprite_.scale = new Point(scale, scale);
-      this.sprite_.anchor = new Point(0.5, 0.5);
+      var s = 1/window.devicePixelRatio;
+      var scale:Point = this.sprite_.scale;
+      scale.x = s;
+      scale.y = s;
+      var anchor:Point = this.sprite_.anchor;
+      anchor.x = .5;
+      anchor.y = .5;
       if (color !== undefined && color !== null) {
         this.color = color;
       }

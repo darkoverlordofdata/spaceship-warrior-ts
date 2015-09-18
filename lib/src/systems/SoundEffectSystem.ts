@@ -37,15 +37,12 @@ module example.systems {
 
       switch (soundEffect.effect) {
         case EFFECT.PEW:
-          console.log('pew');
           this.pew.play();
           break;
         case EFFECT.ASPLODE:
-          console.log('asplode');
           this.asplode.play();
           break;
         case EFFECT.SMALLASPLODE:
-          console.log('smallasplode');
           this.smallasplode.play();
           break;
         default:

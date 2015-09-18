@@ -25,7 +25,9 @@ module example.templates {
       entity.addComponent(Bounds, boundsRadius);
       entity.addComponent(Health, health, health);
       entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
-        sprite.position = new Point(x*2,y);
+        var pos = sprite.position;
+        pos.x = x*2;
+        pos.y = y;
         sprite.layer = layer;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });

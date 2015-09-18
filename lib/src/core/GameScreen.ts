@@ -36,9 +36,9 @@ module example.core {
 
       world.setManager(new GroupManager());
       world.setSystem(new MovementSystem());
-      world.setSystem(new PlayerInputSystem(sprites));
+      world.setSystem(new PlayerInputSystem());
       world.setSystem(new SoundEffectSystem());
-      world.setSystem(new CollisionSystem(sprites));
+      world.setSystem(new CollisionSystem());
       world.setSystem(new ExpiringSystem());
       world.setSystem(new EntitySpawningTimerSystem());
       world.setSystem(new ParallaxStarRepeatingSystem());
@@ -46,7 +46,7 @@ module example.core {
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
-      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites, resources), true);
+      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
       this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
       this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
 

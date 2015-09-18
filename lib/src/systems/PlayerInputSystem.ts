@@ -22,7 +22,7 @@ module example.systems {
     private timeToFire:number=0;
     private mouseVector;
 
-    constructor(private sprites:Container) {
+    constructor() {
       super(Aspect.getAspectForAll(Position, Velocity, Player));
     }
 

@@ -25,6 +25,7 @@ module example.systems {
 		@Mapper(Position) pm:ComponentMapper<Position>;
 		@Mapper(Health) hm:ComponentMapper<Health>;
     @Mapper(Bounds) bm:ComponentMapper<Bounds>;
+    @Mapper(Sprite) sm:ComponentMapper<Sprite>;
 
     private texts:IBitmapText = {};
 
@@ -33,9 +34,13 @@ module example.systems {
 		}
 		
     public inserted(e:Entity) {
+      var sprite:Sprite = this.sm.get(e);
       var text:BitmapText = new BitmapText('100%',  {font: '20px Radio Stars'});
-      var scale = 1/window.devicePixelRatio;
-      text.scale = new Point(scale, scale);
+      text['layer'] = sprite.layer+.5;
+      var s = 1/window.devicePixelRatio;
+      var scale = text.scale;
+      scale.x = s;
+      scale.y = s;
       this.sprites.addChild(text);
       this.texts[e.uuid] = text;
 

@@ -33,7 +33,7 @@ module example.systems {
 
     private collisionPairs:Bag<CollisionPair>;
 
-    constructor(private sprites:Container) {
+    constructor() {
       super(Aspect.getAspectForAll(Position, Bounds));
     }
 
@@ -66,7 +66,6 @@ module example.systems {
 
 
     protected processEntities(entities:ImmutableBag<Entity>) {
-      //console.log('this.collisionPairs.size()', this.collisionPairs.size());
       for (var i = 0; this.collisionPairs.size() > i; i++) {
         this.collisionPairs.get(i).checkForCollisions();
       }
