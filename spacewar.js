@@ -386,7 +386,6 @@ var example;
     (function (components) {
         var PooledComponent = artemis.PooledComponent;
         var Pooled = artemis.annotations.Pooled;
-        var Point = PIXI.Point;
         (function (Layer) {
             Layer[Layer["DEFAULT"] = 0] = "DEFAULT";
             Layer[Layer["BACKGROUND"] = 1] = "BACKGROUND";
@@ -404,9 +403,13 @@ var example;
             Sprite.prototype.initialize = function (name, color, lambda) {
                 this.name_ = name;
                 this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(name + ".png"));
-                var scale = 1 / window.devicePixelRatio;
-                this.sprite_.scale = new Point(scale, scale);
-                this.sprite_.anchor = new Point(0.5, 0.5);
+                var s = 1 / window.devicePixelRatio;
+                var scale = this.sprite_.scale;
+                scale.x = s;
+                scale.y = s;
+                var anchor = this.sprite_.anchor;
+                anchor.x = .5;
+                anchor.y = .5;
                 if (color !== undefined && color !== null) {
                     this.color = color;
                 }
@@ -549,7 +552,6 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
-        var Point = PIXI.Point;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
         var Velocity = example.components.Velocity;
@@ -568,7 +570,9 @@ var example;
                 entity.addComponent(Bounds, boundsRadius);
                 entity.addComponent(Health, health, health);
                 entity.addComponent(Sprite, name, 0xff008e, function (sprite) {
-                    sprite.position = new Point(x * 2, y);
+                    var pos = sprite.position;
+                    pos.x = x * 2;
+                    pos.y = y;
                     sprite.layer = layer;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -602,7 +606,6 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
-        var Point = PIXI.Point;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
         var Expires = example.components.Expires;
@@ -618,19 +621,23 @@ var example;
         var ExplosionTemplate = (function () {
             function ExplosionTemplate() {
             }
-            ExplosionTemplate.prototype.buildEntity = function (entity, world, x, y, scale) {
+            ExplosionTemplate.prototype.buildEntity = function (entity, world, x, y, s) {
                 entity.addComponent(Position, x, y);
                 entity.addComponent(Expires, 0.5);
                 entity.addComponent(Sprite, 'explosion', 0xffd80080, function (sprite) {
-                    sprite.scale = new Point(scale, scale);
-                    sprite.position = new Point(x * 2, y);
+                    var scale = sprite.scale;
+                    scale.x = s;
+                    scale.y = s;
+                    var pos = sprite.position;
+                    pos.x = x * 2;
+                    pos.y = y;
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
                 entity.addComponent(ScaleAnimation, function (scaleAnimation) {
                     scaleAnimation.active = true;
-                    scaleAnimation.max = scale;
-                    scaleAnimation.min = scale / 100;
+                    scaleAnimation.max = s;
+                    scaleAnimation.min = s / 100;
                     scaleAnimation.speed = -3.0;
                     scaleAnimation.repeat = false;
                 });
@@ -696,7 +703,6 @@ var example;
     var templates;
     (function (templates) {
         var Tau = 2 * Math.PI;
-        var Point = PIXI.Point;
         var MathUtils = artemis.utils.MathUtils;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
@@ -720,8 +726,12 @@ var example;
                 //0xffd800ff
                 entity.addComponent(Sprite, 'particle', 0xffd800ff, function (sprite) {
                     var s = MathUtils.random(0.5, 1);
-                    sprite.scale = new Point(s, s);
-                    sprite.position = new Point(x * 2, y);
+                    var scale = sprite.scale;
+                    scale.x = s;
+                    scale.y = s;
+                    var pos = sprite.position;
+                    pos.x = x * 2;
+                    pos.y = y;
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -755,7 +765,6 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
-        var Point = PIXI.Point;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
         var Velocity = example.components.Velocity;
@@ -778,7 +787,9 @@ var example;
                 entity.addComponent(Expires, 5);
                 entity.addComponent(SoundEffect, EFFECT.PEW);
                 entity.addComponent(Sprite, 'bullet', 0xffffff, function (sprite) {
-                    sprite.position = new Point(x * 2, y);
+                    var pos = sprite.position;
+                    pos.x = x * 2;
+                    pos.y = y;
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -806,7 +817,6 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
-        var Point = PIXI.Point;
         var GroupManager = artemis.managers.GroupManager;
         var EntitySystem = artemis.EntitySystem;
         var EntityTemplate = artemis.annotations.EntityTemplate;
@@ -828,7 +838,9 @@ var example;
                 entity.addComponent(Bounds, 43);
                 entity.addComponent(Player);
                 entity.addComponent(Sprite, 'fighter', 0x5dff81, function (sprite) {
-                    sprite.position = new Point(x * 2, y);
+                    var pos = sprite.position;
+                    pos.x = x * 2;
+                    pos.y = y;
                     sprite.layer = Layer.ACTORS_3;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -856,7 +868,6 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
-        var Point = PIXI.Point;
         var MathUtils = artemis.utils.MathUtils;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
@@ -878,8 +889,12 @@ var example;
                 entity.addComponent(ParallaxStar);
                 entity.addComponent(Sprite, 'particle', 0xffd800ff, function (sprite) {
                     var s = MathUtils.random(0.5, 1);
-                    sprite.scale = new Point(s, s);
-                    sprite.position = new Point(x * 2, y);
+                    var scale = sprite.scale;
+                    scale.x = s;
+                    scale.y = s;
+                    var pos = sprite.position;
+                    pos.x = x * 2;
+                    pos.y = y;
                     sprite.alpha = MathUtils.nextDouble() * 127;
                     sprite.layer = Layer.BACKGROUND;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -932,9 +947,8 @@ var example;
         var GroupManager = artemis.managers.GroupManager;
         var CollisionSystem = (function (_super) {
             __extends(CollisionSystem, _super);
-            function CollisionSystem(sprites) {
+            function CollisionSystem() {
                 _super.call(this, Aspect.getAspectForAll(Position, Bounds));
-                this.sprites = sprites;
             }
             CollisionSystem.prototype.initialize = function () {
                 var _this = this;
@@ -959,7 +973,6 @@ var example;
                 }));
             };
             CollisionSystem.prototype.processEntities = function (entities) {
-                //console.log('this.collisionPairs.size()', this.collisionPairs.size());
                 for (var i = 0; this.collisionPairs.size() > i; i++) {
                     this.collisionPairs.get(i).checkForCollisions();
                 }
@@ -1183,10 +1196,10 @@ var example;
     var systems;
     (function (systems) {
         var BitmapText = PIXI.extras.BitmapText;
-        var Point = PIXI.Point;
         var Bounds = example.components.Bounds;
         var Health = example.components.Health;
         var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
@@ -1198,9 +1211,13 @@ var example;
                 this.texts = {};
             }
             HealthRenderSystem.prototype.inserted = function (e) {
+                var sprite = this.sm.get(e);
                 var text = new BitmapText('100%', { font: '20px Radio Stars' });
-                var scale = 1 / window.devicePixelRatio;
-                text.scale = new Point(scale, scale);
+                text['layer'] = sprite.layer + .5;
+                var s = 1 / window.devicePixelRatio;
+                var scale = text.scale;
+                scale.x = s;
+                scale.y = s;
                 this.sprites.addChild(text);
                 this.texts[e.uuid] = text;
             };
@@ -1230,6 +1247,9 @@ var example;
             __decorate([
                 Mapper(Bounds)
             ], HealthRenderSystem.prototype, "bm");
+            __decorate([
+                Mapper(Sprite)
+            ], HealthRenderSystem.prototype, "sm");
             return HealthRenderSystem;
         })(EntityProcessingSystem);
         systems.HealthRenderSystem = HealthRenderSystem;
@@ -1434,10 +1454,9 @@ var example;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var PlayerInputSystem = (function (_super) {
             __extends(PlayerInputSystem, _super);
-            function PlayerInputSystem(sprites) {
+            function PlayerInputSystem() {
                 var _this = this;
                 _super.call(this, Aspect.getAspectForAll(Position, Velocity, Player));
-                this.sprites = sprites;
                 this.timeToFire = 0;
                 this.onTouchStart = function (event) {
                     event = event.changedTouches ? event.changedTouches[0] : event;
@@ -1668,15 +1687,12 @@ var example;
                 var soundEffect = this.se.get(e);
                 switch (soundEffect.effect) {
                     case EFFECT.PEW:
-                        console.log('pew');
                         this.pew.play();
                         break;
                     case EFFECT.ASPLODE:
-                        console.log('asplode');
                         this.asplode.play();
                         break;
                     case EFFECT.SMALLASPLODE:
-                        console.log('smallasplode');
                         this.smallasplode.play();
                         break;
                     default:
@@ -1712,65 +1728,48 @@ var example;
 (function (example) {
     var systems;
     (function (systems) {
-        var HashMap = artemis.utils.HashMap;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
         var Aspect = artemis.Aspect;
         var EntitySystem = artemis.EntitySystem;
-        var Bag = artemis.utils.Bag;
         var Mapper = artemis.annotations.Mapper;
         var SpriteRenderSystem = (function (_super) {
             __extends(SpriteRenderSystem, _super);
-            function SpriteRenderSystem(sprites, resources) {
+            function SpriteRenderSystem(sprites) {
                 _super.call(this, Aspect.getAspectForAll(Position, Sprite));
                 this.sprites = sprites;
-                this.resources = resources;
             }
-            SpriteRenderSystem.prototype.initialize = function () {
-                var textureAtlas = this.resources['res/images.json'].data; //.frames;
-                this.regions = new HashMap();
-                for (var name in textureAtlas.frames) {
-                    var r = textureAtlas.frames[name];
-                    this.regions.put(name, r);
-                }
-                this.regionsByEntity = new Bag();
-                this.sortedEntities = new Array();
-            };
             SpriteRenderSystem.prototype.checkProcessing = function () {
                 return true;
             };
             SpriteRenderSystem.prototype.processEntities = function (entities) {
-                for (var i = 0; this.sortedEntities.length > i; i++) {
-                    this.processEach(this.sortedEntities[i]);
+                for (var i = 0, l = entities.size(); i < l; i++) {
+                    this.processEach(entities.get(i));
                 }
             };
             SpriteRenderSystem.prototype.processEach = function (e) {
                 if (this.pm.has(e)) {
                     var position = this.pm.getSafe(e);
                     var sprite = this.sm.get(e);
-                    sprite.position = new PIXI.Point(position.x * 2, position.y);
+                    var pos = sprite.position;
+                    pos.x = position.x * 2;
+                    pos.y = position.y;
                 }
             };
             SpriteRenderSystem.prototype.inserted = function (e) {
-                var _this = this;
                 var sprite = this.sm.get(e);
-                this.regionsByEntity.set(e.getId(), this.regions.get(sprite.name));
-                // sortedEntities.add(e);
-                this.sortedEntities.push(e);
-                this.sortedEntities.sort(function (e1, e2) {
-                    var s1 = _this.sm.get(e1);
-                    var s2 = _this.sm.get(e2);
-                    return s1.layer - s2.layer;
+                sprite.sprite_['layer'] = sprite.layer;
+                this.sprites.children.sort(function (a, b) {
+                    if (a['layer'] < b['layer'])
+                        return -1;
+                    if (a['layer'] > b['layer'])
+                        return 1;
+                    return 0;
                 });
             };
             SpriteRenderSystem.prototype.removed = function (e) {
                 var c = e.getComponentByType(Sprite);
                 c.removeFrom(this.sprites);
-                this.regionsByEntity.set(e.getId(), null);
-                var index = this.sortedEntities.indexOf(e);
-                if (index !== -1) {
-                    this.sortedEntities.splice(index, 1);
-                }
             };
             __decorate([
                 Mapper(Position)
@@ -1783,35 +1782,6 @@ var example;
         systems.SpriteRenderSystem = SpriteRenderSystem;
     })(systems = example.systems || (example.systems = {}));
 })(example || (example = {}));
-/**
- * TODO: sprites not layered in correct order. Use this:>
- *
- * @see https://github.com/pixijs/pixi.js/issues/300
- *
- * var mapContainer = new PIXI.DisplayObjectContainer(),
- unitsContainer = new PIXI.DisplayObjectContainer(),
- menuContainer = new PIXI.DisplayObjectContainer();
-
- mapContainer.zIndex = 5;
- unitsContainer.zIndex = 10;
- menuContainer.zIndex = 20;
-
- /* adding children, no matter in which order * /
-stage.addChild(mapContainer);
-stage.addChild(menuContainer);
-stage.addChild(unitsContainer);
-
-/* call this function whenever you added a new layer/container * /
-stage.updateLayersOrder = function () {
-  stage.children.sort(function(a,b) {
-    a.zIndex = a.zIndex || 0;
-    b.zIndex = b.zIndex || 0;
-    return b.zIndex - a.zIndex
-  });
-};
-
-stage.updateLayersOrder();
- */ 
 //# sourceMappingURL=SpriteRenderSystem.js.map
 var example;
 (function (example) {
@@ -1838,16 +1808,16 @@ var example;
                 var world = this.world = new artemis.World();
                 world.setManager(new GroupManager());
                 world.setSystem(new MovementSystem());
-                world.setSystem(new PlayerInputSystem(sprites));
+                world.setSystem(new PlayerInputSystem());
                 world.setSystem(new SoundEffectSystem());
-                world.setSystem(new CollisionSystem(sprites));
+                world.setSystem(new CollisionSystem());
                 world.setSystem(new ExpiringSystem());
                 world.setSystem(new EntitySpawningTimerSystem());
                 world.setSystem(new ParallaxStarRepeatingSystem());
                 world.setSystem(new ColorAnimationSystem());
                 world.setSystem(new ScaleAnimationSystem());
                 world.setSystem(new RemoveOffscreenShipsSystem());
-                this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites, resources), true);
+                this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
                 this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
                 this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
                 world.initialize();
