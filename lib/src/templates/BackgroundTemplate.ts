@@ -26,9 +26,7 @@ module example.templates {
     public buildEntity(entity:artemis.Entity, world:artemis.World):artemis.Entity {
 
       var resources = EntitySystem.blackBoard.getEntry('resources');
-
-      var shader = new StarField(resources['res/glsl/parallaxStars.c'].data);
-      shader.uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+      var shader = new StarField(resources['res/glsl/parallaxStars.frag'].data);
 
       entity.addComponent(Background, shader);
       entity.addComponent(Position, 0, 0);

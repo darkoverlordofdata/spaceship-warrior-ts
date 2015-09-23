@@ -38,8 +38,8 @@ var example;
             __extends(StarField, _super);
             function StarField(source) {
                 _super.call(this, null, source, {
-                    time: { type: "f", value: 1.0 },
-                    resolution: { type: "2f", value: new Float32Array([0.0, 0.0]) }
+                    time: { type: "f", value: performance.now() },
+                    resolution: { type: "2f", value: [window.innerHeight, window.innerWidth] }
                 });
             }
             return StarField;
@@ -647,7 +647,6 @@ var example;
             BackgroundTemplate.prototype.buildEntity = function (entity, world) {
                 var resources = EntitySystem.blackBoard.getEntry('resources');
                 var shader = new StarField(resources['res/glsl/parallaxStars.c'].data);
-                shader.uniforms.resolution.value = [window.innerHeight, window.innerWidth];
                 entity.addComponent(Background, shader);
                 entity.addComponent(Position, 0, 0);
                 entity.addComponent(Sprite, function (sprite) {
@@ -1079,10 +1078,12 @@ var example;
             BackgroundSystem.prototype.processEach = function (e) {
                 var background = this.bm.get(e);
                 var sprite = this.sm.get(e);
-                background.filter.uniforms.time.value = performance.now() / 1000;
-                background.filter.uniforms.resolution.value = [window.innerHeight, window.innerWidth];
-                sprite.sprite_.height = window.innerHeight;
-                sprite.sprite_.width = window.innerWidth;
+                var uniforms = background.filter.uniforms;
+                uniforms.time.value += this.world.delta;
+                uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+                var value = uniforms.resolution.value;
+                sprite.sprite_.height = value[0] = window.innerHeight;
+                sprite.sprite_.width = value[0] = window.innerWidth;
             };
             __decorate([
                 Mapper(Background)

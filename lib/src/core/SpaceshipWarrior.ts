@@ -17,7 +17,7 @@ module example.core {
       'res/sounds/asplode.ogg',
       'res/sounds/pew.ogg',
       'res/sounds/smallasplode.ogg',
-      'res/glsl/parallaxStars.c'
+      'res/glsl/parallaxStars.frag'
     ];
 
     public sprites:Container;
@@ -47,6 +47,7 @@ module example.core {
 
       this.sprites = new Container();
       this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
+      EntitySystem.blackBoard.setEntry('webgl', this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
       this.renderer.view.style.position = "absolute";
       document.body.appendChild(this.renderer.view);
       window.addEventListener('resize', this.resize, true);

@@ -18,7 +18,7 @@ uniform vec2 resolution;
 
 #define zoom   10.0
 #define tile   0.50
-#define speed  0.00031
+#define speed  0.00051
 
 #define brightness 0.0015
 #define darkmatter 0.100

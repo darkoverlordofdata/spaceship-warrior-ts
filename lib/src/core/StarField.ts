@@ -10,8 +10,8 @@ module example.core {
 
     constructor(source) {
       super(null, source, {
-        time: {type: "f", value: 1.0},
-        resolution: {type: "2f", value: new Float32Array([0.0, 0.0])}
+        time: {type: "f", value: performance.now()},
+        resolution: {type: "2f", value: [window.innerHeight, window.innerWidth]}
       });
     }
 

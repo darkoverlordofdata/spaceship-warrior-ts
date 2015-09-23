@@ -21,10 +21,13 @@ module example.systems {
       var background = this.bm.get(e);
       var sprite = this.sm.get(e);
 
-      background.filter.uniforms.time.value = performance.now()/1000;
-      background.filter.uniforms.resolution.value = [window.innerHeight, window.innerWidth];
-      sprite.sprite_.height = window.innerHeight;
-      sprite.sprite_.width = window.innerWidth;
+      var uniforms = background.filter.uniforms
+      uniforms.time.value += this.world.delta;
+      uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+      var value = uniforms.resolution.value;
+      sprite.sprite_.height = value[0] = window.innerHeight;
+      sprite.sprite_.width = value[0] = window.innerWidth;
+
     }
   }
 }
