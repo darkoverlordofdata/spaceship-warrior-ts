@@ -25,6 +25,75 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/**
+ * Parallax Stars GL Shader
+ *
+ * @see http://glslsandbox.com/e#21149.2
+ */
+var example;
+(function (example) {
+    var core;
+    (function (core) {
+        var StarField = (function (_super) {
+            __extends(StarField, _super);
+            function StarField(source) {
+                _super.call(this, null, source, {
+                    time: { type: "f", value: 1.0 },
+                    resolution: { type: "2f", value: new Float32Array([0.0, 0.0]) }
+                });
+            }
+            return StarField;
+        })(PIXI.AbstractFilter);
+        core.StarField = StarField;
+    })(core = example.core || (example.core = {}));
+})(example || (example = {}));
+//# sourceMappingURL=StarField.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var components;
+    (function (components) {
+        var PooledComponent = artemis.PooledComponent;
+        var Pooled = artemis.annotations.Pooled;
+        var Background = (function (_super) {
+            __extends(Background, _super);
+            function Background() {
+                _super.apply(this, arguments);
+            }
+            Background.prototype.initialize = function (filter) {
+                if (filter === void 0) { filter = null; }
+                this.filter = filter;
+            };
+            Background.className = 'Background';
+            Background = __decorate([
+                Pooled()
+            ], Background);
+            return Background;
+        })(PooledComponent);
+        components.Background = Background;
+        Background.prototype.filter = null;
+    })(components = example.components || (example.components = {}));
+})(example || (example = {}));
+//# sourceMappingURL=Background.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
     switch (arguments.length) {
@@ -389,10 +458,11 @@ var example;
         (function (Layer) {
             Layer[Layer["DEFAULT"] = 0] = "DEFAULT";
             Layer[Layer["BACKGROUND"] = 1] = "BACKGROUND";
-            Layer[Layer["ACTORS_1"] = 2] = "ACTORS_1";
-            Layer[Layer["ACTORS_2"] = 3] = "ACTORS_2";
-            Layer[Layer["ACTORS_3"] = 4] = "ACTORS_3";
-            Layer[Layer["PARTICLES"] = 5] = "PARTICLES";
+            Layer[Layer["TEXT"] = 2] = "TEXT";
+            Layer[Layer["ACTORS_1"] = 3] = "ACTORS_1";
+            Layer[Layer["ACTORS_2"] = 4] = "ACTORS_2";
+            Layer[Layer["ACTORS_3"] = 5] = "ACTORS_3";
+            Layer[Layer["PARTICLES"] = 6] = "PARTICLES";
         })(components.Layer || (components.Layer = {}));
         var Layer = components.Layer;
         var Sprite = (function (_super) {
@@ -401,20 +471,32 @@ var example;
                 _super.apply(this, arguments);
             }
             Sprite.prototype.initialize = function (name, color, lambda) {
-                this.name_ = name;
-                this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(name + ".png"));
-                var s = 1 / window.devicePixelRatio;
-                var scale = this.sprite_.scale;
-                scale.x = s;
-                scale.y = s;
-                var anchor = this.sprite_.anchor;
-                anchor.x = .5;
-                anchor.y = .5;
-                if (color !== undefined && color !== null) {
-                    this.color = color;
-                }
-                if (lambda !== undefined) {
+                if ('function' === typeof name) {
+                    this.sprite_ = new PIXI.Sprite();
+                    lambda = name;
                     lambda(this);
+                }
+                else {
+                    if (name === undefined) {
+                        this.sprite_ = new PIXI.Sprite();
+                    }
+                    else {
+                        this.name_ = name;
+                        this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(this.name + ".png"));
+                        var s = 1 / window.devicePixelRatio;
+                        var scale = this.sprite_.scale;
+                        scale.x = s;
+                        scale.y = s;
+                        var anchor = this.sprite_.anchor;
+                        anchor.x = .5;
+                        anchor.y = .5;
+                        if (color !== undefined && color !== null) {
+                            this.color = color;
+                        }
+                        if (lambda !== undefined) {
+                            lambda(this);
+                        }
+                    }
                 }
             };
             Object.defineProperty(Sprite.prototype, "name", {
@@ -554,6 +636,55 @@ var example;
     (function (templates) {
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
+        var Background = example.components.Background;
+        var Layer = example.components.Layer;
+        var EntitySystem = artemis.EntitySystem;
+        var EntityTemplate = artemis.annotations.EntityTemplate;
+        var StarField = example.core.StarField;
+        var BackgroundTemplate = (function () {
+            function BackgroundTemplate() {
+            }
+            BackgroundTemplate.prototype.buildEntity = function (entity, world) {
+                var resources = EntitySystem.blackBoard.getEntry('resources');
+                var shader = new StarField(resources['res/glsl/parallaxStars.c'].data);
+                shader.uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+                entity.addComponent(Background, shader);
+                entity.addComponent(Position, 0, 0);
+                entity.addComponent(Sprite, function (sprite) {
+                    var pos = sprite.position;
+                    pos.x = 0;
+                    pos.y = 0;
+                    sprite.layer = Layer.BACKGROUND;
+                    sprite.sprite_.filters = [shader];
+                    sprite.sprite_.height = window.innerHeight;
+                    sprite.sprite_.width = window.innerWidth;
+                    sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
+                });
+                return entity;
+            };
+            BackgroundTemplate = __decorate([
+                EntityTemplate('background')
+            ], BackgroundTemplate);
+            return BackgroundTemplate;
+        })();
+        templates.BackgroundTemplate = BackgroundTemplate;
+    })(templates = example.templates || (example.templates = {}));
+})(example || (example = {}));
+//# sourceMappingURL=BackgroundTemplate.js.map
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var templates;
+    (function (templates) {
+        var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
         var Velocity = example.components.Velocity;
         var Bounds = example.components.Bounds;
         var Health = example.components.Health;
@@ -571,7 +702,7 @@ var example;
                 entity.addComponent(Health, health, health);
                 entity.addComponent(Sprite, name, 0xff008e, function (sprite) {
                     var pos = sprite.position;
-                    pos.x = x * 2;
+                    pos.x = x;
                     pos.y = y;
                     sprite.layer = layer;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -626,18 +757,18 @@ var example;
                 entity.addComponent(Expires, 0.5);
                 entity.addComponent(Sprite, 'explosion', 0xffd80080, function (sprite) {
                     var scale = sprite.scale;
-                    scale.x = s;
-                    scale.y = s;
+                    scale.x = s / (window.devicePixelRatio * 2);
+                    scale.y = s / (window.devicePixelRatio * 2);
                     var pos = sprite.position;
-                    pos.x = x * 2;
+                    pos.x = x;
                     pos.y = y;
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
                 entity.addComponent(ScaleAnimation, function (scaleAnimation) {
                     scaleAnimation.active = true;
-                    scaleAnimation.max = s;
-                    scaleAnimation.min = s / 100;
+                    scaleAnimation.max = s / (window.devicePixelRatio * 2);
+                    scaleAnimation.min = s / (100 * (window.devicePixelRatio * 2));
                     scaleAnimation.speed = -3.0;
                     scaleAnimation.repeat = false;
                 });
@@ -730,7 +861,7 @@ var example;
                     scale.x = s;
                     scale.y = s;
                     var pos = sprite.position;
-                    pos.x = x * 2;
+                    pos.x = x;
                     pos.y = y;
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -788,7 +919,7 @@ var example;
                 entity.addComponent(SoundEffect, EFFECT.PEW);
                 entity.addComponent(Sprite, 'bullet', 0xffffff, function (sprite) {
                     var pos = sprite.position;
-                    pos.x = x * 2;
+                    pos.x = x;
                     pos.y = y;
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -839,7 +970,7 @@ var example;
                 entity.addComponent(Player);
                 entity.addComponent(Sprite, 'fighter', 0x5dff81, function (sprite) {
                     var pos = sprite.position;
-                    pos.x = x * 2;
+                    pos.x = x;
                     pos.y = y;
                     sprite.layer = Layer.ACTORS_3;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -893,7 +1024,7 @@ var example;
                     scale.x = s;
                     scale.y = s;
                     var pos = sprite.position;
-                    pos.x = x * 2;
+                    pos.x = x;
                     pos.y = y;
                     sprite.alpha = MathUtils.nextDouble() * 127;
                     sprite.layer = Layer.BACKGROUND;
@@ -917,6 +1048,54 @@ var example;
     })(templates = example.templates || (example.templates = {}));
 })(example || (example = {}));
 //# sourceMappingURL=StarTemplate.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var systems;
+    (function (systems) {
+        var Background = example.components.Background;
+        var Sprite = example.components.Sprite;
+        var Aspect = artemis.Aspect;
+        var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
+        var Mapper = artemis.annotations.Mapper;
+        var BackgroundSystem = (function (_super) {
+            __extends(BackgroundSystem, _super);
+            function BackgroundSystem() {
+                _super.call(this, Aspect.getAspectForAll(Background, Sprite));
+            }
+            BackgroundSystem.prototype.processEach = function (e) {
+                var background = this.bm.get(e);
+                var sprite = this.sm.get(e);
+                background.filter.uniforms.time.value = performance.now() / 1000;
+                background.filter.uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+                sprite.sprite_.height = window.innerHeight;
+                sprite.sprite_.width = window.innerWidth;
+            };
+            __decorate([
+                Mapper(Background)
+            ], BackgroundSystem.prototype, "bm");
+            __decorate([
+                Mapper(Sprite)
+            ], BackgroundSystem.prototype, "sm");
+            return BackgroundSystem;
+        })(EntityProcessingSystem);
+        systems.BackgroundSystem = BackgroundSystem;
+    })(systems = example.systems || (example.systems = {}));
+})(example || (example = {}));
+//# sourceMappingURL=BackgroundSystem.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1023,7 +1202,7 @@ var example;
                 var b2 = this.cs.bm.get(e2);
                 var a = p1.x - p2.x;
                 var b = p1.y - p2.y;
-                return Math.sqrt(a * a + b * b) - b1.radius < b2.radius;
+                return Math.sqrt(a * a + b * b) - (b1.radius / window.devicePixelRatio) < (b2.radius / window.devicePixelRatio);
                 //return Utils.distance(p1.x, p1.y, p2.x, p2.y)-b1.radius < b2.radius;
             };
             return CollisionPair;
@@ -1108,15 +1287,15 @@ var example;
                 _super.call(this);
                 this.timer1 = new Timer(2, true);
                 this.timer1.execute = function () {
-                    _this.world.createEntityFromTemplate('enemy', "enemy1", Layer.ACTORS_3, 10, MathUtils.nextInt(Constants.FRAME_WIDTH / 2), Constants.FRAME_HEIGHT / 2 - 200, 0, -40, 20).addToWorld();
+                    _this.world.createEntityFromTemplate('enemy', "enemy1", Layer.ACTORS_3, 10, MathUtils.nextInt(Constants.FRAME_WIDTH), Constants.FRAME_HEIGHT / 2 - 200, 0, -40, 20).addToWorld();
                 };
                 this.timer2 = new Timer(6, true);
                 this.timer2.execute = function () {
-                    _this.world.createEntityFromTemplate('enemy', "enemy2", Layer.ACTORS_2, 20, MathUtils.nextInt(Constants.FRAME_WIDTH / 2), Constants.FRAME_HEIGHT / 2 - 100, 0, -30, 40).addToWorld();
+                    _this.world.createEntityFromTemplate('enemy', "enemy2", Layer.ACTORS_2, 20, MathUtils.nextInt(Constants.FRAME_WIDTH), Constants.FRAME_HEIGHT / 2 - 100, 0, -30, 40).addToWorld();
                 };
                 this.timer3 = new Timer(12, true);
                 this.timer3.execute = function () {
-                    _this.world.createEntityFromTemplate('enemy', "enemy3", Layer.ACTORS_1, 60, MathUtils.nextInt(Constants.FRAME_WIDTH / 2), Constants.FRAME_HEIGHT / 2 - 50, 0, -20, 70).addToWorld();
+                    _this.world.createEntityFromTemplate('enemy', "enemy3", Layer.ACTORS_1, 60, MathUtils.nextInt(Constants.FRAME_WIDTH), Constants.FRAME_HEIGHT / 2 - 50, 0, -20, 70).addToWorld();
                 };
             }
             EntitySpawningTimerSystem.prototype.processSystem = function () {
@@ -1234,7 +1413,8 @@ var example;
                     var bounds = this.bm.get(e);
                     var text = this.texts[e.uuid];
                     var percentage = Math.round(health.health / health.maximumHealth * 100);
-                    text.position = new PIXI.Point(position.x * 2, position.y);
+                    text.position.x = position.x; // = new PIXI.Point(position.x, position.y);
+                    text.position.y = position.y; // = new PIXI.Point(position.x, position.y);
                     text.text = percentage + "%";
                 }
             };
@@ -1276,6 +1456,7 @@ var example;
     (function (systems) {
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
+        var Layer = example.components.Layer;
         var VoidEntitySystem = artemis.systems.VoidEntitySystem;
         var Mapper = artemis.annotations.Mapper;
         var BitmapText = PIXI.extras.BitmapText;
@@ -1294,15 +1475,19 @@ var example;
                 this.activeEntities = new BitmapText('Active entities: ', font);
                 this.totalCreated = new BitmapText('Total created: ', font);
                 this.totalDeleted = new BitmapText('Total deleted: ', font);
+                this.framesPerSecond['layer'] = Layer.TEXT;
+                this.activeEntities['layer'] = Layer.TEXT;
+                this.totalCreated['layer'] = Layer.TEXT;
+                this.totalDeleted['layer'] = Layer.TEXT;
                 var scale = 1 / window.devicePixelRatio;
                 this.framesPerSecond.scale = new Point(scale, scale);
                 this.activeEntities.scale = new Point(scale, scale);
                 this.totalCreated.scale = new Point(scale, scale);
                 this.totalDeleted.scale = new Point(scale, scale);
-                this.framesPerSecond.position = new Point(0, 20);
-                this.activeEntities.position = new Point(0, 40);
-                this.totalCreated.position = new Point(0, 60);
-                this.totalDeleted.position = new Point(0, 80);
+                this.framesPerSecond.position = new Point(0, 20 / window.devicePixelRatio);
+                this.activeEntities.position = new Point(0, 40 / window.devicePixelRatio);
+                this.totalCreated.position = new Point(0, 60 / window.devicePixelRatio);
+                this.totalDeleted.position = new Point(0, 80 / window.devicePixelRatio);
                 this.sprites.addChild(this.framesPerSecond);
                 this.sprites.addChild(this.activeEntities);
                 this.sprites.addChild(this.totalCreated);
@@ -1512,13 +1697,13 @@ var example;
                 var destinationY = this.mouseVector.y;
                 if (destinationX === undefined || destinationY === undefined)
                     return;
-                position.x = this.mouseVector.x / 2;
-                //position.y = Constants.FRAME_HEIGHT-this.mouseVector.y;
+                position.x = this.mouseVector.x;
                 position.y = this.mouseVector.y;
                 if (this.shoot) {
                     if (this.timeToFire <= 0) {
-                        this.world.createEntityFromTemplate('bullet', position.x - 27, position.y + 2).addToWorld();
-                        this.world.createEntityFromTemplate('bullet', position.x + 27, position.y + 2).addToWorld();
+                        var s = ~~(27 / window.devicePixelRatio);
+                        this.world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
+                        this.world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
                         this.timeToFire = PlayerInputSystem.FireRate;
                     }
                 }
@@ -1752,7 +1937,7 @@ var example;
                     var position = this.pm.getSafe(e);
                     var sprite = this.sm.get(e);
                     var pos = sprite.position;
-                    pos.x = position.x * 2;
+                    pos.x = position.x;
                     pos.y = position.y;
                 }
             };
@@ -1787,6 +1972,7 @@ var example;
 (function (example) {
     var core;
     (function (core) {
+        var BackgroundSystem = example.systems.BackgroundSystem;
         var CollisionSystem = example.systems.CollisionSystem;
         var ColorAnimationSystem = example.systems.ColorAnimationSystem;
         var EntitySpawningTimerSystem = example.systems.EntitySpawningTimerSystem;
@@ -1817,18 +2003,21 @@ var example;
                 world.setSystem(new ColorAnimationSystem());
                 world.setSystem(new ScaleAnimationSystem());
                 world.setSystem(new RemoveOffscreenShipsSystem());
+                this.backgroundSystem = world.setSystem(new BackgroundSystem(), true);
                 this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
                 this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
                 this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
                 world.initialize();
                 world.createEntityFromTemplate('player').addToWorld();
-                for (var i = 0; 500 > i; i++) {
-                    world.createEntityFromTemplate('star').addToWorld();
-                }
+                world.createEntityFromTemplate('background').addToWorld();
+                //for (var i = 0; 500 > i; i++) {
+                //  world.createEntityFromTemplate('star').addToWorld();
+                //}
             }
             GameScreen.prototype.render = function (delta) {
                 this.world.setDelta(delta);
                 this.world.process();
+                this.backgroundSystem.process();
                 this.spriteRenderSystem.process();
                 this.healthRenderSystem.process();
                 this.hudRenderSystem.process();
@@ -1846,6 +2035,7 @@ var example;
         var Container = PIXI.Container;
         var GameScreen = example.core.GameScreen;
         var Constants = example.core.Constants;
+        var EntitySystem = artemis.EntitySystem;
         var SpaceshipWarrior = (function () {
             /**
              * Create the game instance
@@ -1874,6 +2064,8 @@ var example;
                     var width = window.innerWidth;
                     _this.renderer.resize(width, height);
                 };
+                /** save the resources on the blackboard */
+                EntitySystem.blackBoard.setEntry('resources', resources);
                 this.sprites = new Container();
                 this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, { backgroundColor: 0x000000 });
                 this.renderer.view.style.position = "absolute";
@@ -1898,7 +2090,8 @@ var example;
                 'res/fonts/hud.fnt',
                 'res/sounds/asplode.ogg',
                 'res/sounds/pew.ogg',
-                'res/sounds/smallasplode.ogg'
+                'res/sounds/smallasplode.ogg',
+                'res/glsl/parallaxStars.c'
             ];
             return SpaceshipWarrior;
         })();
