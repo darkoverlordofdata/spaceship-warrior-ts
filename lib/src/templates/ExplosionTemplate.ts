@@ -31,18 +31,18 @@ module example.templates {
       entity.addComponent(Expires, 0.5);
       entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
         var scale = sprite.scale;
-        scale.x = s;
-        scale.y = s;
+        scale.x = s/(window.devicePixelRatio*2);
+        scale.y = s/(window.devicePixelRatio*2);
         var pos = sprite.position;
-        pos.x = x*2;
+        pos.x = x;
         pos.y = y;
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;
-        scaleAnimation.max = s;
-        scaleAnimation.min = s/100;
+        scaleAnimation.max = s/(window.devicePixelRatio*2);
+        scaleAnimation.min = s/(100*(window.devicePixelRatio*2));
         scaleAnimation.speed = -3.0;
         scaleAnimation.repeat = false;
       });

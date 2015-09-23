@@ -9,6 +9,7 @@ module example.components {
   export enum Layer {
     DEFAULT,
     BACKGROUND,
+    TEXT,
     ACTORS_1,
     ACTORS_2,
     ACTORS_3,
@@ -27,21 +28,31 @@ module example.components {
     public name_:string;
     public sprite_:PIXI.Sprite;
 
-    initialize(name?:string, color?, lambda?) {
-      this.name_ = name;
-      this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(`${name}.png`));
-      var s = 1/window.devicePixelRatio;
-      var scale:Point = this.sprite_.scale;
-      scale.x = s;
-      scale.y = s;
-      var anchor:Point = this.sprite_.anchor;
-      anchor.x = .5;
-      anchor.y = .5;
-      if (color !== undefined && color !== null) {
-        this.color = color;
-      }
-      if (lambda !== undefined) {
+    initialize(name?:string|Function, color?, lambda?) {
+      if ('function' === typeof name) {
+        this.sprite_ = new PIXI.Sprite();
+        lambda = name;
         lambda(this);
+      } else {
+        if (name === undefined) {
+          this.sprite_ = new PIXI.Sprite();
+        } else {
+          this.name_ = <string>name;
+          this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(`${this.name}.png`));
+          var s = 1 / window.devicePixelRatio;
+          var scale:Point = this.sprite_.scale;
+          scale.x = s;
+          scale.y = s;
+          var anchor:Point = this.sprite_.anchor;
+          anchor.x = .5;
+          anchor.y = .5;
+          if (color !== undefined && color !== null) {
+            this.color = color;
+          }
+          if (lambda !== undefined) {
+            lambda(this);
+          }
+        }
       }
     }
 

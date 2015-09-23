@@ -34,7 +34,7 @@ module example.templates {
         scale.x = s;
         scale.y = s;
         var pos = sprite.position;
-        pos.x = x*2;
+        pos.x = x;
         pos.y = y;
         sprite.alpha = MathUtils.nextDouble()*127;
         sprite.layer = Layer.BACKGROUND;

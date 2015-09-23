@@ -60,7 +60,8 @@ module example.systems {
         var text:BitmapText = this.texts[e.uuid];
 
         var percentage:number = Math.round(health.health / health.maximumHealth * 100);
-        text.position = new PIXI.Point(position.x*2, position.y);
+        text.position.x = position.x; // = new PIXI.Point(position.x, position.y);
+        text.position.y = position.y; // = new PIXI.Point(position.x, position.y);
         text.text = `${percentage}%`;
       }
 		}

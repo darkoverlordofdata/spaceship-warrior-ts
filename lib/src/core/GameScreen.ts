@@ -1,5 +1,6 @@
 module example.core {
 
+  import BackgroundSystem = example.systems.BackgroundSystem;
   import CollisionSystem = example.systems.CollisionSystem;
   import ColorAnimationSystem = example.systems.ColorAnimationSystem;
   import EntitySpawningTimerSystem = example.systems.EntitySpawningTimerSystem;
@@ -27,6 +28,7 @@ module example.core {
     private spriteRenderSystem:SpriteRenderSystem;
     private healthRenderSystem:HealthRenderSystem;
     private hudRenderSystem:HudRenderSystem;
+    private backgroundSystem:BackgroundSystem;
 
     constructor(sprites, resources) {
 
@@ -46,16 +48,17 @@ module example.core {
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
+      this.backgroundSystem = world.setSystem(new BackgroundSystem(), true);
       this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
       this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
       this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
 
       world.initialize();
       world.createEntityFromTemplate('player').addToWorld();
-
-      for (var i = 0; 500 > i; i++) {
-        world.createEntityFromTemplate('star').addToWorld();
-      }
+      world.createEntityFromTemplate('background').addToWorld();
+      //for (var i = 0; 500 > i; i++) {
+      //  world.createEntityFromTemplate('star').addToWorld();
+      //}
 
     }
 
@@ -64,12 +67,11 @@ module example.core {
       this.world.setDelta(delta);
       this.world.process();
 
+      this.backgroundSystem.process();
       this.spriteRenderSystem.process();
       this.healthRenderSystem.process();
       this.hudRenderSystem.process();
     }
-
-
   }
 }
 

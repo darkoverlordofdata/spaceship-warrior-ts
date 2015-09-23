@@ -1,9 +1,12 @@
 module example.core {
 
   import Container = PIXI.Container;
+  import Sprite = PIXI.Sprite;
   import SystemRenderer = PIXI.SystemRenderer;
   import GameScreen = example.core.GameScreen;
   import Constants = example.core.Constants;
+  import StarField = example.core.StarField;
+  import EntitySystem = artemis.EntitySystem;
 
   export class SpaceshipWarrior {
 
@@ -13,7 +16,8 @@ module example.core {
       'res/fonts/hud.fnt',
       'res/sounds/asplode.ogg',
       'res/sounds/pew.ogg',
-      'res/sounds/smallasplode.ogg'
+      'res/sounds/smallasplode.ogg',
+      'res/glsl/parallaxStars.c'
     ];
 
     public sprites:Container;
@@ -37,6 +41,9 @@ module example.core {
      * @param resources
      */
     constructor(resources) {
+
+      /** save the resources on the blackboard */
+      EntitySystem.blackBoard.setEntry('resources', resources);
 
       this.sprites = new Container();
       this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});

@@ -5,6 +5,7 @@ module example.systems {
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Constants = example.core.Constants;
+  import Layer = example.components.Layer;
 
   import ComponentMapper = artemis.ComponentMapper;
   import VoidEntitySystem = artemis.systems.VoidEntitySystem;
@@ -37,16 +38,22 @@ module example.systems {
       this.totalCreated = new BitmapText('Total created: ', font);
       this.totalDeleted = new BitmapText('Total deleted: ', font);
 
+
+      this.framesPerSecond['layer'] = Layer.TEXT;
+      this.activeEntities['layer'] = Layer.TEXT;
+      this.totalCreated['layer'] = Layer.TEXT;
+      this.totalDeleted['layer'] = Layer.TEXT;
+
       var scale = 1 / window.devicePixelRatio;
       this.framesPerSecond.scale = new Point(scale, scale);
       this.activeEntities.scale = new Point(scale, scale);
       this.totalCreated.scale = new Point(scale, scale);
       this.totalDeleted.scale = new Point(scale, scale);
 
-      this.framesPerSecond.position = new Point(0, 20);
-      this.activeEntities.position = new Point(0, 40);
-      this.totalCreated.position = new Point(0, 60);
-      this.totalDeleted.position = new Point(0, 80);
+      this.framesPerSecond.position = new Point(0, 20/ window.devicePixelRatio);
+      this.activeEntities.position = new Point(0, 40/ window.devicePixelRatio);
+      this.totalCreated.position = new Point(0, 60/ window.devicePixelRatio);
+      this.totalDeleted.position = new Point(0, 80/ window.devicePixelRatio);
 
       this.sprites.addChild(this.framesPerSecond);
       this.sprites.addChild(this.activeEntities);
@@ -71,6 +78,7 @@ module example.systems {
       this.activeEntities.text = 'Active entities: ' + this.world.getEntityManager().getActiveEntityCount();
       this.totalCreated.text = 'Total created: ' + this.world.getEntityManager().getTotalCreated();
       this.totalDeleted.text = 'Total deleted: ' + this.world.getEntityManager().getTotalDeleted();
+
     }
   }
 }

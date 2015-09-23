@@ -40,7 +40,7 @@ module example.systems {
         var sprite:Sprite = this.sm.get(e);
         var pos:Point = sprite.position;
 
-        pos.x = position.x * 2;
+        pos.x = position.x;
         pos.y = position.y;
       }
     }

@@ -29,7 +29,7 @@ module example.templates {
       entity.addComponent(SoundEffect, EFFECT.PEW);
       entity.addComponent(Sprite, 'bullet', 0xffffff, (sprite:Sprite) => {
         var pos = sprite.position;
-        pos.x = x*2;
+        pos.x = x;
         pos.y = y;
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

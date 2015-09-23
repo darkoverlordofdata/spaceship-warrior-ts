@@ -26,7 +26,7 @@ module example.templates {
       entity.addComponent(Health, health, health);
       entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
         var pos = sprite.position;
-        pos.x = x*2;
+        pos.x = x;
         pos.y = y;
         sprite.layer = layer;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

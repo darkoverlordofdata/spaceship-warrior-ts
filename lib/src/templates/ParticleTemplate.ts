@@ -39,7 +39,7 @@ module example.templates {
         scale.x = s;
         scale.y = s;
         var pos = sprite.position;
-        pos.x = x*2;
+        pos.x = x;
         pos.y = y;
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

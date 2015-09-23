@@ -198,6 +198,7 @@
             <filename>images/fighter.png</filename>
             <filename>images/particle.png</filename>
             <filename>images/star.png</filename>
+            <filename>images/starfield.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
