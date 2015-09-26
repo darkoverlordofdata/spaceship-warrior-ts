@@ -646,7 +646,7 @@ var example;
             }
             BackgroundTemplate.prototype.buildEntity = function (entity, world) {
                 var resources = EntitySystem.blackBoard.getEntry('resources');
-                var shader = new StarField(resources['res/glsl/parallaxStars.c'].data);
+                var shader = new StarField(resources['res/glsl/parallaxStars.frag'].data);
                 entity.addComponent(Background, shader);
                 entity.addComponent(Position, 0, 0);
                 entity.addComponent(Sprite, function (sprite) {
@@ -2069,6 +2069,7 @@ var example;
                 EntitySystem.blackBoard.setEntry('resources', resources);
                 this.sprites = new Container();
                 this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, { backgroundColor: 0x000000 });
+                EntitySystem.blackBoard.setEntry('webgl', this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
                 this.renderer.view.style.position = "absolute";
                 document.body.appendChild(this.renderer.view);
                 window.addEventListener('resize', this.resize, true);
@@ -2092,7 +2093,7 @@ var example;
                 'res/sounds/asplode.ogg',
                 'res/sounds/pew.ogg',
                 'res/sounds/smallasplode.ogg',
-                'res/glsl/parallaxStars.c'
+                'res/glsl/parallaxStars.frag'
             ];
             return SpaceshipWarrior;
         })();

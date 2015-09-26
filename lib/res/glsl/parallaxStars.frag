@@ -52,6 +52,7 @@ void main(void) {
     vec3 v = vec3(0.0);
 
     for (int r=0; r<VOLSTEPS; r++) {
+
         vec3 p = from + s * dir * 0.5;
         p = abs(vec3(TILE) - mod(p, vec3(TILE * 2.0))); // tiling fold
         float pa;
@@ -61,9 +62,12 @@ void main(void) {
             a += abs(length(p) - 0.1 * pa);             // absolute sum of average change
             pa = length(p);
         }
+
         float dm = max(0.0, DARKMATTER - a * a * 0.001);//dark matter
         a *= a * a;                                     // add contrast
-        if (r>6) fade *= 1.0 - dm;                      // dark matter, don't render near
+        if (r>6) {
+            fade *= 1.0 - dm;                           // dark matter, don't render near
+        }
 
         v += fade;
         v += vec3(s, s, 4.0 * s * s * s * s) * a * BRIGHTNESS * fade;

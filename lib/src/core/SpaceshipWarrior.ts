@@ -10,16 +10,6 @@ module example.core {
 
   export class SpaceshipWarrior {
 
-    public static assets = [
-      'res/images.json',
-      'res/fonts/normal.fnt',
-      'res/fonts/hud.fnt',
-      'res/sounds/asplode.ogg',
-      'res/sounds/pew.ogg',
-      'res/sounds/smallasplode.ogg',
-      'res/glsl/parallaxStars.frag'
-    ];
-
     public sprites:Container;
     public renderer:SystemRenderer;
     public gameScreen:GameScreen;
@@ -30,8 +20,8 @@ module example.core {
      * Load assets and start
      */
     public static main() {
-      for (var asset in SpaceshipWarrior.assets) {
-        PIXI.loader.add(SpaceshipWarrior.assets[asset]);
+      for (var asset in Constants.assets) {
+        PIXI.loader.add(Constants.assets[asset]);
       }
       PIXI.loader.load((loader, resources) => new SpaceshipWarrior(resources));
     }
