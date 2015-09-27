@@ -10,7 +10,6 @@ module example.systems {
   import Mapper = artemis.annotations.Mapper;
   import EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
   import Constants = example.core.Constants;
-  import Container = PIXI.Container;
 
   export class PlayerInputSystem extends EntityProcessingSystem  {
     private static FireRate = 0.1;
@@ -21,60 +20,56 @@ module example.systems {
     private shoot:boolean;
     private timeToFire:number=0;
     private mouseVector;
+    private game:CCLayer;
 
-    constructor() {
+    constructor(game:CCLayer) {
       super(Aspect.getAspectForAll(Position, Velocity, Player));
+      this.game = game;
     }
 
 
     public initialize() {
 
-      document.addEventListener('touchstart', this.onTouchStart, true);
-      document.addEventListener('touchmove', this.onTouchMove, true);
-      document.addEventListener('touchend', this.onTouchEnd, true);
+      if (cc.sys.isMobile) {
+        var inputListener = cc.EventListener.create({
+          event: cc.EventListener.TOUCH_ONE_BY_ONE,
+          swallowTouches: true,
+          onTouchBegan: (touch, event) => {
+            this.shoot = true;
+            this.mouseVector = touch.getLocation();
+            return true;
+          },
+          onTouchMoved: (touch, event) => {
+            //this.shoot = true;
+            this.mouseVector = touch.getLocation();
+            return true;
+          },
+          onTouchEnded: (touch, event) => {
+            this.shoot = false;
+            this.mouseVector = touch.getLocation();
+          }
+        });
 
-      document.addEventListener('mousedown', this.onTouchStart, true);
-      document.addEventListener('mousemove', this.onTouchMove, true);
-      document.addEventListener('mouseup', this.onTouchEnd, true);
-
+      } else {
+        var inputListener = cc.EventListener.create({
+          event: cc.EventListener.MOUSE,
+          onMouseMove: (event) => {
+            this.mouseVector = {x:event.getLocationX(), y:event.getLocationY()};
+            return true;
+          },
+          onMouseUp: (event) => {
+            this.shoot = false;
+            this.mouseVector = {x:event.getLocationX(), y:event.getLocationY()};
+          },
+          onMouseDown: (event) => {
+            this.shoot = true;
+            this.mouseVector = {x:event.getLocationX(), y:event.getLocationY()};
+            return true;
+          }
+        });
+      }
+      cc.eventManager.addListener(inputListener, this.game);
     }
-    
-    private onTouchStart = (event) => {
-      event = event.changedTouches ? event.changedTouches[0] : event;
-
-      try {
-        if (document.documentElement['requestFullscreen']) {
-          document.documentElement['requestFullscreen']();
-        } else if (document.documentElement['mozRequestFullScreen']) {
-          document.documentElement['mozRequestFullScreen']();
-        } else if (document.documentElement['webkitRequestFullscreen']) {
-          document.documentElement['webkitRequestFullscreen']();
-        } else if (document.documentElement['msRequestFullscreen']) {
-          document.documentElement['msRequestFullscreen']();
-        }
-      } catch (e) {}
-
-      this.shoot = true;
-      this.mouseVector = {
-        x: parseInt(event.clientX),
-        y: parseInt(event.clientY)
-      };
-      return true;
-    };
-
-    private onTouchMove = (event) => {
-      event = event.changedTouches ? event.changedTouches[0] : event;
-      //this.shoot = true;
-      this.mouseVector = {
-        x: parseInt(event.clientX),
-        y: parseInt(event.clientY)
-      };
-      return true;
-    };
-
-    private onTouchEnd = (event) => {
-      this.shoot = false;
-    };
 
     protected processEach(e:Entity) {
 
@@ -88,16 +83,15 @@ module example.systems {
 
       if (destinationX === undefined || destinationY === undefined) return;
 
-      position.x = this.mouseVector.x;
-      position.y = this.mouseVector.y;
+      position.x = this.mouseVector.x/2;
+      position.y = Constants.FRAME_HEIGHT-this.mouseVector.y;
 
 
       if (this.shoot) {
         if (this.timeToFire <= 0) {
 
-          var s = ~~(27/window.devicePixelRatio);
-          this.world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
-          this.world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
+          this.world.createEntityFromTemplate('bullet', position.x - 27/2, position.y + 2).addToWorld();
+          this.world.createEntityFromTemplate('bullet', position.x + 27/2, position.y + 2).addToWorld();
           this.timeToFire = PlayerInputSystem.FireRate;
         }
       }
@@ -108,7 +102,5 @@ module example.systems {
         }
       }
     }
-
-
   }
 }

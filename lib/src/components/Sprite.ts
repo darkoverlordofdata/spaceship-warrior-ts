@@ -1,122 +1,114 @@
 module example.components {
-
-  import Component = artemis.Component;
+	
+	import Component = artemis.Component;
   import PooledComponent = artemis.PooledComponent;
   import Pooled = artemis.annotations.Pooled;
-  import Point = PIXI.Point;
-  import Container = PIXI.Container;
 
-  export enum Layer {
-    DEFAULT,
-    BACKGROUND,
-    TEXT,
-    ACTORS_1,
-    ACTORS_2,
-    ACTORS_3,
-    PARTICLES
-
-    // getLayerId() {
-    // 	return ordinal();
-    // }
-  }
+	export enum Layer {
+		DEFAULT,
+		BACKGROUND,
+		ACTORS_1,
+		ACTORS_2,
+		ACTORS_3,
+		PARTICLES
+		
+		// getLayerId() {
+		// 	return ordinal();
+		// }
+	}
 
   @Pooled()
-  export class Sprite extends PooledComponent {
+	export class Sprite extends PooledComponent {
     public static className = 'Sprite';
-    public layer:Layer;
-
-    public name_:string;
-    public sprite_:PIXI.Sprite;
-
-    initialize(name?:string|Function, color?, lambda?) {
-      if ('function' === typeof name) {
-        this.sprite_ = new PIXI.Sprite();
-        lambda = name;
-        lambda(this);
-      } else {
-        if (name === undefined) {
-          this.sprite_ = new PIXI.Sprite();
-        } else {
-          this.name_ = <string>name;
-          this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(`${this.name}.png`));
-          var s = 1 / window.devicePixelRatio;
-          var scale:Point = this.sprite_.scale;
-          scale.x = s;
-          scale.y = s;
-          var anchor:Point = this.sprite_.anchor;
-          anchor.x = .5;
-          anchor.y = .5;
-          if (color !== undefined && color !== null) {
-            this.color = color;
-          }
-          if (lambda !== undefined) {
-            lambda(this);
-          }
-        }
+		public layer:Layer;
+		
+		public name_:string;
+		public scaleX_:number;
+		public scaleY_:number;
+		public rotation_:number;
+		public r_:number;
+		public g_:number;
+		public b_:number;
+		public a_:number;
+		public sprite_:cc.Sprite;
+		
+    initialize(name?:string, color?, lambda?) {
+			this.sprite_ = new cc.Sprite();
+      this.sprite_.setOpacityModifyRGB(true);
+      this.name = name;
+      if (color !== undefined && color !== null) {
+        this.r = color.r;
+        this.g = color.g;
+        this.b = color.b;
+        this.a = color.a;
       }
-    }
+      if (lambda !== undefined) {
+        lambda(this);
+      }
+		}
+			
+		get name():string {return this.name_;}
+		set name(value:string) {
+			this.name_ = value;
+      this.sprite_.initWithSpriteFrameName(`${value}.png`);
+		}
+		
+		get scaleX():number {return this.sprite_.getScaleX();}
+		set scaleX(value:number) {this.sprite_.setScaleX(value);}
 
-    get name():string {
-      return this.name_;
-    }
+		get scaleY():number {return this.sprite_.getScaleY();}
+		set scaleY(value:number) {this.sprite_.setScaleY(value);}
+		
+		get rotation():number {return this.sprite_.getRotation();}
+		set rotation(value:number) {this.sprite_.setRotation(value);}
+		
+		get r():number {return this.r_;}
+		set r(value:number) {
+			this.r_ = value;
+			this.sprite_.setColor(cc.color(this.r_, this.g_, this.b_));
+		}
+		
+		get g():number {return this.g_;}
+		set g(value:number) {
+			this.g_ = value;
+			this.sprite_.setColor(cc.color(this.r_, this.g_, this.b_));
+		}
+		
+		get b():number {return this.b_;}
+		set b(value:number) {
+			this.b_ = value;
+			this.sprite_.setColor(cc.color(this.r_, this.g_, this.b_));
+		}
+		
+		get a():number {return this.a_;}
+		set a(value:number) {
+			this.a_ = value;
+			this.sprite_.setColor(cc.color(this.r_, this.g_, this.b_, this.a_));
+		}
 
-    get scale():PIXI.Point {
-      return this.sprite_.scale;
-    }
-
-    set scale(value:PIXI.Point) {
-      this.sprite_.scale = value;
-    }
-
-    get rotation():number {
-      return this.sprite_.rotation;
-    }
-
-    set rotation(value:number) {
-      this.sprite_.rotation = value;
-    }
-
-    get position():Point {
-      return this.sprite_.position;
-    }
-
-    set position(value:Point) {
-      this.sprite_.position = value;
-    }
-
-    get color():number {
-      return this.sprite_.tint;
-    }
-
-    set color(value:number) {
-      this.sprite_.tint = value;
-      //this.sprite_.setColor(cc.color(this.r_, this.g_, this.b_));
-    }
-
-    get alpha():number {
-      return this.sprite_.alpha;
-    }
-
-    set alpha(value:number) {
-      this.sprite_.alpha = value;
-    }
-
-    addTo(layer:Container) {
+    addTo(layer:cc.Layer) {
       layer.addChild(this.sprite_);
     }
 
-    removeFrom(layer:Container) {
+    removeFrom(layer:cc.Layer) {
       layer.removeChild(this.sprite_);
     }
 
-    public reset() {
-      this.sprite_ = null;
-    }
+		public reset(){
+			this.sprite_ = null;
+		}
 
   }
 
-  Sprite.prototype.layer = Layer.DEFAULT;
-  Sprite.prototype.name_ = '';
-  Sprite.prototype.sprite_ = null;
+	Sprite.prototype.layer = Layer.DEFAULT;
+	Sprite.prototype.name_ = '';
+	Sprite.prototype.scaleX_ = 1;
+	Sprite.prototype.scaleY_ = 1;
+	Sprite.prototype.rotation_ = 0;
+	Sprite.prototype.r_ = 255;
+	Sprite.prototype.g_ = 255;
+	Sprite.prototype.b_ = 255;
+	Sprite.prototype.a_ = 255;
+	Sprite.prototype.sprite_ = null;
 }
 

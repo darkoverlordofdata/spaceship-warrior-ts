@@ -1,6 +1,6 @@
 module example.components {
 	
-  import Component = artemis.Component;
+	import Component = artemis.Component;
   import PooledComponent = artemis.PooledComponent;
   import Pooled = artemis.annotations.Pooled;
 

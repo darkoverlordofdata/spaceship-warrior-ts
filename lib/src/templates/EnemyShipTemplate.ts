@@ -1,8 +1,5 @@
 module example.templates {
 
-  import Point = PIXI.Point;
-  import Container = PIXI.Container;
-
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Velocity = example.components.Velocity;
@@ -24,12 +21,9 @@ module example.templates {
       entity.addComponent(Velocity, velocityX, velocityY);
       entity.addComponent(Bounds, boundsRadius);
       entity.addComponent(Health, health, health);
-      entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
-        var pos = sprite.position;
-        pos.x = x;
-        pos.y = y;
+      entity.addComponent(Sprite, name, cc.color(255, 0, 142), (sprite:Sprite) => {
         sprite.layer = layer;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<cc.Layer>('game'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.ENEMY_SHIPS);
       return entity;

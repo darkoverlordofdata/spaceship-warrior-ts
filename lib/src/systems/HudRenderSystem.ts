@@ -1,84 +1,61 @@
 module example.systems {
 
+
   import HashMap = artemis.utils.HashMap;
 
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Constants = example.core.Constants;
-  import Layer = example.components.Layer;
 
   import ComponentMapper = artemis.ComponentMapper;
   import VoidEntitySystem = artemis.systems.VoidEntitySystem;
   import Mapper = artemis.annotations.Mapper;
 
-  import BitmapText = PIXI.extras.BitmapText;
-  import Container = PIXI.Container;
-  import Point = PIXI.Point;
-
   export class HudRenderSystem extends VoidEntitySystem {
     @Mapper(Position) pm:ComponentMapper<Position>;
     @Mapper(Sprite) sm:ComponentMapper<Sprite>;
 
-    private framesPerSecond:BitmapText;
-    private activeEntities:BitmapText;
-    private totalCreated:BitmapText;
-    private totalDeleted:BitmapText;
-    private startTime:number=0;
-    private frameNumber:number=0;
+    private activeEntities:cc.LabelBMFont;
+    private totalCreated:cc.LabelBMFont;
+    private totalDeleted:cc.LabelBMFont;
 
-    constructor(private sprites:Container) {
+    private game:CCLayer;
+
+    constructor(game:CCLayer) {
       super();
+      this.game = game;
     }
+
 
     public initialize() {
-      var font = {font: '20px Radio Stars', align: 'left'};
+      //cc.LabelBMFont
+      //
+      this.activeEntities = new cc.LabelBMFont("Active entities:           ", "res/fonts/normal.fnt", 200, cc.TEXT_ALIGNMENT_LEFT);
+      this.totalCreated = new cc.LabelBMFont("Total created:          ", "res/fonts/normal.fnt", 200, cc.TEXT_ALIGNMENT_LEFT);
+      this.totalDeleted = new cc.LabelBMFont("Total deleted:          ", "res/fonts/normal.fnt", 200, cc.TEXT_ALIGNMENT_LEFT);
 
-      this.framesPerSecond = new BitmapText('FPS: 60', font);
-      this.activeEntities = new BitmapText('Active entities: ', font);
-      this.totalCreated = new BitmapText('Total created: ', font);
-      this.totalDeleted = new BitmapText('Total deleted: ', font);
+      this.activeEntities.setAnchorPoint(cc.p(0, 0));
+      this.totalCreated.setAnchorPoint(cc.p(0, 0));
+      this.totalDeleted.setAnchorPoint(cc.p(0, 0));
 
+      this.activeEntities.setPosition(cc.p(0, Constants.FRAME_HEIGHT - 20));
+      this.totalCreated.setPosition(cc.p(0, Constants.FRAME_HEIGHT - 40));
+      this.totalDeleted.setPosition(cc.p(0, Constants.FRAME_HEIGHT - 60));
 
-      this.framesPerSecond['layer'] = Layer.TEXT;
-      this.activeEntities['layer'] = Layer.TEXT;
-      this.totalCreated['layer'] = Layer.TEXT;
-      this.totalDeleted['layer'] = Layer.TEXT;
-
-      var scale = 1 / window.devicePixelRatio;
-      this.framesPerSecond.scale = new Point(scale, scale);
-      this.activeEntities.scale = new Point(scale, scale);
-      this.totalCreated.scale = new Point(scale, scale);
-      this.totalDeleted.scale = new Point(scale, scale);
-
-      this.framesPerSecond.position = new Point(0, 20/ window.devicePixelRatio);
-      this.activeEntities.position = new Point(0, 40/ window.devicePixelRatio);
-      this.totalCreated.position = new Point(0, 60/ window.devicePixelRatio);
-      this.totalDeleted.position = new Point(0, 80/ window.devicePixelRatio);
-
-      this.sprites.addChild(this.framesPerSecond);
-      this.sprites.addChild(this.activeEntities);
-      this.sprites.addChild(this.totalCreated);
-      this.sprites.addChild(this.totalDeleted);
+      this.game.addChild(this.activeEntities);
+      this.game.addChild(this.totalCreated);
+      this.game.addChild(this.totalDeleted);
     }
 
-    private getFramesPerSecond() {
-      var time = performance.now();
-      var delta = (time - this.startTime) / 1000;
-      var result = ~~(++this.frameNumber / delta);
-
-      if (delta > 1) {
-        this.startTime = time;
-        this.frameNumber = 0;
-      }
-      return result;
-    }
 
     public processSystem() {
-      this.framesPerSecond.text = 'FPS: ' + this.getFramesPerSecond();
-      this.activeEntities.text = 'Active entities: ' + this.world.getEntityManager().getActiveEntityCount();
-      this.totalCreated.text = 'Total created: ' + this.world.getEntityManager().getTotalCreated();
-      this.totalDeleted.text = 'Total deleted: ' + this.world.getEntityManager().getTotalDeleted();
+
+      this.activeEntities.string = "Active entities: " + this.world.getEntityManager().getActiveEntityCount();
+      this.totalCreated.string = "Total created: " + this.world.getEntityManager().getTotalCreated();
+      this.totalDeleted.string = "Total deleted: " + this.world.getEntityManager().getTotalDeleted();
 
     }
+
+
   }
 }

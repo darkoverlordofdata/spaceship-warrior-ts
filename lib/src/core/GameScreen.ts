@@ -1,6 +1,5 @@
 module example.core {
 
-  import BackgroundSystem = example.systems.BackgroundSystem;
   import CollisionSystem = example.systems.CollisionSystem;
   import ColorAnimationSystem = example.systems.ColorAnimationSystem;
   import EntitySpawningTimerSystem = example.systems.EntitySpawningTimerSystem;
@@ -20,7 +19,6 @@ module example.core {
   import EntitySystem = artemis.EntitySystem;
   import PlayerTemplate = example.templates.PlayerTemplate;
 
-
   export class GameScreen {
 
     private world:World;
@@ -28,50 +26,48 @@ module example.core {
     private spriteRenderSystem:SpriteRenderSystem;
     private healthRenderSystem:HealthRenderSystem;
     private hudRenderSystem:HudRenderSystem;
-    private backgroundSystem:BackgroundSystem;
 
-    constructor(sprites, resources) {
+    constructor(game:CCLayer) {
 
-      EntitySystem.blackBoard.setEntry('sprites', sprites);
+      EntitySystem.blackBoard.setEntry('game', game);
 
       var world:World = this.world = new artemis.World();
 
       world.setManager(new GroupManager());
       world.setSystem(new MovementSystem());
-      world.setSystem(new PlayerInputSystem());
-      world.setSystem(new SoundEffectSystem());
-      world.setSystem(new CollisionSystem());
+      world.setSystem(new PlayerInputSystem(game));
+      //world.setSystem(new SoundEffectSystem());
+      world.setSystem(new CollisionSystem(game));
       world.setSystem(new ExpiringSystem());
-      world.setSystem(new EntitySpawningTimerSystem());
+      world.setSystem(new EntitySpawningTimerSystem(game));
       world.setSystem(new ParallaxStarRepeatingSystem());
       world.setSystem(new ColorAnimationSystem());
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
-      this.backgroundSystem = world.setSystem(new BackgroundSystem(), true);
-      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
-      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
-      this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
+      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(game), true);
+      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(game), true);
+      this.hudRenderSystem = world.setSystem(new HudRenderSystem(game), true);
 
       world.initialize();
       world.createEntityFromTemplate('player').addToWorld();
-      world.createEntityFromTemplate('background').addToWorld();
+
       //for (var i = 0; 500 > i; i++) {
-      //  world.createEntityFromTemplate('star').addToWorld();
+      // world.createEntityFromTemplate('star').addToWorld();
       //}
 
     }
 
     public render(delta:number) {
-
       this.world.setDelta(delta);
       this.world.process();
 
-      this.backgroundSystem.process();
       this.spriteRenderSystem.process();
       this.healthRenderSystem.process();
       this.hudRenderSystem.process();
     }
+
+
   }
 }
 

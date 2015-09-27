@@ -1,8 +1,5 @@
 module example.templates {
 
-  import Point = PIXI.Point;
-  import Container = PIXI.Container;
-
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Velocity = example.components.Velocity;
@@ -20,29 +17,21 @@ module example.templates {
   import IEntityTemplate = artemis.IEntityTemplate;
 
 
-  /**
-   * Base Explosion Template
-   */
-  class ExplosionTemplate implements IEntityTemplate {
+  export class ExplosionTemplate implements IEntityTemplate {
 
-    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, s:number):artemis.Entity {
+    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, scale:number):artemis.Entity {
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Expires, 0.5);
-      entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
-        var scale = sprite.scale;
-        scale.x = s/(window.devicePixelRatio*2);
-        scale.y = s/(window.devicePixelRatio*2);
-        var pos = sprite.position;
-        pos.x = x;
-        pos.y = y;
+      entity.addComponent(Sprite, 'explosion', cc.color(255, 216, 0, 128), (sprite:Sprite) => {
+        sprite.scaleX = sprite.scaleY = scale;
         sprite.layer = Layer.PARTICLES;
-        sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
+        sprite.addTo(EntitySystem.blackBoard.getEntry<cc.Layer>('game'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;
-        scaleAnimation.max = s/(window.devicePixelRatio*2);
-        scaleAnimation.min = s/(100*(window.devicePixelRatio*2));
+        scaleAnimation.max = scale;
+        scaleAnimation.min = scale/100;
         scaleAnimation.speed = -3.0;
         scaleAnimation.repeat = false;
       });
@@ -50,9 +39,6 @@ module example.templates {
     }
   }
 
-  /**
-   * Small Explosion
-   */
   @EntityTemplate('small')
   export class SmallExplosionTemplate extends ExplosionTemplate {
 
@@ -68,9 +54,6 @@ module example.templates {
     }
   }
 
-  /**
-   * Big Explosion
-   */
   @EntityTemplate('big')
   export class BigExplosionTemplate extends ExplosionTemplate {
 
