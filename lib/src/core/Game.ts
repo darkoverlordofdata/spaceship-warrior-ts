@@ -5,10 +5,9 @@ module example.core {
   import SystemRenderer = PIXI.SystemRenderer;
   import GameScreen = example.core.GameScreen;
   import Constants = example.core.Constants;
-  import StarField = example.core.StarField;
   import EntitySystem = artemis.EntitySystem;
 
-  export class SpaceshipWarrior {
+  export class Game {
 
     public sprites:Container;
     public renderer:SystemRenderer;
@@ -23,7 +22,7 @@ module example.core {
       for (var asset in Constants.assets) {
         PIXI.loader.add(Constants.assets[asset]);
       }
-      PIXI.loader.load((loader, resources) => new SpaceshipWarrior(resources));
+      PIXI.loader.load((loader, resources) => new Game(resources));
     }
 
     /**
@@ -37,12 +36,11 @@ module example.core {
 
       this.sprites = new Container();
       this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
-      EntitySystem.blackBoard.setEntry('webgl', this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
       this.renderer.view.style.position = "absolute";
       document.body.appendChild(this.renderer.view);
       window.addEventListener('resize', this.resize, true);
       window.onorientationchange = this.resize;
-      this.gameScreen = new GameScreen(this.sprites, resources);
+      this.gameScreen = new GameScreen(this.sprites, this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
       requestAnimationFrame(this.update);
     }
 

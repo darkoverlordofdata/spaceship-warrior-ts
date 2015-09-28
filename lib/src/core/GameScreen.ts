@@ -1,5 +1,9 @@
 module example.core {
 
+  import World = artemis.World;
+  import GroupManager = artemis.managers.GroupManager;
+  import EntitySystem = artemis.EntitySystem;
+
   import BackgroundSystem = example.systems.BackgroundSystem;
   import CollisionSystem = example.systems.CollisionSystem;
   import ColorAnimationSystem = example.systems.ColorAnimationSystem;
@@ -14,10 +18,7 @@ module example.core {
   import ScaleAnimationSystem = example.systems.ScaleAnimationSystem;
   import SoundEffectSystem = example.systems.SoundEffectSystem;
   import SpriteRenderSystem = example.systems.SpriteRenderSystem;
-  import World = artemis.World;
-  import GroupManager = artemis.managers.GroupManager;
   import Constants = example.core.Constants;
-  import EntitySystem = artemis.EntitySystem;
   import PlayerTemplate = example.templates.PlayerTemplate;
 
 
@@ -28,9 +29,8 @@ module example.core {
     private spriteRenderSystem:SpriteRenderSystem;
     private healthRenderSystem:HealthRenderSystem;
     private hudRenderSystem:HudRenderSystem;
-    private backgroundSystem:BackgroundSystem;
 
-    constructor(sprites, resources) {
+    constructor(sprites, webgl:boolean) {
 
       EntitySystem.blackBoard.setEntry('sprites', sprites);
 
@@ -43,23 +43,29 @@ module example.core {
       world.setSystem(new CollisionSystem());
       world.setSystem(new ExpiringSystem());
       world.setSystem(new EntitySpawningTimerSystem());
-      world.setSystem(new ParallaxStarRepeatingSystem());
-      world.setSystem(new ColorAnimationSystem());
+      if (webgl) {
+        world.setSystem(new BackgroundSystem());
+      } else {
+        world.setSystem(new ParallaxStarRepeatingSystem());
+        world.setSystem(new ColorAnimationSystem());
+      }
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
-      this.backgroundSystem = world.setSystem(new BackgroundSystem(), true);
       this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
       this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
       this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
 
       world.initialize();
-      world.createEntityFromTemplate('player').addToWorld();
-      world.createEntityFromTemplate('background').addToWorld();
-      //for (var i = 0; 500 > i; i++) {
-      //  world.createEntityFromTemplate('star').addToWorld();
-      //}
 
+      world.createEntityFromTemplate('player').addToWorld();
+      if (webgl) {
+        world.createEntityFromTemplate('background').addToWorld();
+      } else {
+        for (var i = 0; 500 > i; i++) {
+          world.createEntityFromTemplate('star').addToWorld();
+        }
+      }
     }
 
     public render(delta:number) {
@@ -67,7 +73,6 @@ module example.core {
       this.world.setDelta(delta);
       this.world.process();
 
-      this.backgroundSystem.process();
       this.spriteRenderSystem.process();
       this.healthRenderSystem.process();
       this.hudRenderSystem.process();

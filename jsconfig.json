@@ -1,7 +1,6 @@
 {
   "files": [
     "web/src/spacewar/core/Constants.js",
-    "web/src/spacewar/core/StarField.js",
     "web/src/spacewar/components/Background.js",
     "web/src/spacewar/components/Bounds.js",
     "web/src/spacewar/components/ColorAnimation.js",
@@ -37,6 +36,6 @@
     "web/src/spacewar/systems/SoundEffectSystem.js",
     "web/src/spacewar/systems/SpriteRenderSystem.js",
     "web/src/spacewar/core/GameScreen.js",
-    "web/src/spacewar/core/SpaceshipWarrior.js"
+    "web/src/spacewar/core/Game.js"
   ]
 }

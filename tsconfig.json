@@ -15,7 +15,6 @@
       "lib/src/artemis.d.ts",
       "lib/src/pixi.js.d.ts",
       "lib/src/core/Constants",
-      "lib/src/core/StarField.ts",
       "lib/src/components/Background.ts",
       "lib/src/components/Bounds.ts",
       "lib/src/components/ColorAnimation.ts",
@@ -51,7 +50,7 @@
       "lib/src/systems/SoundEffectSystem.ts",
       "lib/src/systems/SpriteRenderSystem.ts",
       "lib/src/core/GameScreen.ts",
-      "lib/src/core/SpaceshipWarrior.ts"
+      "lib/src/core/Game.ts"
    ]
 	
 }

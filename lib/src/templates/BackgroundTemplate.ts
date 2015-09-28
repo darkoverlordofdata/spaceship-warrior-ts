@@ -17,7 +17,6 @@ module example.templates {
   import EntityTemplate = artemis.annotations.EntityTemplate;
   import IEntityTemplate = artemis.IEntityTemplate;
   import SpaceshipWarrior = example.core.SpaceshipWarrior;
-  import StarField = example.core.StarField;
 
 
   @EntityTemplate('background')
@@ -26,7 +25,11 @@ module example.templates {
     public buildEntity(entity:artemis.Entity, world:artemis.World):artemis.Entity {
 
       var resources = EntitySystem.blackBoard.getEntry('resources');
-      var shader = new StarField(resources['res/glsl/parallaxStars.frag'].data);
+
+      var shader = new PIXI.AbstractFilter(null, resources['res/glsl/parallaxStars.frag'].data, {
+        time: {type: "f", value: performance.now()},
+        resolution: {type: "2f", value: [window.innerHeight, window.innerWidth]}
+      });
 
       entity.addComponent(Background, shader);
       entity.addComponent(Position, 0, 0);

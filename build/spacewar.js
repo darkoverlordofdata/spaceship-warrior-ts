@@ -13,6 +13,15 @@ var example;
                 ENEMY_SHIPS: "enemy ships",
                 ENEMY_BULLETS: "enemy bullets"
             };
+            Constants.assets = [
+                'res/images.json',
+                'res/fonts/normal.fnt',
+                'res/fonts/hud.fnt',
+                'res/sounds/asplode.ogg',
+                'res/sounds/pew.ogg',
+                'res/sounds/smallasplode.ogg',
+                'res/glsl/parallaxStars.frag'
+            ];
             return Constants;
         })();
         core.Constants = Constants;
@@ -2081,20 +2090,11 @@ var example;
              * Load assets and start
              */
             SpaceshipWarrior.main = function () {
-                for (var asset in SpaceshipWarrior.assets) {
-                    PIXI.loader.add(SpaceshipWarrior.assets[asset]);
+                for (var asset in Constants.assets) {
+                    PIXI.loader.add(Constants.assets[asset]);
                 }
                 PIXI.loader.load(function (loader, resources) { return new SpaceshipWarrior(resources); });
             };
-            SpaceshipWarrior.assets = [
-                'res/images.json',
-                'res/fonts/normal.fnt',
-                'res/fonts/hud.fnt',
-                'res/sounds/asplode.ogg',
-                'res/sounds/pew.ogg',
-                'res/sounds/smallasplode.ogg',
-                'res/glsl/parallaxStars.frag'
-            ];
             return SpaceshipWarrior;
         })();
         core.SpaceshipWarrior = SpaceshipWarrior;

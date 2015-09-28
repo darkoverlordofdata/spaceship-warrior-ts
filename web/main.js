@@ -1,1 +1,1 @@
-example.core.SpaceshipWarrior.main();
+example.core.Game.main();
