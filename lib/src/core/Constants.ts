@@ -1,26 +1,38 @@
+/**
+ * Constants
+ */
 module example.core {
 
+  /**
+   * GroupManager Groups
+   */
+  export enum Groups {
+    PLAYER_BULLETS,
+    PLAYER_SHIP,
+    ENEMY_SHIPS,
+    ENEMY_BULLETS
+  }
+
+  export enum ScaleType {
+    FILL, // fill to fit screen
+    FIXED // scale fixed size to fit the screen
+  }
   export class Constants {
 
     public static FRAME_WIDTH:number = window.innerWidth;
     public static FRAME_HEIGHT:number = window.innerHeight;
 
-    public static Groups = {
-      PLAYER_BULLETS: "player bullets",
-      PLAYER_SHIP: "player ship",
-      ENEMY_SHIPS: "enemy ships",
-      ENEMY_BULLETS: "enemy bullets"
-    };
+    public static SCALE_TYPE:ScaleType = ScaleType.FILL;
 
-    public static assets = [
-      'res/images.json',
-      'res/fonts/normal.fnt',
-      'res/fonts/hud.fnt',
-      'res/sounds/asplode.ogg',
-      'res/sounds/pew.ogg',
-      'res/sounds/smallasplode.ogg',
-      'res/glsl/parallaxStars.frag'
-    ];
+    public static assets = {
+      images_json         : 'res/images.json',
+      normal_fnt          : 'res/fonts/normal.fnt',
+      hud_fnt             : 'res/fonts/hud.fnt',
+      asplode_ogg         : 'res/sounds/asplode.ogg',
+      pew_ogg             : 'res/sounds/pew.ogg',
+      smallasplode_ogg    : 'res/sounds/smallasplode.ogg',
+      parallaxStars_frag  : 'res/glsl/parallaxStars.frag'
+    };
 
   }
 }

@@ -17,6 +17,7 @@ module example.templates {
   import Player = example.components.Player;
   import Layer = example.components.Layer;
   import Constants = example.core.Constants;
+  import Groups = example.core.Groups;
 
   @EntityTemplate('player')
   export class PlayerTemplate implements IEntityTemplate {
@@ -30,14 +31,16 @@ module example.templates {
       entity.addComponent(Velocity, 0, 0);
       entity.addComponent(Bounds, 43);
       entity.addComponent(Player);
-      entity.addComponent(Sprite, 'fighter', 0x5dff81, (sprite:Sprite) => {
-        var pos = sprite.position;
+      entity.addComponent(Sprite, 'fighter', (sprite:Sprite) => {
+        var s:PIXI.Sprite = sprite.sprite_;
+        s.tint = 0x5dff81;
+        var pos = s.position;
         pos.x = x;
         pos.y = y;
         sprite.layer = Layer.ACTORS_3;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
-      world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_SHIP);
+      world.getManager<GroupManager>(GroupManager).add(entity, Groups.PLAYER_SHIP);
       return entity;
     }
   }

@@ -29,11 +29,12 @@ module example.templates {
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Expires, 0.5);
-      entity.addComponent(Sprite, 'explosion', 0xffd80080, (sprite:Sprite) => {
-        var scale = sprite.scale;
-        scale.x = s/(window.devicePixelRatio*2);
-        scale.y = s/(window.devicePixelRatio*2);
-        var pos = sprite.position;
+      entity.addComponent(Sprite, 'explosion', (sprite:Sprite) => {
+        var s:PIXI.Sprite = sprite.sprite_;
+        s.tint = 0xffd80080;
+        var scale = s.scale;
+        scale.x = scale.y = s/(window.devicePixelRatio*2);
+        var pos = s.position;
         pos.x = x;
         pos.y = y;
         sprite.layer = Layer.PARTICLES;

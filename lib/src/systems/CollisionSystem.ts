@@ -15,6 +15,7 @@ module example.systems {
   import Sprite = example.components.Sprite;
   import Velocity = example.components.Velocity;
   import Constants = example.core.Constants;
+  import Groups = example.core.Groups;
   import Mapper = artemis.annotations.Mapper;
 
   import EntitySystem = artemis.EntitySystem;
@@ -40,7 +41,7 @@ module example.systems {
 
     public initialize() {
       this.collisionPairs = new Bag<CollisionPair>();
-      this.collisionPairs.add(new CollisionPair(this, Constants.Groups.PLAYER_BULLETS, Constants.Groups.ENEMY_SHIPS,
+      this.collisionPairs.add(new CollisionPair(this, Groups.PLAYER_BULLETS, Groups.ENEMY_SHIPS,
         {
 
           handleCollision: (bullet:Entity, ship:Entity) => {
@@ -84,7 +85,7 @@ module example.systems {
     private handler:CollisionHandler;
     private cs:CollisionSystem;
 
-    constructor(cs:CollisionSystem, group1:string, group2:string, handler:CollisionHandler) {
+    constructor(cs:CollisionSystem, group1:Groups, group2:Groups, handler:CollisionHandler) {
       this.groupEntitiesA = cs.world.getManager<GroupManager>(GroupManager).getEntities(group1);
       this.groupEntitiesB = cs.world.getManager<GroupManager>(GroupManager).getEntities(group2);
       this.handler = handler;

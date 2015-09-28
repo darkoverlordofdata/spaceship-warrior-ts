@@ -35,7 +35,7 @@
     "web/src/spacewar/systems/ScaleAnimationSystem.js",
     "web/src/spacewar/systems/SoundEffectSystem.js",
     "web/src/spacewar/systems/SpriteRenderSystem.js",
-    "web/src/spacewar/core/GameScreen.js",
+    "web/src/spacewar/core/GameSystems.js",
     "web/src/spacewar/core/Game.js"
   ]
 }

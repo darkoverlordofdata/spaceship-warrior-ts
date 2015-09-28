@@ -49,7 +49,7 @@
       "lib/src/systems/ScaleAnimationSystem.ts",
       "lib/src/systems/SoundEffectSystem.ts",
       "lib/src/systems/SpriteRenderSystem.ts",
-      "lib/src/core/GameScreen.ts",
+      "lib/src/core/GameSystems.ts",
       "lib/src/core/Game.ts"
    ]
 	

@@ -14,6 +14,7 @@ module example.templates {
   import GroupManager = artemis.managers.GroupManager;
   import EntitySystem = artemis.EntitySystem;
   import Constants = example.core.Constants;
+  import Groups = example.core.Groups;
   import EntityTemplate = artemis.annotations.EntityTemplate;
   import IEntityTemplate = artemis.IEntityTemplate;
 
@@ -27,14 +28,16 @@ module example.templates {
       entity.addComponent(Bounds, 5);
       entity.addComponent(Expires, 5);
       entity.addComponent(SoundEffect, EFFECT.PEW);
-      entity.addComponent(Sprite, 'bullet', 0xffffff, (sprite:Sprite) => {
-        var pos = sprite.position;
+      entity.addComponent(Sprite, 'bullet', (sprite:Sprite) => {
+        var s:PIXI.Sprite = sprite.sprite_;
+        s.tint = 0xffffff;
+        var pos = s.position;
         pos.x = x;
         pos.y = y;
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
-      world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.PLAYER_BULLETS);
+      world.getManager<GroupManager>(GroupManager).add(entity, Groups.PLAYER_BULLETS);
       return entity;
     }
   }

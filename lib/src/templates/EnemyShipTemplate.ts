@@ -12,6 +12,7 @@ module example.templates {
   import GroupManager = artemis.managers.GroupManager;
   import EntitySystem = artemis.EntitySystem;
   import Constants = example.core.Constants;
+  import Groups = example.core.Groups;
   import EntityTemplate = artemis.annotations.EntityTemplate;
   import IEntityTemplate = artemis.IEntityTemplate;
 
@@ -24,14 +25,16 @@ module example.templates {
       entity.addComponent(Velocity, velocityX, velocityY);
       entity.addComponent(Bounds, boundsRadius);
       entity.addComponent(Health, health, health);
-      entity.addComponent(Sprite, name, 0xff008e, (sprite:Sprite) => {
-        var pos = sprite.position;
+      entity.addComponent(Sprite, name, (sprite:Sprite) => {
+        var s:PIXI.Sprite = sprite.sprite_;
+        s.tint = 0xff008e;
+        var pos = s.position;
         pos.x = x;
         pos.y = y;
         sprite.layer = layer;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
-      world.getManager<GroupManager>(GroupManager).add(entity, Constants.Groups.ENEMY_SHIPS);
+      world.getManager<GroupManager>(GroupManager).add(entity, Groups.ENEMY_SHIPS);
       return entity;
     }
   }

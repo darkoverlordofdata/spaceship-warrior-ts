@@ -20,7 +20,7 @@ module example.systems {
 		
 		protected processEach(e:Entity) {
 			var c:ColorAnimation = this.cam.get(e);
-      var sprite:Sprite = this.sm.get(e);
+      var sprite:PIXI.Sprite = this.sm.get(e).sprite_;
 
       if (c.alphaAnimate) {
         sprite.alpha += c.alphaSpeed * this.world.delta;

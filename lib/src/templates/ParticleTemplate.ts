@@ -33,12 +33,12 @@ module example.templates {
       entity.addComponent(Velocity, velocityX, velocityY);
       entity.addComponent(Expires, 1);
       //0xffd800ff
-      entity.addComponent(Sprite, 'particle', 0xffd800ff, (sprite:Sprite) => {
-        var s = MathUtils.random(0.5, 1);
-        var scale = sprite.scale;
-        scale.x = s;
-        scale.y = s;
-        var pos = sprite.position;
+      entity.addComponent(Sprite, 'particle', (sprite:Sprite) => {
+        var s:PIXI.Sprite = sprite.sprite_;
+        s.tint = 0xffd800ff;
+        var scale = s.scale;
+        scale.x = scale.y = MathUtils.random(0.5, 1);
+        var pos = s.position;
         pos.x = x;
         pos.y = y;
         sprite.layer = Layer.PARTICLES;

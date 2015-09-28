@@ -20,8 +20,14 @@ module example.systems {
     @Mapper(Position) pm:ComponentMapper<Position>;
     @Mapper(Sprite) sm:ComponentMapper<Sprite>;
 
-    constructor(private sprites:Container) {
+    private sprites:Container;
+
+    constructor() {
       super(Aspect.getAspectForAll(Position, Sprite));
+    }
+
+    public initialize() {
+      this.sprites = EntitySystem.blackBoard.getEntry<Container>('sprites');
     }
 
     protected checkProcessing():boolean {
@@ -38,7 +44,7 @@ module example.systems {
       if (this.pm.has(e)) {
         var position:Position = this.pm.getSafe(e);
         var sprite:Sprite = this.sm.get(e);
-        var pos:Point = sprite.position;
+        var pos:Point = sprite.sprite_.position;
 
         pos.x = position.x;
         pos.y = position.y;

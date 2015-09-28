@@ -23,7 +23,7 @@ module example.systems {
 			var scaleAnimation:ScaleAnimation = this.sa.get(e);
 
 			if (scaleAnimation.active) {
-				var sprite:Sprite = this.sm.get(e);
+				var sprite:PIXI.Sprite = this.sm.get(e).sprite_;
 
 				sprite.scale.x += scaleAnimation.speed * this.world.delta;
 				sprite.scale.y = sprite.scale.x;

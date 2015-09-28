@@ -1,3 +1,8 @@
+/**
+ * GameSystems
+ *
+ * the main game loop
+ */
 module example.core {
 
   import World = artemis.World;
@@ -22,7 +27,7 @@ module example.core {
   import PlayerTemplate = example.templates.PlayerTemplate;
 
 
-  export class GameScreen {
+  export class GameSystems {
 
     private world:World;
 
@@ -30,9 +35,7 @@ module example.core {
     private healthRenderSystem:HealthRenderSystem;
     private hudRenderSystem:HudRenderSystem;
 
-    constructor(sprites, webgl:boolean) {
-
-      EntitySystem.blackBoard.setEntry('sprites', sprites);
+    constructor(webgl:boolean) {
 
       var world:World = this.world = new artemis.World();
 
@@ -52,9 +55,9 @@ module example.core {
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
-      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(sprites), true);
-      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(sprites), true);
-      this.hudRenderSystem = world.setSystem(new HudRenderSystem(sprites), true);
+      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(), true);
+      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(), true);
+      this.hudRenderSystem = world.setSystem(new HudRenderSystem(), true);
 
       world.initialize();
 
@@ -68,7 +71,7 @@ module example.core {
       }
     }
 
-    public render(delta:number) {
+    public update(delta:number) {
 
       this.world.setDelta(delta);
       this.world.process();

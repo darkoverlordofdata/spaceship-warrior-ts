@@ -16,7 +16,7 @@ module example.templates {
   import Constants = example.core.Constants;
   import EntityTemplate = artemis.annotations.EntityTemplate;
   import IEntityTemplate = artemis.IEntityTemplate;
-  import SpaceshipWarrior = example.core.SpaceshipWarrior;
+  import AbstractFilter = PIXI.AbstractFilter;
 
 
   @EntityTemplate('background')
@@ -24,9 +24,8 @@ module example.templates {
 
     public buildEntity(entity:artemis.Entity, world:artemis.World):artemis.Entity {
 
-      var resources = EntitySystem.blackBoard.getEntry('resources');
-
-      var shader = new PIXI.AbstractFilter(null, resources['res/glsl/parallaxStars.frag'].data, {
+      var resources:any = EntitySystem.blackBoard.getEntry('resources');
+      var shader = new AbstractFilter(null, resources.parallaxStars_frag.data, {
         time: {type: "f", value: performance.now()},
         resolution: {type: "2f", value: [window.innerHeight, window.innerWidth]}
       });
@@ -34,13 +33,14 @@ module example.templates {
       entity.addComponent(Background, shader);
       entity.addComponent(Position, 0, 0);
       entity.addComponent(Sprite, (sprite:Sprite) => {
-        var pos = sprite.position;
+        var s:PIXI.Sprite = sprite.sprite_;
+        var pos = s.position;
         pos.x = 0;
         pos.y = 0;
+        s.filters = [shader];
+        s.height = window.innerHeight;
+        s.width = window.innerWidth;
         sprite.layer = Layer.BACKGROUND;
-        sprite.sprite_.filters = [shader];
-        sprite.sprite_.height = window.innerHeight;
-        sprite.sprite_.width = window.innerWidth;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       return entity;

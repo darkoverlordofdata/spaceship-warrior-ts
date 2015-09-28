@@ -7,6 +7,7 @@ module example.systems {
   import Constants = example.core.Constants;
   import Layer = example.components.Layer;
 
+  import EntitySystem = artemis.EntitySystem;
   import ComponentMapper = artemis.ComponentMapper;
   import VoidEntitySystem = artemis.systems.VoidEntitySystem;
   import Mapper = artemis.annotations.Mapper;
@@ -26,7 +27,7 @@ module example.systems {
     private startTime:number=0;
     private frameNumber:number=0;
 
-    constructor(private sprites:Container) {
+    constructor() {
       super();
     }
 
@@ -55,10 +56,11 @@ module example.systems {
       this.totalCreated.position = new Point(0, 60/ window.devicePixelRatio);
       this.totalDeleted.position = new Point(0, 80/ window.devicePixelRatio);
 
-      this.sprites.addChild(this.framesPerSecond);
-      this.sprites.addChild(this.activeEntities);
-      this.sprites.addChild(this.totalCreated);
-      this.sprites.addChild(this.totalDeleted);
+      var sprites:Container = EntitySystem.blackBoard.getEntry<Container>('sprites');
+      sprites.addChild(this.framesPerSecond);
+      sprites.addChild(this.activeEntities);
+      sprites.addChild(this.totalCreated);
+      sprites.addChild(this.totalDeleted);
     }
 
     private getFramesPerSecond() {

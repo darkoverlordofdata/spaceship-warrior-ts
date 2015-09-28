@@ -1335,20 +1335,23 @@ declare module artemis.managers {
         * @param group group to add the entity into.
         * @param e entity to add into the group.
         */
-        add(e: Entity, group: string): void;
+        //add(e: Entity, group: string): void;
+        add(e: Entity, group: string|number): void;
         /**
         * Remove the entity from the specified group.
         * @param e
         * @param group
         */
-        remove(e: Entity, group: string): void;
+        //remove(e: Entity, group: string): void;
+        remove(e: Entity, group: string|number): void;
         removeFromAllGroups(e: Entity): void;
         /**
         * Get all entities that belong to the provided group.
         * @param group name of the group.
         * @return read-only bag of entities belonging to the group.
         */
-        getEntities(group: string): ImmutableBag<Entity>;
+        //getEntities(group: string): ImmutableBag<Entity>;
+        getEntities(group: string|number): ImmutableBag<Entity>;
         /**
         * @param e entity
         * @return the groups the entity belongs to, null if none.
@@ -1366,7 +1369,8 @@ declare module artemis.managers {
         * @param e the entity to check for.
         * @return true if the entity is in the supplied group, false if not.
         */
-        isInGroup(e: Entity, group: string): boolean;
+        //isInGroup(e: Entity, group: string): boolean;
+        isInGroup(e: Entity, group: string|string): boolean;
         deleted(e: Entity): void;
     }
 }

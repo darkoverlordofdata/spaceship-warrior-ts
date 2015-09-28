@@ -12,6 +12,7 @@ module example.systems {
 	import Aspect = artemis.Aspect;
 	import ComponentMapper = artemis.ComponentMapper;
 	import Entity = artemis.Entity;
+  import EntitySystem = artemis.EntitySystem;
 	import EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
 	import MathUtils = artemis.utils.MathUtils;
 	import Mapper = artemis.annotations.Mapper;
@@ -28,11 +29,17 @@ module example.systems {
     @Mapper(Sprite) sm:ComponentMapper<Sprite>;
 
     private texts:IBitmapText = {};
+    private sprites:Container;
 
-    constructor(private sprites:Container) {
+    constructor() {
 			super(Aspect.getAspectForAll(Position, Health));
 		}
-		
+
+    public initialize() {
+      this.sprites = EntitySystem.blackBoard.getEntry<Container>('sprites');
+    }
+
+
     public inserted(e:Entity) {
       var sprite:Sprite = this.sm.get(e);
       var text:BitmapText = new BitmapText('100%',  {font: '20px Radio Stars'});
