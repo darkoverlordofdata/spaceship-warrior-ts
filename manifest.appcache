@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Time: Tue Sep 29 2015 08:50:20 GMT-0700 (PDT)
+# Time: Tue Sep 29 2015 10:26:23 GMT-0700 (PDT)
 
 
 CACHE:
@@ -14,6 +14,9 @@ res/fonts/hud_0.png
 res/fonts/normal.fnt
 res/fonts/normal_0.png
 res/glsl/parallaxStars.frag
+res/icons/icon144.png
+res/icons/icon192.png
+res/icons/icon96.png
 res/sounds/asplode.ogg
 res/sounds/asplode.wav
 res/sounds/pew.ogg
@@ -25,4 +28,4 @@ res/sounds/smallasplode.wav
 NETWORK:
 *
 
-# hash: 989d3d30c8ff8dbd84926663b55e23097bf36b8a5271715d7f751a530d379bfa
+# hash: 3d82dfa09ed53634b1435f5c2f34eae03a7e88549ff56d350be4ce01c4ad6fb3
