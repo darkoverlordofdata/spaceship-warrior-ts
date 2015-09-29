@@ -26,8 +26,8 @@ module example.templates {
 
       var resources:any = EntitySystem.blackBoard.getEntry('resources');
       var shader = new AbstractFilter(null, resources.parallaxStars_frag.data, {
-        time: {type: "f", value: performance.now()},
-        resolution: {type: "2f", value: [window.innerHeight, window.innerWidth]}
+        time: {type: 'f', value: performance.now()},
+        resolution: {type: '2f', value: [window.innerHeight, window.innerWidth]}
       });
 
       entity.addComponent(Background, shader);
