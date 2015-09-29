@@ -31,9 +31,7 @@ module example.templates {
       entity.addComponent(Sprite, 'bullet', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffffff;
-        var pos = s.position;
-        pos.x = x;
-        pos.y = y;
+        s.position.set(x, y);
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });

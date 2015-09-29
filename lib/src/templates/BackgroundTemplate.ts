@@ -34,9 +34,7 @@ module example.templates {
       entity.addComponent(Position, 0, 0);
       entity.addComponent(Sprite, (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
-        var pos = s.position;
-        pos.x = 0;
-        pos.y = 0;
+        s.position.set(0,0);
         s.filters = [shader];
         s.height = window.innerHeight;
         s.width = window.innerWidth;

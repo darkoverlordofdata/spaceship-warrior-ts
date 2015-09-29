@@ -25,25 +25,22 @@ module example.templates {
    */
   class ExplosionTemplate implements IEntityTemplate {
 
-    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, s:number):artemis.Entity {
+    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, scale:number):artemis.Entity {
 
       entity.addComponent(Position, x, y);
       entity.addComponent(Expires, 0.5);
       entity.addComponent(Sprite, 'explosion', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffd80080;
-        var scale = s.scale;
-        scale.x = scale.y = s/(window.devicePixelRatio*2);
-        var pos = s.position;
-        pos.x = x;
-        pos.y = y;
+        s.scale.set(scale/(window.devicePixelRatio*2));
+        s.position.set(x, y);
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;
-        scaleAnimation.max = s/(window.devicePixelRatio*2);
-        scaleAnimation.min = s/(100*(window.devicePixelRatio*2));
+        scaleAnimation.max = scale/(window.devicePixelRatio*2);
+        scaleAnimation.min = scale/(100*(window.devicePixelRatio*2));
         scaleAnimation.speed = -3.0;
         scaleAnimation.repeat = false;
       });

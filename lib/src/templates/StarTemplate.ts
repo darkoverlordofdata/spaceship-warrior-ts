@@ -31,11 +31,8 @@ module example.templates {
       entity.addComponent(Sprite, 'particle', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffd800ff;
-        var scale = s.scale;
-        scale.x = scale.y = MathUtils.random(0.5, 1);
-        var pos = s.position;
-        pos.x = x;
-        pos.y = y;
+        s.scale.set(MathUtils.random(0.5, 1));
+        s.position.set(x, y);
         s.alpha = MathUtils.nextDouble()*127;
         sprite.layer = Layer.BACKGROUND;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

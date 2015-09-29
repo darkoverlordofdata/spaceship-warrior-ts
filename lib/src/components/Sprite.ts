@@ -5,6 +5,12 @@ module example.components {
   import Pooled = artemis.annotations.Pooled;
   import Point = PIXI.Point;
   import Container = PIXI.Container;
+  import Texture = PIXI.Texture;
+  import ZSprite = PIXI.Sprite;
+  /**
+   * ZSprite!?! Is that SAP?
+   * Careful with that axe, Eugene.
+   */
 
   export enum Layer {
     DEFAULT,
@@ -26,29 +32,24 @@ module example.components {
     public layer:Layer;
 
     public name:string;
-    public sprite_:PIXI.Sprite;
+    public sprite_:ZSprite;
 
     initialize(name?:string|Function, lambda?) {
-      if ('function' === typeof name) {
-        this.sprite_ = new PIXI.Sprite();
-        lambda = name;
-        lambda(this);
-      } else {
-        if (name === undefined) {
-          this.sprite_ = new PIXI.Sprite();
-        } else {
+      switch(typeof name) {
+
+        case 'string':
           this.name = <string>name;
-          this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(`${this.name}.png`));
-          var s = 1 / window.devicePixelRatio;
-          var scale:Point = this.sprite_.scale;
-          scale.x = scale.y = s;
-          var anchor:Point = this.sprite_.anchor;
-          anchor.x = anchor.y = .5;
-          if (lambda !== undefined) {
-            lambda(this);
-          }
-        }
+          var s = this.sprite_ = new ZSprite(Texture.fromFrame(`${this.name}.png`));
+          s.scale.set(1 / window.devicePixelRatio);
+          s.anchor.set(.5, .5);
+          break;
+
+        case 'function':
+          this.sprite_ = new ZSprite();
+          lambda = name;
+          break;
       }
+      if (lambda) lambda(this);
     }
 
     addTo(layer:Container) {

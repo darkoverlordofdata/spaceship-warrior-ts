@@ -44,10 +44,7 @@ module example.systems {
       if (this.pm.has(e)) {
         var position:Position = this.pm.getSafe(e);
         var sprite:Sprite = this.sm.get(e);
-        var pos:Point = sprite.sprite_.position;
-
-        pos.x = position.x;
-        pos.y = position.y;
+        sprite.sprite_.position.set(position.x, position.y);
       }
     }
 

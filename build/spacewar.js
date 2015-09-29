@@ -448,6 +448,12 @@ var example;
     (function (components) {
         var PooledComponent = artemis.PooledComponent;
         var Pooled = artemis.annotations.Pooled;
+        var Texture = PIXI.Texture;
+        var ZSprite = PIXI.Sprite;
+        /**
+         * ZSprite!?! Is that SAP?
+         * Careful with that axe, Eugene.
+         */
         (function (Layer) {
             Layer[Layer["DEFAULT"] = 0] = "DEFAULT";
             Layer[Layer["BACKGROUND"] = 1] = "BACKGROUND";
@@ -464,28 +470,20 @@ var example;
                 _super.apply(this, arguments);
             }
             Sprite.prototype.initialize = function (name, lambda) {
-                if ('function' === typeof name) {
-                    this.sprite_ = new PIXI.Sprite();
-                    lambda = name;
-                    lambda(this);
-                }
-                else {
-                    if (name === undefined) {
-                        this.sprite_ = new PIXI.Sprite();
-                    }
-                    else {
+                switch (typeof name) {
+                    case 'string':
                         this.name = name;
-                        this.sprite_ = new PIXI.Sprite(PIXI.Texture.fromFrame(this.name + ".png"));
-                        var s = 1 / window.devicePixelRatio;
-                        var scale = this.sprite_.scale;
-                        scale.x = scale.y = s;
-                        var anchor = this.sprite_.anchor;
-                        anchor.x = anchor.y = .5;
-                        if (lambda !== undefined) {
-                            lambda(this);
-                        }
-                    }
+                        var s = this.sprite_ = new ZSprite(Texture.fromFrame(this.name + ".png"));
+                        s.scale.set(1 / window.devicePixelRatio);
+                        s.anchor.set(.5, .5);
+                        break;
+                    case 'function':
+                        this.sprite_ = new ZSprite();
+                        lambda = name;
+                        break;
                 }
+                if (lambda)
+                    lambda(this);
             };
             Sprite.prototype.addTo = function (layer) {
                 layer.addChild(this.sprite_);
@@ -584,9 +582,7 @@ var example;
                 entity.addComponent(Position, 0, 0);
                 entity.addComponent(Sprite, function (sprite) {
                     var s = sprite.sprite_;
-                    var pos = s.position;
-                    pos.x = 0;
-                    pos.y = 0;
+                    s.position.set(0, 0);
                     s.filters = [shader];
                     s.height = window.innerHeight;
                     s.width = window.innerWidth;
@@ -636,9 +632,7 @@ var example;
                 entity.addComponent(Sprite, name, function (sprite) {
                     var s = sprite.sprite_;
                     s.tint = 0xff008e;
-                    var pos = s.position;
-                    pos.x = x;
-                    pos.y = y;
+                    s.position.set(x, y);
                     sprite.layer = layer;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -687,24 +681,21 @@ var example;
         var ExplosionTemplate = (function () {
             function ExplosionTemplate() {
             }
-            ExplosionTemplate.prototype.buildEntity = function (entity, world, x, y, s) {
+            ExplosionTemplate.prototype.buildEntity = function (entity, world, x, y, scale) {
                 entity.addComponent(Position, x, y);
                 entity.addComponent(Expires, 0.5);
                 entity.addComponent(Sprite, 'explosion', function (sprite) {
                     var s = sprite.sprite_;
                     s.tint = 0xffd80080;
-                    var scale = s.scale;
-                    scale.x = scale.y = s / (window.devicePixelRatio * 2);
-                    var pos = s.position;
-                    pos.x = x;
-                    pos.y = y;
+                    s.scale.set(scale / (window.devicePixelRatio * 2));
+                    s.position.set(x, y);
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
                 entity.addComponent(ScaleAnimation, function (scaleAnimation) {
                     scaleAnimation.active = true;
-                    scaleAnimation.max = s / (window.devicePixelRatio * 2);
-                    scaleAnimation.min = s / (100 * (window.devicePixelRatio * 2));
+                    scaleAnimation.max = scale / (window.devicePixelRatio * 2);
+                    scaleAnimation.min = scale / (100 * (window.devicePixelRatio * 2));
                     scaleAnimation.speed = -3.0;
                     scaleAnimation.repeat = false;
                 });
@@ -794,11 +785,8 @@ var example;
                 entity.addComponent(Sprite, 'particle', function (sprite) {
                     var s = sprite.sprite_;
                     s.tint = 0xffd800ff;
-                    var scale = s.scale;
-                    scale.x = scale.y = MathUtils.random(0.5, 1);
-                    var pos = s.position;
-                    pos.x = x;
-                    pos.y = y;
+                    s.scale.set(MathUtils.random(0.5, 1));
+                    s.position.set(x, y);
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -856,9 +844,7 @@ var example;
                 entity.addComponent(Sprite, 'bullet', function (sprite) {
                     var s = sprite.sprite_;
                     s.tint = 0xffffff;
-                    var pos = s.position;
-                    pos.x = x;
-                    pos.y = y;
+                    s.position.set(x, y);
                     sprite.layer = Layer.PARTICLES;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -910,9 +896,7 @@ var example;
                 entity.addComponent(Sprite, 'fighter', function (sprite) {
                     var s = sprite.sprite_;
                     s.tint = 0x5dff81;
-                    var pos = s.position;
-                    pos.x = x;
-                    pos.y = y;
+                    s.position.set(x, y);
                     sprite.layer = Layer.ACTORS_3;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
@@ -962,11 +946,8 @@ var example;
                 entity.addComponent(Sprite, 'particle', function (sprite) {
                     var s = sprite.sprite_;
                     s.tint = 0xffd800ff;
-                    var scale = s.scale;
-                    scale.x = scale.y = MathUtils.random(0.5, 1);
-                    var pos = s.position;
-                    pos.x = x;
-                    pos.y = y;
+                    s.scale.set(MathUtils.random(0.5, 1));
+                    s.position.set(x, y);
                     s.alpha = MathUtils.nextDouble() * 127;
                     sprite.layer = Layer.BACKGROUND;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -1885,9 +1866,7 @@ var example;
                 if (this.pm.has(e)) {
                     var position = this.pm.getSafe(e);
                     var sprite = this.sm.get(e);
-                    var pos = sprite.sprite_.position;
-                    pos.x = position.x;
-                    pos.y = position.y;
+                    sprite.sprite_.position.set(position.x, position.y);
                 }
             };
             SpriteRenderSystem.prototype.inserted = function (e) {
