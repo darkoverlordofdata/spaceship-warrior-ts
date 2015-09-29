@@ -1,0 +1,28 @@
+CACHE MANIFEST
+# Time: Tue Sep 29 2015 08:22:10 GMT-0700 (PDT)
+
+
+CACHE:
+res/favicon.png
+res/favicon128.png
+res/favicon64.png
+res/images.json
+res/images.png
+res/logo.png
+res/fonts/hud.fnt
+res/fonts/hud_0.png
+res/fonts/normal.fnt
+res/fonts/normal_0.png
+res/glsl/parallaxStars.frag
+res/sounds/asplode.ogg
+res/sounds/asplode.wav
+res/sounds/pew.ogg
+res/sounds/pew.wav
+res/sounds/smallasplode.ogg
+res/sounds/smallasplode.wav
+
+
+NETWORK:
+*
+
+# hash: 0e38c0dd4cd8190596d5af7bbfa0725af867ddbdd8a361376c8cc5e43989a62a

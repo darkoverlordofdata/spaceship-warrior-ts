@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html manifest="manifest.appcache">
 <head>
     <meta charset="utf-8">
-    <title>Spaceship Warriors [Artemis+PIXI]</title>
+    <title>Spaceship Warriors</title>
     <link rel="icon" type="image/GIF" href="res/favicon.png"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="full-screen" content="yes"/>
@@ -13,11 +13,17 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Artemis+PIXI">
+    <meta name="description" content="Space Warz">
     <meta name="author" content="">
 
-    <link href='http://fonts.googleapis.com/css?family=Orbitron:900' rel='stylesheet' type='text/css'>
     <style>
+        html {
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-image:url(res/logo.png);
+        }
         body {
             padding:0;
             margin: 0;
@@ -33,10 +39,5 @@
     </style>
 </head>
 <body></body>
-<script src="res/loading.js"></script>
-<script src="src/howler.js/howler.min.js"></script>
-<script src="src/pixi.js/pixi.min.js"></script>
-<script src="src/artemists/artemis.min.js"></script>
 <script src="spacewar.js"></script>
-<script src="main.js"></script>
 </html>
