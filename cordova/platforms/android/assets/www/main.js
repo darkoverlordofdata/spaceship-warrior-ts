@@ -1,1 +1,0 @@
-example.core.Game.main();

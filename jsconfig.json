@@ -1,5 +1,8 @@
 {
   "files": [
+    "web/src/howler.js/howler.min.js",
+    "web/src/pixi.js/pixi.min.js",
+    "web/src/artemists/artemis.min.js",
     "web/src/spacewar/core/Constants.js",
     "web/src/spacewar/components/Background.js",
     "web/src/spacewar/components/Bounds.js",
@@ -36,6 +39,7 @@
     "web/src/spacewar/systems/SoundEffectSystem.js",
     "web/src/spacewar/systems/SpriteRenderSystem.js",
     "web/src/spacewar/core/GameSystems.js",
-    "web/src/spacewar/core/Game.js"
+    "web/src/spacewar/core/Game.js",
+    "web/main.js"
   ]
 }

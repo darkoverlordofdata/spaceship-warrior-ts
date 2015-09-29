@@ -1,6 +1,6 @@
 module example.systems {
 
-  import BitmapText = PIXI.extras.BitmapText;
+  import Text = PIXI.Text;
   import Container = PIXI.Container;
   import Point = PIXI.Point;
 
@@ -20,7 +20,7 @@ module example.systems {
 
 
   interface IBitmapText {
-    [key: string]: BitmapText;
+    [key: string]: Text;
   }
 	export class HealthRenderSystem extends EntityProcessingSystem {
 		@Mapper(Position) pm:ComponentMapper<Position>;
@@ -41,8 +41,9 @@ module example.systems {
 
 
     public inserted(e:Entity) {
+      var font = {font: 'bold 20px Audiowide', align: 'left', fill: 'white'};
       var sprite:Sprite = this.sm.get(e);
-      var text:BitmapText = new BitmapText('100%',  {font: '20px Radio Stars'});
+      var text:Text = new Text('100%', font);
       text['layer'] = sprite.layer+.5;
       var s = 1/window.devicePixelRatio;
       var scale = text.scale;
@@ -64,7 +65,7 @@ module example.systems {
         var position:Position = this.pm.get(e);
         var health:Health = this.hm.get(e);
         var bounds:Bounds = this.bm.get(e);
-        var text:BitmapText = this.texts[e.uuid];
+        var text:Text = this.texts[e.uuid];
 
         var percentage:number = Math.round(health.health / health.maximumHealth * 100);
         text.position.x = position.x; // = new PIXI.Point(position.x, position.y);

@@ -12,7 +12,7 @@ module example.systems {
   import VoidEntitySystem = artemis.systems.VoidEntitySystem;
   import Mapper = artemis.annotations.Mapper;
 
-  import BitmapText = PIXI.extras.BitmapText;
+  import Text = PIXI.Text;
   import Container = PIXI.Container;
   import Point = PIXI.Point;
 
@@ -20,10 +20,10 @@ module example.systems {
     @Mapper(Position) pm:ComponentMapper<Position>;
     @Mapper(Sprite) sm:ComponentMapper<Sprite>;
 
-    private framesPerSecond:BitmapText;
-    private activeEntities:BitmapText;
-    private totalCreated:BitmapText;
-    private totalDeleted:BitmapText;
+    private framesPerSecond:Text;
+    private activeEntities:Text;
+    private totalCreated:Text;
+    private totalDeleted:Text;
     private startTime:number=0;
     private frameNumber:number=0;
 
@@ -32,12 +32,13 @@ module example.systems {
     }
 
     public initialize() {
-      var font = {font: '20px Radio Stars', align: 'left'};
+      //Orbitron
+      var font = {font: 'bold 20px Audiowide', align: 'left', fill: 'white'};
 
-      this.framesPerSecond = new BitmapText('FPS: 60', font);
-      this.activeEntities = new BitmapText('Active entities: ', font);
-      this.totalCreated = new BitmapText('Total created: ', font);
-      this.totalDeleted = new BitmapText('Total deleted: ', font);
+      this.framesPerSecond = new Text('FPS: 60', font);
+      this.activeEntities = new Text('Active entities: ', font);
+      this.totalCreated = new Text('Total created: ', font);
+      this.totalDeleted = new Text('Total deleted: ', font);
 
 
       this.framesPerSecond['layer'] = Layer.TEXT;
