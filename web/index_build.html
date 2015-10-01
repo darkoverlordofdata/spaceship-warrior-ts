@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html manifest="manifest.appcachez">
 <head>
     <meta charset="utf-8">
-    <title>Spaceship Warriors</title>
+    <title>Schmup Wars</title>
     <link rel="icon" type="image/GIF" href="res/favicon.png"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="full-screen" content="yes"/>
@@ -13,26 +13,19 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Space Warz">
+    <meta name="description" content="Schmup Wars, oh give me those Schmup Wars...">
     <meta name="author" content="">
 
-    <link href='http://fonts.googleapis.com/css?family=Orbitron:900' rel='stylesheet' type='text/css'>
     <style>
-        /* latin-ext */
-        @font-face {
-            font-family: 'Audiowide';
+        @font-face{
+            font-family:'opendyslexic';
             font-style: normal;
             font-weight: 400;
-            src: local('Audiowide'), local('Audiowide-Regular'), url(res/fonts/Audiowide-ext.woff2) format('woff2');
-            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
-        }
-        /* latin */
-        @font-face {
-            font-family: 'Audiowide';
-            font-style: normal;
-            font-weight: 400;
-            src: local('Audiowide'), local('Audiowide-Regular'), url(res/fonts/Audiowide-latin.woff2) format('woff2');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+            src: local('opendyslexic'),
+            url(res/fonts/OpenDyslexic-Regular.eot) format('embedded-opentype'),
+            url(res/fonts/OpenDyslexic-Regular.woff) format('woff'),
+            url(res/fonts/OpenDyslexic-Regular.otf) format('opentype'),
+            url(res/fonts/OpenDyslexic-Regular.ttf) format('truetype');
         }
         html {
             -webkit-background-size: cover;
@@ -56,5 +49,5 @@
     </style>
 </head>
 <body></body>
-<script src="spacewar.js"></script>
+<script src="spacewar.min.js"></script>
 </html>

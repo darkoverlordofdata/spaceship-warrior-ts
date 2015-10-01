@@ -1,6 +1,9 @@
+/**
+ * Track ships health and display damage
+ */
 module example.systems {
 
-  import Text = PIXI.Text;
+  import BitmapText = PIXI.extras.BitmapText;
   import Container = PIXI.Container;
   import Point = PIXI.Point;
 
@@ -17,10 +20,13 @@ module example.systems {
 	import MathUtils = artemis.utils.MathUtils;
 	import Mapper = artemis.annotations.Mapper;
   import Constants = example.core.Constants;
+  import BlurFilter = PIXI.filters.BlurFilter;
+  import BloomFilter = PIXI.filters.BloomFilter;
+  import InvertFilter = PIXI.filters.InvertFilter;
 
 
   interface IBitmapText {
-    [key: string]: Text;
+    [key: string]: BitmapText;
   }
 	export class HealthRenderSystem extends EntityProcessingSystem {
 		@Mapper(Position) pm:ComponentMapper<Position>;
@@ -30,6 +36,7 @@ module example.systems {
 
     private texts:IBitmapText = {};
     private sprites:Container;
+    private font;
 
     constructor() {
 			super(Aspect.getAspectForAll(Position, Health));
@@ -37,40 +44,45 @@ module example.systems {
 
     public initialize() {
       this.sprites = EntitySystem.blackBoard.getEntry<Container>('sprites');
+      this.font = example.core.font;
     }
 
 
-    public inserted(e:Entity) {
-      var font = {font: 'bold 20px Audiowide', align: 'left', fill: 'white'};
-      var sprite:Sprite = this.sm.get(e);
-      var text:Text = new Text('100%', font);
-      text['layer'] = sprite.layer+.5;
-      var s = 1/window.devicePixelRatio;
-      var scale = text.scale;
-      scale.x = s;
-      scale.y = s;
-      this.sprites.addChild(text);
-      this.texts[e.uuid] = text;
-
-    }
-    protected removed(e:Entity) {
-      this.sprites.removeChild(this.texts[e.uuid]);
-      this.texts[e.uuid] = null;
-      delete this.texts[e.uuid];
-    }
+    //public inserted(e:Entity) {
+    //  var sprite:Sprite = this.sm.get(e);
+    //  var text:BitmapText = new BitmapText('100%', this.font);
+    //  text['layer'] = sprite.layer+.5;
+    //  text.scale.set(1/Constants.RATIO);
+    //  this.sprites.addChild(text);
+    //  this.texts[e.uuid] = text;
+    //
+    //}
+    //protected removed(e:Entity) {
+    //  this.sprites.removeChild(this.texts[e.uuid]);
+    //  this.texts[e.uuid] = null;
+    //  delete this.texts[e.uuid];
+    //}
 
 		public processEach(e:Entity) {
       // update the text element on the sprite
-      if (this.texts[e.uuid]) {
+      //if (this.texts[e.uuid]) {
         var position:Position = this.pm.get(e);
         var health:Health = this.hm.get(e);
-        var bounds:Bounds = this.bm.get(e);
-        var text:Text = this.texts[e.uuid];
-
         var percentage:number = Math.round(health.health / health.maximumHealth * 100);
-        text.position.x = position.x; // = new PIXI.Point(position.x, position.y);
-        text.position.y = position.y; // = new PIXI.Point(position.x, position.y);
-        text.text = `${percentage}%`;
+
+        //var text:BitmapText = this.texts[e.uuid];
+        //
+        //text.position.set(position.x, position.y);
+        //text.text = `${percentage}%`;
+        if (percentage < 100) {
+
+          var sprite:PIXI.Sprite = this.sm.get(e).sprite_;
+          if (!sprite.filters) {
+            sprite.filters = [new InvertFilter()];
+          }
+          sprite.filters[0]['invert'] = (100-percentage)/100;
+        //}
+
       }
 		}
 

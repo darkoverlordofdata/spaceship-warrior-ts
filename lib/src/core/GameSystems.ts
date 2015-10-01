@@ -29,13 +29,16 @@ module example.core {
 
   export class GameSystems {
 
-    private world:World;
+    public world:World;
 
     private spriteRenderSystem:SpriteRenderSystem;
     private healthRenderSystem:HealthRenderSystem;
     private hudRenderSystem:HudRenderSystem;
 
     constructor(webgl:boolean) {
+
+      EntitySystem.blackBoard.setEntry('sys', this);
+      artemis.utils.TrigLUT.init(true);
 
       var world:World = this.world = new artemis.World();
 
@@ -62,6 +65,9 @@ module example.core {
       world.initialize();
 
       world.createEntityFromTemplate('player').addToWorld();
+      for (var life=0; life<3; life++) {
+        world.createEntityFromTemplate('life', life).addToWorld();
+      }
       if (webgl) {
         world.createEntityFromTemplate('background').addToWorld();
       } else {

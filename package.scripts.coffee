@@ -132,7 +132,7 @@ module.exports = (project, options = {}) ->
         cat #{files} | \
           java -jar #{COMPILER_JAR} \
             --compilation_level #{options.compile} \
-            --js_output_file build/#{LIB_NAME}.min,js
+            --js_output_file build/#{LIB_NAME}.min.js
       """
         
     return step
@@ -196,7 +196,7 @@ module.exports = (project, options = {}) ->
 
   ### update the cocos2d project file? ###
   postbuild: """
-    cp -f build/#{LIB_NAME}.js build/web/#{LIB_NAME}.js
+    cp -f build/#{LIB_NAME}.min.js build/web/#{LIB_NAME}.min.js
   """
 
   postclosure: """

@@ -2,6 +2,7 @@ module example.systems {
 
   import Position = example.components.Position;
   import Velocity = example.components.Velocity;
+  import Constants = example.core.Constants;
 
   import Aspect = artemis.Aspect;
   import ComponentMapper = artemis.ComponentMapper;
@@ -21,7 +22,7 @@ module example.systems {
       var position:Position = this.pm.get(e);
       var velocity:Velocity = this.vm.get(e);
 
-      var delta = 1 / window.devicePixelRatio * this.world.delta;;
+      var delta = 1 / Constants.RATIO * this.world.delta;;
       position.x += velocity.vectorX * delta;
       position.y -= velocity.vectorY * delta;
     }

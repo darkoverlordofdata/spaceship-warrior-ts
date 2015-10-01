@@ -18,7 +18,8 @@ module example.systems {
     @Mapper(Bounds) bm:ComponentMapper<Bounds>;
 
     constructor() {
-      super(Aspect.getAspectForAll(Velocity, Position, Health, Bounds), 5);
+      //super(Aspect.getAspectForAll(Velocity, Position, Health, Bounds), 5);
+      super(Aspect.getAspectForAll(Velocity, Position, Bounds).exclude(Player), 5);
     }
 
 

@@ -25,14 +25,14 @@ module example.templates {
       var x = MathUtils.nextInt(Constants.FRAME_WIDTH);
       var y = MathUtils.nextInt(Constants.FRAME_HEIGHT);
 
-      entity.addComponent(Position, x, y);
+      entity.addComponent(Position, ~~x, ~~y);
       entity.addComponent(Velocity, 0, MathUtils.random(-10, -60));
       entity.addComponent(ParallaxStar);
       entity.addComponent(Sprite, 'particle', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffd800ff;
         s.scale.set(MathUtils.random(0.5, 1));
-        s.position.set(x, y);
+        s.position.set(~~x, ~~y);
         s.alpha = MathUtils.nextDouble()*127;
         sprite.layer = Layer.BACKGROUND;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

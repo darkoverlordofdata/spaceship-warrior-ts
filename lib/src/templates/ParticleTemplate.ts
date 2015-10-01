@@ -29,7 +29,7 @@ module example.templates {
       var velocityX = magnitude * Math.cos(radians);
       var velocityY = magnitude * Math.sin(radians);
 
-      entity.addComponent(Position, x, y);
+      entity.addComponent(Position, ~~x, ~~y);
       entity.addComponent(Velocity, velocityX, velocityY);
       entity.addComponent(Expires, 1);
       //0xffd800ff
@@ -37,7 +37,7 @@ module example.templates {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffd800ff;
         s.scale.set(MathUtils.random(0.5, 1));
-        s.position.set(x, y);
+        s.position.set(~~x, ~~y);
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });

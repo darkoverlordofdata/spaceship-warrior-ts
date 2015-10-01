@@ -89,13 +89,13 @@ module example.systems {
       if (destinationX === undefined || destinationY === undefined) return;
 
       position.x = this.mouseVector.x;
-      position.y = this.mouseVector.y;
+      position.y = this.mouseVector.y-60;
 
 
       if (this.shoot) {
         if (this.timeToFire <= 0) {
 
-          var s = ~~(27/window.devicePixelRatio);
+          var s = ~~(24/Constants.RATIO);
           this.world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
           this.world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
           this.timeToFire = PlayerInputSystem.FireRate;

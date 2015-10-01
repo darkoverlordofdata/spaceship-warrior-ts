@@ -27,20 +27,20 @@ module example.templates {
 
     public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number, scale:number):artemis.Entity {
 
-      entity.addComponent(Position, x, y);
+      entity.addComponent(Position, ~~x, ~~y);
       entity.addComponent(Expires, 0.5);
       entity.addComponent(Sprite, 'explosion', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffd80080;
-        s.scale.set(scale/(window.devicePixelRatio*2));
-        s.position.set(x, y);
+        s.scale.set(scale/(Constants.RATIO*2));
+        s.position.set(~~x, ~~y);
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       entity.addComponent(ScaleAnimation, (scaleAnimation:ScaleAnimation) => {
         scaleAnimation.active = true;
-        scaleAnimation.max = scale/(window.devicePixelRatio*2);
-        scaleAnimation.min = scale/(100*(window.devicePixelRatio*2));
+        scaleAnimation.max = scale/(Constants.RATIO*2);
+        scaleAnimation.min = scale/(100*(Constants.RATIO*2));
         scaleAnimation.speed = -3.0;
         scaleAnimation.repeat = false;
       });
@@ -83,5 +83,21 @@ module example.templates {
     }
   }
 
+  /**
+   * Big Explosion
+   */
+  @EntityTemplate('huge')
+  export class HugeExplosionTemplate extends ExplosionTemplate {
+
+    public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number):artemis.Entity {
+      super.buildEntity(entity, world, x, y, Constants.RATIO);
+
+      var sf:SoundEffect = new SoundEffect();
+      sf.effect = EFFECT.ASPLODE;
+      entity.addComponent(sf);
+      return entity;
+
+    }
+  }
 
 }

@@ -26,7 +26,7 @@ module example.systems {
       uniforms.resolution.value = [window.innerHeight, window.innerWidth];
       var value = uniforms.resolution.value;
       sprite.sprite_.height = value[0] = window.innerHeight;
-      sprite.sprite_.width = value[0] = window.innerWidth;
+      sprite.sprite_.width = value[1] = window.innerWidth;
 
     }
   }

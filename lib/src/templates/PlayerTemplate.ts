@@ -12,6 +12,7 @@ module example.templates {
 
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
+  import Health = example.components.Health;
   import Velocity = example.components.Velocity;
   import Bounds = example.components.Bounds;
   import Player = example.components.Player;
@@ -24,17 +25,18 @@ module example.templates {
 
     public buildEntity(entity:Entity, world:World):Entity {
 
-      var x = Constants.FRAME_WIDTH/4;
-      var y = 80;
+      var x = Constants.FRAME_WIDTH/2;
+      var y = Constants.FRAME_HEIGHT-80;
 
-      entity.addComponent(Position, x, y);
+      entity.addComponent(Position, ~~x, ~~y);
       entity.addComponent(Velocity, 0, 0);
       entity.addComponent(Bounds, 43);
+      entity.addComponent(Health, 100, 100);
       entity.addComponent(Player);
       entity.addComponent(Sprite, 'fighter', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0x5dff81;
-        s.position.set(x, y);
+        s.position.set(~~x, ~~y);
         sprite.layer = Layer.ACTORS_3;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });

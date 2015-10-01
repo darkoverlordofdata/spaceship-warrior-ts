@@ -147,7 +147,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>images.json</filename>
+                <filename>../../web/res/images.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -198,7 +198,9 @@
             <filename>images/fighter.png</filename>
             <filename>images/particle.png</filename>
             <filename>images/star.png</filename>
-            <filename>images/starfield.png</filename>
+            <filename>images/life.png</filename>
+            <filename>images/mine1.png</filename>
+            <filename>images/mine2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

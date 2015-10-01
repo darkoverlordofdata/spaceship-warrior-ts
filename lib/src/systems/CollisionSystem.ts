@@ -17,6 +17,9 @@ module example.systems {
   import Constants = example.core.Constants;
   import Groups = example.core.Groups;
   import Mapper = artemis.annotations.Mapper;
+  import Timer = artemis.utils.Timer;
+  import Game = example.core.Game;
+  import GameSystems = example.core.GameSystems;
 
   import EntitySystem = artemis.EntitySystem;
   import ComponentMapper = artemis.ComponentMapper;
@@ -33,6 +36,9 @@ module example.systems {
     @Mapper(Expires) ex:ComponentMapper<Expires>;
 
     private collisionPairs:Bag<CollisionPair>;
+    private groupManager:GroupManager;
+    private timer:Timer;
+    private score;
 
     constructor() {
       super(Aspect.getAspectForAll(Position, Bounds));
@@ -40,35 +46,85 @@ module example.systems {
 
 
     public initialize() {
+      this.score = EntitySystem.blackBoard.getEntry('score');
+      this.groupManager = <GroupManager>this.world.getManager(GroupManager);
       this.collisionPairs = new Bag<CollisionPair>();
-      this.collisionPairs.add(new CollisionPair(this, Groups.PLAYER_BULLETS, Groups.ENEMY_SHIPS,
-        {
 
-          handleCollision: (bullet:Entity, ship:Entity) => {
-            var bp:Position = this.pm.get(bullet);
-            var health:Health = this.hm.get(ship);
-            var position:Position = this.pm.get(ship);
+      /** Check for bullets hitting enemy ship */
+      this.collisionPairs.add(new CollisionPair(this, Groups.PLAYER_BULLETS, Groups.ENEMY_SHIPS, {
 
-            this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
-            for (var i = 0; 4 > i; i++) {
-              this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
-            }
+        handleCollision: (bullet:Entity, ship:Entity) => {
+          var bp:Position = this.pm.get(bullet);
+          var health:Health = this.hm.get(ship);
+          var position:Position = this.pm.get(ship);
 
-            bullet.deleteFromWorld();
-            health.health -= 1;
-            if (health.health < 0) {
-              health.health = 0;
-              ship.deleteFromWorld();
-              this.world.createEntityFromTemplate('big', position.x, position.y).addToWorld();
+          this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
+          for (var i = 0; 4 > i; i++) {
+            this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
+          }
+
+          bullet.deleteFromWorld();
+          health.health -= 1;
+          if (health.health < 0) {
+            this.score.score += health.maximumHealth;
+            health.health = 0;
+            ship.deleteFromWorld();
+            this.world.createEntityFromTemplate('big', position.x, position.y).addToWorld();
+
+          }
+        }
+      }));
+
+      /** Check for enemy mines hitting player ship */
+      this.collisionPairs.add(new CollisionPair(this, Groups.ENEMY_MINES, Groups.PLAYER_SHIP, {
+
+        handleCollision: (mine:Entity, ship:Entity) => {
+          var bp:Position = this.pm.get(mine);
+          var health:Health = this.hm.get(ship);
+          var position:Position = this.pm.get(ship);
+
+          //this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
+          //for (var i = 0; 4 > i; i++) {
+          //  this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
+          //}
+
+          mine.deleteFromWorld();
+          health.health -= (this.hm.get(mine).health*Math.random())+1;
+          if (health.health < 0) {
+            health.health = 0;
+            ship.deleteFromWorld();
+            this.world.createEntityFromTemplate('huge', position.x, position.y).addToWorld();
+            var lives = this.groupManager.getEntities(Groups.PLAYER_LIVES);
+            if (lives.size() === 0) {
+              /** Game Over!! */
+              var game:Game = <Game>EntitySystem.blackBoard.getEntry('game');
+              var sys:GameSystems = <GameSystems>EntitySystem.blackBoard.getEntry('sys');
+              game.sprites.visible = false;
+              game.gameOver.visible = true;
+
+            } else {
+              var life:Entity = lives.get(0);
+              life.deleteFromWorld();
+              this.groupManager.remove(life, Groups.PLAYER_LIVES);
+              this.timer = new Timer(1, true);
+              this.timer.execute = () => {
+                this.world.createEntityFromTemplate('player').addToWorld();
+                this.timer = null;
+              };
+
             }
           }
-        }));
+        }
+      }));
     }
 
 
     protected processEntities(entities:ImmutableBag<Entity>) {
       for (var i = 0; this.collisionPairs.size() > i; i++) {
         this.collisionPairs.get(i).checkForCollisions();
+      }
+      if (this.timer) {
+        this.timer.update(this.world.delta);
       }
     }
 
@@ -117,7 +173,7 @@ module example.systems {
 
       var a = p1.x - p2.x;
       var b = p1.y - p2.y;
-      return Math.sqrt(a * a + b * b) - (b1.radius/window.devicePixelRatio) < (b2.radius/window.devicePixelRatio);
+      return Math.sqrt(a * a + b * b) - (b1.radius/Constants.RATIO) < (b2.radius/Constants.RATIO);
       //return Utils.distance(p1.x, p1.y, p2.x, p2.y)-b1.radius < b2.radius;
     }
   }

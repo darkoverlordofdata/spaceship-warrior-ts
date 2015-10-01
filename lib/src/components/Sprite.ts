@@ -1,5 +1,6 @@
 module example.components {
 
+  import Constants = example.core.Constants;
   import Component = artemis.Component;
   import PooledComponent = artemis.PooledComponent;
   import Pooled = artemis.annotations.Pooled;
@@ -16,6 +17,8 @@ module example.components {
     DEFAULT,
     BACKGROUND,
     TEXT,
+    LIVES,
+    MINES,
     ACTORS_1,
     ACTORS_2,
     ACTORS_3,
@@ -40,7 +43,7 @@ module example.components {
         case 'string':
           this.name = <string>name;
           var s = this.sprite_ = new ZSprite(Texture.fromFrame(`${this.name}.png`));
-          s.scale.set(1 / window.devicePixelRatio);
+          s.scale.set(1 / Constants.RATIO);
           s.anchor.set(.5, .5);
           break;
 

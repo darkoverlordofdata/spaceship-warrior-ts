@@ -2,6 +2,7 @@
   "files": [
     "web/src/howler.js/howler.min.js",
     "web/src/pixi.js/pixi.min.js",
+    "web/src/ezgui/EZGUI.js",
     "web/src/artemists/artemis.min.js",
     "web/src/spacewar/core/Constants.js",
     "web/src/spacewar/components/Background.js",
@@ -10,6 +11,7 @@
     "web/src/spacewar/components/Enemy.js",
     "web/src/spacewar/components/Expires.js",
     "web/src/spacewar/components/Health.js",
+    "web/src/spacewar/components/Mine.js",
     "web/src/spacewar/components/ParallaxStar.js",
     "web/src/spacewar/components/Player.js",
     "web/src/spacewar/components/Position.js",
@@ -20,6 +22,8 @@
     "web/src/spacewar/templates/BackgroundTemplate.js",
     "web/src/spacewar/templates/EnemyShipTemplate.js",
     "web/src/spacewar/templates/ExplosionTemplate.js",
+    "web/src/spacewar/templates/LifeTemplate.js",
+    "web/src/spacewar/templates/MineTemplate.js",
     "web/src/spacewar/templates/ParticleTemplate.js",
     "web/src/spacewar/templates/PlayerBulletTemplate.js",
     "web/src/spacewar/templates/PlayerTemplate.js",
@@ -41,5 +45,5 @@
     "web/src/spacewar/core/GameSystems.js",
     "web/src/spacewar/core/Game.js",
     "web/main.js"
-  ]
+ ]
 }

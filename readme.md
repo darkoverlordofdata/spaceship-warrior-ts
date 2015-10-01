@@ -1,8 +1,8 @@
-spaceship-warrior-ts
-=========================
+# Schmup Wars
 
-a typescript version of [spaceship-warrior-gradle](https://github.com/Flet/spaceship-warrior-gradle)
+alternate version
 
-Requires TypeScript 1.5 and PIXI 3.0.7. Needs WebGL enabled for performance.
+Artwork:
+This work has been released under the Creative Commons BY License: https://creativecommons.org/licenses/by/4.0/
 
-replaced individual stars with a shader for the background.
+By MillionthVector (http://millionthvector.blogspot.de)

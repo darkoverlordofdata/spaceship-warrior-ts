@@ -23,7 +23,7 @@ module example.templates {
 
     public buildEntity(entity:artemis.Entity, world:artemis.World, x:number, y:number):artemis.Entity {
 
-      entity.addComponent(Position, x, y);
+      entity.addComponent(Position, ~~x, ~~y);
       entity.addComponent(Velocity, 0, 800);
       entity.addComponent(Bounds, 5);
       entity.addComponent(Expires, 5);
@@ -31,7 +31,7 @@ module example.templates {
       entity.addComponent(Sprite, 'bullet', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
         s.tint = 0xffffff;
-        s.position.set(x, y);
+        s.position.set(~~x, ~~y);
         sprite.layer = Layer.PARTICLES;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
