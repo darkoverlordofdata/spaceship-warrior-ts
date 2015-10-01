@@ -126,7 +126,7 @@ module example.core {
           id: 'label1',
           text: 'Schmup Warz',
           font: {
-            size: '45px',
+            size: '60px',
             fontWeight: 'bold',
             family: 'OpenDyslexic',
             color: '8f8'

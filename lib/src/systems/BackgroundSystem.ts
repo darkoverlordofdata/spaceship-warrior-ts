@@ -8,6 +8,7 @@ module example.systems {
   import Entity = artemis.Entity;
   import EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
   import Mapper = artemis.annotations.Mapper;
+  import MathUtils = artemis.utils.MathUtils;
 
   export class BackgroundSystem extends EntityProcessingSystem {
     @Mapper(Background) bm:ComponentMapper<Background>;
@@ -22,7 +23,12 @@ module example.systems {
       var sprite = this.sm.get(e);
 
       var uniforms = background.filter.uniforms;
-      uniforms.time.value += this.world.delta;
+      if (uniforms.time.value === 0) {
+        uniforms.time.value = MathUtils.nextInt(1000)+500;
+      } else {
+        uniforms.time.value += this.world.delta;
+      }
+      //uniforms.time.value += this.world.delta;
       uniforms.resolution.value = [window.innerHeight, window.innerWidth];
       var value = uniforms.resolution.value;
       sprite.sprite_.height = value[0] = window.innerHeight;
