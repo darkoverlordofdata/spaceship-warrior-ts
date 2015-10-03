@@ -25,6 +25,7 @@
     "artemists": "git://github.com/darkoverlordofdata/artemists",
     "ezgui":"git://github.com/Ezelia/EZGUI/",
     "howler.js": "~1.1.26",
+    "localstoragedb": "~2.3.1",
     "pixi.js": "~3.0.7"
   },
   "install": {
@@ -37,6 +38,7 @@
       "artemists": "packages/artemists/build/artemis.min.js",
       "ezgui": "packages/ezgui/dist/EZGUI.js",
       "howler.js": "packages/howler.js/howler.min.js",
+      "localstoragedb": "packages/localstoragedb/localstoragedb.min.js",
       "pixi.js": "packages/pixi.js/bin/pixi.min.js"
     }
   }

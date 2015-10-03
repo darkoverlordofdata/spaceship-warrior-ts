@@ -37,7 +37,6 @@ module example.core {
 
     constructor(webgl:boolean) {
 
-      EntitySystem.blackBoard.setEntry('sys', this);
       artemis.utils.TrigLUT.init(true);
 
       var world:World = this.world = new artemis.World();
@@ -86,23 +85,6 @@ module example.core {
       this.healthRenderSystem.process();
       this.hudRenderSystem.process();
     }
-
-    //public dispose() {
-    //  for (var i=0, c=this.world.getEntityManager().getTotalCreated(); i<c; i++) {
-    //    var e = this.world.getEntityManager().getEntity(i);
-    //    var bag =
-    //    this.world.getComponentManager().removeComponent(e, t);
-    //    this.world.deleteEntity(e);
-    //  }
-    //
-    //  s = this.world.getSystems();
-    //  for (i=0; i<this.world.getSystems().size; i++) {
-    //    this.world.deleteSystem(s.get(i));
-    //  }
-    //
-    //  this.world.deleteManager(this.world.getEntityManager());
-    //  this.world.deleteManager(this.world.getComponentManager());
-    //}
   }
 }
 

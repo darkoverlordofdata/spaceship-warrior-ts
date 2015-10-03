@@ -16,16 +16,19 @@ module example.systems {
     private timer2:Timer;
     private timer3:Timer;
     private timer4:Timer;
+    private ai:number=0;
+    private mine:number=0;
+    private offset:number=0;
+    private pos:number[][] = [
+      [20, 20],
+      [50, 20],
+      [80, 20]
+    ];
 
     constructor() {
       super();
 
-      this.timer4 = new Timer(1, true);
-      this.timer4.execute = () => {
-        this.world.createEntityFromTemplate('mine', "mine1", 10, MathUtils.nextInt(Constants.FRAME_WIDTH), MathUtils.nextInt(Constants.FRAME_HEIGHT/4), 0, -MathUtils.nextInt(50)-50, 10).addToWorld();
-        this.world.createEntityFromTemplate('mine', "mine2", 20, MathUtils.nextInt(Constants.FRAME_WIDTH), MathUtils.nextInt(Constants.FRAME_HEIGHT/4), 0, -MathUtils.nextInt(60)-60, 10).addToWorld();
-
-      };
+      this.initializeAi();
 
       this.timer1 = new Timer(2, true);
 
@@ -48,6 +51,27 @@ module example.systems {
         var x = MathUtils.nextInt(Constants.FRAME_WIDTH);
         var y = Constants.FRAME_HEIGHT / 2 - 50;
         this.world.createEntityFromTemplate('enemy', "enemy3", Layer.ACTORS_1, 60, x, y, 0, -20, 70).addToWorld();
+      };
+    }
+
+    /**
+     * Mine AI
+     */
+    public initializeAi() {
+      this.timer4 = new Timer(.85/(window.innerWidth/640), true);
+      this.timer4.execute = () => {
+        this.ai = (this.ai+1)%3;
+        this.mine = (this.mine+1)%2;
+        var m = this.mine+1;
+
+        this.offset+=100;
+        if (this.offset>window.innerWidth) this.offset = 0;
+
+        var v = -MathUtils.nextInt(50)-50;
+        var x = this.offset+this.pos[this.ai][0];
+        var y = this.pos[this.ai][1];
+        this.world.createEntityFromTemplate('mine', `mine${m}`, m*10, x, y, 0, v, 10).addToWorld();
+
       };
     }
 

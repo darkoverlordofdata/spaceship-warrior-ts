@@ -8,12 +8,14 @@ module example.core {
   import Container = PIXI.Container;
   import Sprite = PIXI.Sprite;
   import SystemRenderer = PIXI.SystemRenderer;
-  import GameSystems = example.core.GameSystems;
   import Constants = example.core.Constants;
   import EntitySystem = artemis.EntitySystem;
   import ScaleType = example.core.ScaleType;
   import AbstractFilter = PIXI.AbstractFilter;
   import MathUtils = artemis.utils.MathUtils;
+  import Properties = example.core.Properties;
+  import MenuView = example.views.MenuView;
+  import OptionsView = example.views.OptionsView;
 
   export class Game {
 
@@ -23,16 +25,17 @@ module example.core {
     public systems:GameSystems;
     private delta:number=0;
     private previousTime:number=0;
+    private score = {score: 0};
+    private sfx = {sfx: false};
 
-    public menuScreen;
-    public gameOver;
-
-
+    public options:OptionsView;
+    public menu:MenuView;
 
     /**
      * Load assets and start
      */
     public static main() {
+      Properties.init(Constants.appName, Constants.properties);
       for (var asset in Constants.assets) {
         PIXI.loader.add(asset, Constants.assets[asset]);
       }
@@ -50,7 +53,7 @@ module example.core {
       EntitySystem.blackBoard.setEntry('game', this);
       EntitySystem.blackBoard.setEntry('sprites', this.sprites);
       EntitySystem.blackBoard.setEntry('resources', resources);
-      EntitySystem.blackBoard.setEntry('score', {score:0});
+      EntitySystem.blackBoard.setEntry('score', this.score);
 
       var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
       switch (Constants.SCALE_TYPE) {
@@ -69,49 +72,26 @@ module example.core {
       window.addEventListener('resize', this.resize, true);
       window.onorientationchange = this.resize;
 
-      var theme = 'd16a'; /** DarkoverlordofdatA */
-      EZGUI.Theme.load([`res/ezgui/${theme}-theme/${theme}-theme.json`], () => {
+      EZGUI.Theme.load([`res/ezgui/${Constants.theme}-theme/${Constants.theme}-theme.json`], () => {
 
-        /** Menu */
-        this.menuScreen = EZGUI.create(Constants.guiMenu, theme);
-
-        EZGUI.components.play.on('click', (e) => {
-          this.menuScreen.visible = false;
-          this.gameOver.visible = false;
-          this.sprites.visible = true;
-          this.systems = new GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
-        });
-
-        EZGUI.components.options.on('click', () => {
-        });
-
-        /** display a random fortune cookie */
-        EZGUI.components.slogan.text = Constants.fortune[MathUtils.nextInt(Constants.fortune.length)];
-
-        /** GameOver */
-        this.gameOver = EZGUI.create(Constants.guiGameOver, theme);
-
-        EZGUI.components.again.on('click', (e) => {
-          this.menuScreen.visible = false;
-          this.gameOver.visible = false;
-          this.sprites.visible = true;
-          this.systems = new GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
-        });
-
-
-        this.menuScreen.visible = true;
-        this.gameOver.visible = false;
-        this.sprites.visible = false;
-        this.stage.addChild(this.sprites);
-        this.stage.addChild(this.menuScreen);
-        this.stage.addChild(this.gameOver);
+        this.menu = new MenuView(this);
+        this.options = new OptionsView(this);
+        requestAnimationFrame(this.update);
 
       });
-
-      requestAnimationFrame(this.update);
-
     }
 
+    showLeaderboard(score?:number) {
+      this.options.showLeaderboard(score);
+    }
+
+    /**
+     * Start the game
+     */
+    start() {
+      this.systems = new GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
+
+    }
     /**
      * Game Loop
      * @param time

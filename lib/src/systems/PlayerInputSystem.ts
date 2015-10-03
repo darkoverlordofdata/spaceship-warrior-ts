@@ -42,17 +42,20 @@ module example.systems {
     private onTouchStart = (event) => {
       event = event.changedTouches ? event.changedTouches[0] : event;
 
+      if (Constants.isMobile) {
+
       try {
-        if (document.documentElement['requestFullscreen']) {
-          document.documentElement['requestFullscreen']();
-        } else if (document.documentElement['mozRequestFullScreen']) {
-          document.documentElement['mozRequestFullScreen']();
-        } else if (document.documentElement['webkitRequestFullscreen']) {
-          document.documentElement['webkitRequestFullscreen']();
-        } else if (document.documentElement['msRequestFullscreen']) {
-          document.documentElement['msRequestFullscreen']();
-        }
-      } catch (e) {}
+          if (document.documentElement['requestFullscreen']) {
+            document.documentElement['requestFullscreen']();
+          } else if (document.documentElement['mozRequestFullScreen']) {
+            document.documentElement['mozRequestFullScreen']();
+          } else if (document.documentElement['webkitRequestFullscreen']) {
+            document.documentElement['webkitRequestFullscreen']();
+          } else if (document.documentElement['msRequestFullscreen']) {
+            document.documentElement['msRequestFullscreen']();
+          }
+        } catch (e) {}
+      }
 
       this.shoot = true;
       this.mouseVector = {
@@ -108,7 +111,5 @@ module example.systems {
         }
       }
     }
-
-
   }
 }

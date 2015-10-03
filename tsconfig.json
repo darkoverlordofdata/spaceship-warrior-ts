@@ -12,10 +12,12 @@
     },
 
     "files": [
-      "lib/src/artemis.d.ts",
-      "lib/src/EZGUI.d.ts",
-      "lib/src/pixi.js.d.ts",
-      "lib/src/core/Constants",
+      "lib/src/externals/localStorageDB.d.ts",
+      "lib/src/externals/artemis.d.ts",
+      "lib/src/externals/EZGUI.d.ts",
+      "lib/src/externals/pixi.js.d.ts",
+      "lib/src/core/Constants.ts",
+      "lib/src/core/Properties.ts",
       "lib/src/components/Background.ts",
       "lib/src/components/Bounds.ts",
       "lib/src/components/ColorAnimation.ts",
@@ -53,6 +55,10 @@
       "lib/src/systems/ScaleAnimationSystem.ts",
       "lib/src/systems/SoundEffectSystem.ts",
       "lib/src/systems/SpriteRenderSystem.ts",
+      "lib/src/views/Fonts.ts",
+      "lib/src/views/AbstractView.ts",
+      "lib/src/views/MenuView.ts",
+      "lib/src/views/OptionsView.ts",
       "lib/src/core/GameSystems.ts",
       "lib/src/core/Game.ts"
    ]

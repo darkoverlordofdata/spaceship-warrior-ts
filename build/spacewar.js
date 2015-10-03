@@ -1,3 +1,20 @@
+/*
+	Kailash Nadh (http://nadh.in)
+
+	localStorageDB v 2.3.1
+	A simple database layer for localStorage
+
+	v 2.3.1 Mar 2015
+	v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
+	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+	v 2.1 Nov 2013
+	v 2.0 June 2013
+	v 1.9 Nov 2012
+
+	License	:	MIT License
+*/
+
+!function(t,e){function n(t,n){function r(){E.hasOwnProperty(_)&&delete E[_],x=null}function a(){var t=0;for(var e in x.tables)x.tables.hasOwnProperty(e)&&t++;return t}function i(t){return x.tables[t].fields}function o(t){return x.tables[t]?!0:!1}function f(t){o(t)||D("The table '"+t+"' does not exist")}function u(t,e){var n=!1,r=x.tables[t].fields;for(var a in r)if(r[a]==e){n=!0;break}return n}function l(t,e){x.tables[t]={fields:e,auto_increment:1},x.data[t]={}}function s(t){delete x.tables[t],delete x.data[t]}function c(t){x.tables[t].auto_increment=1,x.data[t]={}}function d(t,e,n){if(x.tables[t].fields=x.tables[t].fields.concat(e),"undefined"!=typeof n)for(var r in x.data[t])if(x.data[t].hasOwnProperty(r))for(var a in e)x.data[t][r][e[a]]="object"==typeof n?n[e[a]]:n}function h(t){var e=0;for(var n in x.data[t])x.data[t].hasOwnProperty(n)&&e++;return e}function v(t,e){return e.ID=x.tables[t].auto_increment,x.data[t][x.tables[t].auto_increment]=e,x.tables[t].auto_increment++,e.ID}function p(t,n,r,a,i,o){for(var f=null,u=[],l=null,s=0;s<n.length;s++)f=n[s],l=x.data[t][f],u.push(k(l));if(i&&i instanceof Array)for(var s=0;s<i.length;s++)u.sort(y(i[s][0],i[s].length>1?i[s][1]:null));if(o&&o instanceof Array){for(var c=0;c<o.length;c++)for(var d={},h=o[c],s=0;s<u.length;s++)u[s]!==e&&(u[s].hasOwnProperty(h)&&d.hasOwnProperty(u[s][h])?delete u[s]:d[u[s][h]]=1);for(var v=[],s=0;s<u.length;s++)u[s]!==e&&v.push(u[s]);u=v}return r=r&&"number"==typeof r?r:null,a=a&&"number"==typeof a?a:null,r&&a?u=u.slice(r,r+a):r?u=u.slice(r):a&&(u=u.slice(r,a)),u}function y(t,e){return function(n,r){var a="string"==typeof n[t]?n[t].toLowerCase():n[t],i="string"==typeof r[t]?r[t].toLowerCase():r[t];return"DESC"===e?a==i?0:i>a?1:-1:a==i?0:a>i?1:-1}}function b(t,e){var n=[],r=!1,a=null;for(var i in x.data[t])if(x.data[t].hasOwnProperty(i)){a=x.data[t][i],r=!0;for(var o in e)if(e.hasOwnProperty(o))if("string"==typeof e[o]){if(a[o].toString().toLowerCase()!=e[o].toString().toLowerCase()){r=!1;break}}else if(a[o]!=e[o]){r=!1;break}r&&n.push(i)}return n}function g(t,e){var n=[],r=null;for(var a in x.data[t])x.data[t].hasOwnProperty(a)&&(r=x.data[t][a],1==e(k(r))&&n.push(a));return n}function m(t){var e=[];for(var n in x.data[t])x.data[t].hasOwnProperty(n)&&e.push(n);return e}function w(t,e){for(var n=0;n<e.length;n++)x.data[t].hasOwnProperty(e[n])&&delete x.data[t][e[n]];return e.length}function O(t,e,n){for(var r="",a=0,i=0;i<e.length;i++){r=e[i];var o=n(k(x.data[t][r]));if(o){delete o.ID;var f=x.data[t][r];for(var u in o)o.hasOwnProperty(u)&&(f[u]=o[u]);x.data[t][r]=j(t,f),a++}}return a}function P(){try{return E.setItem(_,JSON.stringify(x)),!0}catch(t){return!1}}function S(){return JSON.stringify(x)}function D(t){throw new Error(t)}function k(t){var e={};for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);return e}function T(t){return t.toString().match(/[^a-z_0-9]/gi)?!1:!0}function j(t,n){for(var r="",a={},i=0;i<x.tables[t].fields.length;i++)r=x.tables[t].fields[i],n[r]!==e&&(a[r]=n[r]);return a}function I(t,n){for(var r="",a={},i=0;i<x.tables[t].fields.length;i++)r=x.tables[t].fields[i],a[r]=null===n[r]||n[r]===e?null:n[r];return a}var C="db_",_=C+t,q=!1,x=null;try{var E=n==sessionStorage?sessionStorage:localStorage}catch(N){var E=n}return x=E[_],x&&(x=JSON.parse(x))&&x.tables&&x.data||(T(t)?(x={tables:{},data:{}},P(),q=!0):D("The name '"+t+"' contains invalid characters")),{commit:function(){return P()},isNew:function(){return q},drop:function(){r()},serialize:function(){return S()},tableExists:function(t){return o(t)},tableFields:function(t){return i(t)},tableCount:function(){return a()},columnExists:function(t,e){return u(t,e)},createTable:function(t,e){var n=!1;if(T(t))if(this.tableExists(t))D("The table name '"+t+"' already exists.");else{for(var r=!0,a=0;a<e.length;a++)if(!T(e[a])){r=!1;break}if(r){for(var i={},a=0;a<e.length;a++)i[e[a]]=!0;delete i.ID,e=["ID"];for(var o in i)i.hasOwnProperty(o)&&e.push(o);l(t,e),n=!0}else D("One or more field names in the table definition contains invalid characters")}else D("The database name '"+t+"' contains invalid characters.");return n},createTableWithData:function(t,e){("object"!=typeof e||!e.length||e.length<1)&&D("Data supplied isn't in object form. Example: [{k:v,k:v},{k:v,k:v} ..]");var n=Object.keys(e[0]);if(this.createTable(t,n)){this.commit();for(var r=0;r<e.length;r++)v(t,e[r])||D("Failed to insert record: ["+JSON.stringify(e[r])+"]");this.commit()}return!0},dropTable:function(t){f(t),s(t)},truncate:function(t){f(t),c(t)},alterTable:function(t,e,n){var r=!1;if(T(t)){if("object"==typeof e){for(var a=!0,i=0;i<e.length;i++)if(!T(e[i])){a=!1;break}if(a){for(var o={},i=0;i<e.length;i++)o[e[i]]=!0;delete o.ID,e=[];for(var f in o)o.hasOwnProperty(f)&&e.push(f);d(t,e,n),r=!0}else D("One or more field names in the table definition contains invalid characters")}else if("string"==typeof e)if(T(e)){var u=[];u.push(e),d(t,u,n),r=!0}else D("One or more field names in the table definition contains invalid characters")}else D("The database name '"+t+"' contains invalid characters");return r},rowCount:function(t){return f(t),h(t)},insert:function(t,e){return f(t),v(t,I(t,e))},insertOrUpdate:function(t,e,n){f(t);var r=[];if(e?"object"==typeof e?r=b(t,j(t,e)):"function"==typeof e&&(r=g(t,e)):r=m(t),0==r.length)return v(t,I(t,n));for(var a=[],i=0;i<r.length;i++)O(t,r,function(t){return a.push(t.ID),n});return a},update:function(t,e,n){f(t);var r=[];return e?"object"==typeof e?r=b(t,j(t,e)):"function"==typeof e&&(r=g(t,e)):r=m(t),O(t,r,n)},query:function(t,e,n,r,a,i){f(t);var o=[];return e?"object"==typeof e?o=b(t,j(t,e),n,r):"function"==typeof e&&(o=g(t,e,n,r)):o=m(t,n,r),p(t,o,r,n,a,i)},queryAll:function(t,e){return e?this.query(t,e.hasOwnProperty("query")?e.query:null,e.hasOwnProperty("limit")?e.limit:null,e.hasOwnProperty("start")?e.start:null,e.hasOwnProperty("sort")?e.sort:null,e.hasOwnProperty("distinct")?e.distinct:null):this.query(t)},deleteRows:function(t,e){f(t);var n=[];return e?"object"==typeof e?n=b(t,j(t,e)):"function"==typeof e&&(n=g(t,e)):n=m(t),w(t,n)}}}"function"==typeof define&&define.amd?define(function(){return n}):t.localStorageDB=n}(window);
 /*!
  *  howler.js v1.1.26
  *  howlerjs.com
@@ -4177,7 +4194,26 @@ var example;
 (function (example) {
     var core;
     (function (core) {
-        core.font = { font: '20px Radio Stars', align: 'left' };
+        var font45 = {
+            size: '45px',
+            fontWeight: 'bold',
+            family: 'OpenDyslexic',
+            color: '8f8'
+        };
+        var font32 = {
+            size: '32px',
+            fontWeight: 'bold',
+            family: 'OpenDyslexic',
+            color: '8f8'
+        };
+        var font20 = {
+            size: '20px',
+            fontWeight: 'bold',
+            family: 'OpenDyslexic',
+            color: '8f8'
+        };
+        core.font = { font: '18px Skranji', align: 'left' };
+        //export var font = {font: '20px Radio Stars', align: 'left'};
         /**
          * GroupManager Groups
          */
@@ -4198,38 +4234,139 @@ var example;
         var Constants = (function () {
             function Constants() {
             }
+            Constants.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            Constants.appName = "schmupwarz";
             Constants.FRAME_WIDTH = window.innerWidth;
             Constants.FRAME_HEIGHT = window.innerHeight;
             Constants.RATIO = window.devicePixelRatio * .6;
             Constants.SCALE_TYPE = ScaleType.FILL;
+            Constants.properties = {
+                leaderboard: "off",
+                player: "",
+                userId: "",
+                playMusic: "50",
+                playSfx: "50" // soundfx volume
+            };
             Constants.assets = {
                 images_json: 'res/images.json',
-                normal_fnt: 'res/fonts/normal.fnt',
-                hud_fnt: 'res/fonts/hud.fnt',
+                normal_fnt: 'res/ezgui/fonts/normal.fnt',
+                hud_fnt: 'res/ezgui/fonts/hud.fnt',
+                desyrel_fnt: 'res/ezgui/fonts/desyrel.fnt',
+                skranji_fnt: 'res/ezgui/fonts/Skranji-Bold-40.fnt',
                 asplode_ogg: 'res/sounds/asplode.ogg',
                 pew_ogg: 'res/sounds/pew.ogg',
                 smallasplode_ogg: 'res/sounds/smallasplode.ogg',
                 parallaxStars_frag: 'res/glsl/parallaxStars.frag'
             };
-            Constants.gui = {
-                id: 'mainScreen',
-                component: 'MainScreen',
+            Constants.fortune = [
+                '♬ Give me those ♫ Schmup Wars',
+                "I <3 URANUS",
+                'May the Schmup be with you',
+                "Schmup It Good!",
+                "So, at last we meet for the \nfirst time for the last time",
+                "I am your father's brother's \nmother's cousin's ex \nwife's lawyer's father's",
+                'The schmup is strong in this one',
+                "Prepare for ludicrous speed!",
+                "We are not men we are schmup",
+                'Schmup is the path to the\n dark side',
+                "There goes the planet"
+            ];
+            Constants.theme = 'kenney'; //'d16a'; /** DarkoverlordofdatA */
+            Constants.guiOptions = {
+                id: 'gameOver',
+                component: 'Window',
+                padding: 4,
+                position: { x: 0, y: 0 },
                 width: window.innerWidth,
                 height: window.innerHeight,
-                logo: {
-                    height: 200,
-                    transparent: true,
-                    text: 'Schmup Warz',
-                    font: {
-                        size: '45px',
-                        //family: 'Skranji',
-                        family: 'Radio Stars',
-                        color: 'black'
+                layout: [3, 7],
+                children: [
+                    null, {
+                        id: 'label1',
+                        text: 'High Scores',
+                        font: font45,
+                        component: 'Label',
+                        position: 'center',
+                        width: window.innerWidth,
+                        height: 80
+                    }, null,
+                    null, {
+                        id: 'score',
+                        text: '',
+                        font: font45,
+                        component: 'Label',
+                        position: 'center',
+                        width: window.innerWidth,
+                        height: 80
+                    }, null,
+                    { id: 'row1', text: '', font: font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                    { id: 'date1', text: '', font: font20, component: 'Label', position: '', width: 100, height: 100 },
+                    { id: 'score1', text: '', font: font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                    { id: 'row2', text: '', font: font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                    { id: 'date2', text: '', font: font20, component: 'Label', position: '', width: 100, height: 100 },
+                    { id: 'score2', text: '', font: font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                    { id: 'row3', text: '', font: font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                    { id: 'date3', text: '', font: font20, component: 'Label', position: '', width: 100, height: 100 },
+                    { id: 'score3', text: '', font: font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                    { id: 'music', font: font20, text: ' Music', component: 'Checkbox', position: 'left', width: 40, height: 40 },
+                    { id: 'sfx', font: font20, text: ' Sound FX', component: 'Checkbox', position: 'right', width: 40, height: 40 },
+                    null,
+                    null, {
+                        id: 'again',
+                        text: 'Play',
+                        component: 'Button',
+                        position: 'center',
+                        font: font32,
+                        width: window.innerWidth,
+                        height: 80
+                    }, null
+                ]
+            };
+            Constants.guiMenu = {
+                id: 'mainScreen',
+                component: 'Window',
+                padding: 4,
+                position: { x: 0, y: 0 },
+                width: window.innerWidth,
+                height: window.innerHeight,
+                layout: [1, 4],
+                children: [
+                    {
+                        id: 'label1',
+                        text: 'Schmup Warz',
+                        font: font45,
+                        component: 'Label',
+                        position: 'center',
+                        width: window.innerWidth,
+                        height: 80
+                    },
+                    {
+                        id: 'play',
+                        text: 'Play',
+                        font: font20,
+                        component: 'Button',
+                        position: 'center',
+                        width: 200,
+                        height: 50
+                    },
+                    {
+                        id: 'options',
+                        text: 'Options',
+                        font: font20,
+                        component: 'Button',
+                        position: 'center',
+                        width: 200,
+                        height: 50
+                    },
+                    {
+                        id: 'slogan',
+                        text: 'May the schmup be with you',
+                        component: 'Label',
+                        position: 'center',
+                        width: window.innerWidth,
+                        height: 50,
+                        font: font20
                     }
-                },
-                buttons: [
-                    { event: 'play', text: 'Play', width: 300, height: 80 },
-                    { event: 'options', text: 'Options', width: 300, height: 80 }
                 ]
             };
             return Constants;
@@ -4238,6 +4375,115 @@ var example;
     })(core = example.core || (example.core = {}));
 })(example || (example = {}));
 //# sourceMappingURL=Constants.js.map
+/**
+ *--------------------------------------------------------------------+
+ * Properties.ts
+ *--------------------------------------------------------------------+
+ * Copyright DarkOverlordOfData (c) 2015
+ *--------------------------------------------------------------------+
+ *
+ * This file is a part of Schmup Warz
+ *
+ * Schmup Warz is free software; you can copy, modify, and distribute
+ * it under the terms of the MIT License
+ *
+ *--------------------------------------------------------------------+
+ *
+ * Persist properties using LocalStorage
+ *
+ */
+var example;
+(function (example) {
+    var core;
+    (function (core) {
+        var Properties = (function () {
+            function Properties() {
+            }
+            Properties.init = function (name, properties) {
+                if (Properties.db !== null) {
+                    return;
+                }
+                Properties.dbname = name;
+                Properties.properties = properties;
+                Properties.db = new localStorageDB(Properties.dbname);
+                var isNew = Properties.db.isNew();
+                if (isNew) {
+                    Properties.db.createTable("settings", ["name", "value"]);
+                    Properties.db.createTable("leaderboard", ["date", "score"]);
+                    for (var key in Properties.properties) {
+                        var val = Properties.properties[key];
+                        Properties.db.insert("settings", {
+                            name: key,
+                            value: val
+                        });
+                    }
+                    return Properties.db.commit();
+                }
+            };
+            /*
+             * Get Game Property from local storage
+             *
+             * @param property name
+             * @return property value
+             */
+            Properties.get = function (prop) {
+                return Properties.db.queryAll("settings", {
+                    query: {
+                        name: prop
+                    }
+                })[0].value;
+            };
+            Properties.setScore = function (score) {
+                var today = new Date();
+                var mm = (today.getMonth() + 1).toString();
+                if (mm.length === 1)
+                    mm = '0' + mm;
+                var dd = today.getDate().toString();
+                if (dd.length === 1)
+                    dd = '0' + dd;
+                var yyyy = today.getFullYear().toString();
+                var yyyymmdd = yyyy + mm + dd;
+                if (0 === Properties.db.queryAll('leaderboard', { query: { date: yyyymmdd } }).length) {
+                    Properties.db.insert('leaderboard', { date: yyyymmdd, score: score });
+                }
+                else {
+                    Properties.db.update('leaderboard', { date: yyyymmdd }, function (row) {
+                        if (score > row.score) {
+                            row.score = score;
+                        }
+                        return row;
+                    });
+                }
+                Properties.db.commit();
+            };
+            Properties.getLeaderboard = function (count) {
+                return Properties.db.queryAll('leaderboard', { limit: count, sort: [['score', 'DESC']] });
+            };
+            Properties.db = null;
+            Properties.dbname = "";
+            Properties.properties = null;
+            /*
+             * Set Game Property in local storage
+             *
+             * @param property name
+             * @param property value
+             * @return nothing
+             */
+            Properties.set = function (prop, value) {
+                Properties.db.update("settings", {
+                    name: prop
+                }, function (row) {
+                    row.value = "" + value;
+                    return row;
+                });
+                Properties.db.commit();
+            };
+            return Properties;
+        })();
+        core.Properties = Properties;
+    })(core = example.core || (example.core = {}));
+})(example || (example = {}));
+//# sourceMappingURL=Properties.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4798,7 +5044,8 @@ var example;
             BackgroundTemplate.prototype.buildEntity = function (entity, world) {
                 var resources = EntitySystem.blackBoard.getEntry('resources');
                 var shader = new AbstractFilter(null, resources.parallaxStars_frag.data, {
-                    time: { type: 'f', value: performance.now() },
+                    //time: {type: 'f', value: performance.now()},
+                    time: { type: 'f', value: 0 },
                     resolution: { type: '2f', value: [window.innerHeight, window.innerWidth] }
                 });
                 entity.addComponent(Background, shader);
@@ -5336,6 +5583,7 @@ var example;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
+        var MathUtils = artemis.utils.MathUtils;
         var BackgroundSystem = (function (_super) {
             __extends(BackgroundSystem, _super);
             function BackgroundSystem() {
@@ -5345,7 +5593,13 @@ var example;
                 var background = this.bm.get(e);
                 var sprite = this.sm.get(e);
                 var uniforms = background.filter.uniforms;
-                uniforms.time.value += this.world.delta;
+                if (uniforms.time.value === 0) {
+                    uniforms.time.value = MathUtils.nextInt(1000) + 500;
+                }
+                else {
+                    uniforms.time.value += this.world.delta;
+                }
+                //uniforms.time.value += this.world.delta;
                 uniforms.resolution.value = [window.innerHeight, window.innerWidth];
                 var value = uniforms.resolution.value;
                 sprite.sprite_.height = value[0] = window.innerHeight;
@@ -5390,6 +5644,7 @@ var example;
         var Groups = example.core.Groups;
         var Mapper = artemis.annotations.Mapper;
         var Timer = artemis.utils.Timer;
+        var Properties = example.core.Properties;
         var EntitySystem = artemis.EntitySystem;
         var Aspect = artemis.Aspect;
         var GroupManager = artemis.managers.GroupManager;
@@ -5429,10 +5684,6 @@ var example;
                         var bp = _this.pm.get(mine);
                         var health = _this.hm.get(ship);
                         var position = _this.pm.get(ship);
-                        //this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
-                        //for (var i = 0; 4 > i; i++) {
-                        //  this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
-                        //}
                         mine.deleteFromWorld();
                         health.health -= (_this.hm.get(mine).health * Math.random()) + 1;
                         if (health.health < 0) {
@@ -5441,6 +5692,25 @@ var example;
                             _this.world.createEntityFromTemplate('huge', position.x, position.y).addToWorld();
                             var lives = _this.groupManager.getEntities(Groups.PLAYER_LIVES);
                             if (lives.size() === 0) {
+                                /** Game Over!! */
+                                var game = EntitySystem.blackBoard.getEntry('game');
+                                /** Update leaderboard */
+                                game.sprites.visible = false;
+                                game.gameOver.visible = true;
+                                var score = _this.score.score;
+                                if (score > 0) {
+                                    Properties.setScore(score);
+                                    EZGUI.components.score.text = score;
+                                }
+                                var data = Properties.getLeaderboard(3);
+                                for (var k in data) {
+                                    var row = data[k];
+                                    var i = parseInt(k) + 1;
+                                    var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
+                                    EZGUI.components[("row" + i)].text = '#' + i;
+                                    EZGUI.components[("date" + i)].text = mmddyyyy;
+                                    EZGUI.components[("score" + i)].text = row.score;
+                                }
                             }
                             else {
                                 var life = lives.get(0);
@@ -5511,7 +5781,6 @@ var example;
                 var a = p1.x - p2.x;
                 var b = p1.y - p2.y;
                 return Math.sqrt(a * a + b * b) - (b1.radius / Constants.RATIO) < (b2.radius / Constants.RATIO);
-                //return Utils.distance(p1.x, p1.y, p2.x, p2.y)-b1.radius < b2.radius;
             };
             return CollisionPair;
         })();
@@ -5593,11 +5862,15 @@ var example;
             function EntitySpawningTimerSystem() {
                 var _this = this;
                 _super.call(this);
-                this.timer4 = new Timer(1, true);
-                this.timer4.execute = function () {
-                    _this.world.createEntityFromTemplate('mine', "mine1", 10, MathUtils.nextInt(Constants.FRAME_WIDTH), MathUtils.nextInt(Constants.FRAME_HEIGHT / 4), 0, -MathUtils.nextInt(50) - 50, 10).addToWorld();
-                    _this.world.createEntityFromTemplate('mine', "mine2", 20, MathUtils.nextInt(Constants.FRAME_WIDTH), MathUtils.nextInt(Constants.FRAME_HEIGHT / 4), 0, -MathUtils.nextInt(60) - 60, 10).addToWorld();
-                };
+                this.ai = 0;
+                this.mine = 0;
+                this.offset = 0;
+                this.pos = [
+                    [20, 20],
+                    [50, 20],
+                    [80, 20]
+                ];
+                this.initializeAi();
                 this.timer1 = new Timer(2, true);
                 this.timer1.execute = function () {
                     _this.world.createEntityFromTemplate('enemy', "enemy1", Layer.ACTORS_3, 10, MathUtils.nextInt(Constants.FRAME_WIDTH), Constants.FRAME_HEIGHT / 2 - 200, 0, -40, 20).addToWorld();
@@ -5615,6 +5888,25 @@ var example;
                     _this.world.createEntityFromTemplate('enemy', "enemy3", Layer.ACTORS_1, 60, x, y, 0, -20, 70).addToWorld();
                 };
             }
+            /**
+             * Mine AI
+             */
+            EntitySpawningTimerSystem.prototype.initializeAi = function () {
+                var _this = this;
+                this.timer4 = new Timer(.85 / (window.innerWidth / 640), true);
+                this.timer4.execute = function () {
+                    _this.ai = (_this.ai + 1) % 3;
+                    _this.mine = (_this.mine + 1) % 2;
+                    var m = _this.mine + 1;
+                    _this.offset += 100;
+                    if (_this.offset > window.innerWidth)
+                        _this.offset = 0;
+                    var v = -MathUtils.nextInt(50) - 50;
+                    var x = _this.offset + _this.pos[_this.ai][0];
+                    var y = _this.pos[_this.ai][1];
+                    _this.world.createEntityFromTemplate('mine', "mine" + m, m * 10, x, y, 0, v, 10).addToWorld();
+                };
+            };
             EntitySpawningTimerSystem.prototype.processSystem = function () {
                 var rnd = Math.random();
                 if (rnd < .5)
@@ -5995,21 +6287,23 @@ var example;
                 this.timeToFire = 0;
                 this.onTouchStart = function (event) {
                     event = event.changedTouches ? event.changedTouches[0] : event;
-                    try {
-                        if (document.documentElement['requestFullscreen']) {
-                            document.documentElement['requestFullscreen']();
+                    if (Constants.isMobile) {
+                        try {
+                            if (document.documentElement['requestFullscreen']) {
+                                document.documentElement['requestFullscreen']();
+                            }
+                            else if (document.documentElement['mozRequestFullScreen']) {
+                                document.documentElement['mozRequestFullScreen']();
+                            }
+                            else if (document.documentElement['webkitRequestFullscreen']) {
+                                document.documentElement['webkitRequestFullscreen']();
+                            }
+                            else if (document.documentElement['msRequestFullscreen']) {
+                                document.documentElement['msRequestFullscreen']();
+                            }
                         }
-                        else if (document.documentElement['mozRequestFullScreen']) {
-                            document.documentElement['mozRequestFullScreen']();
-                        }
-                        else if (document.documentElement['webkitRequestFullscreen']) {
-                            document.documentElement['webkitRequestFullscreen']();
-                        }
-                        else if (document.documentElement['msRequestFullscreen']) {
-                            document.documentElement['msRequestFullscreen']();
-                        }
+                        catch (e) { }
                     }
-                    catch (e) { }
                     _this.shoot = true;
                     _this.mouseVector = {
                         x: parseInt(event.clientX),
@@ -6407,6 +6701,8 @@ var example;
         var Constants = example.core.Constants;
         var EntitySystem = artemis.EntitySystem;
         var ScaleType = example.core.ScaleType;
+        var MathUtils = artemis.utils.MathUtils;
+        var Properties = example.core.Properties;
         var Game = (function () {
             /**
              * Create the game instance
@@ -6416,6 +6712,7 @@ var example;
                 var _this = this;
                 this.delta = 0;
                 this.previousTime = 0;
+                this.score = { score: 0 };
                 /**
                  * Game Loop
                  * @param time
@@ -6446,9 +6743,10 @@ var example;
                 };
                 this.stage = new Container();
                 this.sprites = new Container();
+                EntitySystem.blackBoard.setEntry('game', this);
                 EntitySystem.blackBoard.setEntry('sprites', this.sprites);
                 EntitySystem.blackBoard.setEntry('resources', resources);
-                EntitySystem.blackBoard.setEntry('score', { score: 0 });
+                EntitySystem.blackBoard.setEntry('score', this.score);
                 var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, { backgroundColor: 0x000000 });
                 switch (Constants.SCALE_TYPE) {
                     case ScaleType.FILL:
@@ -6464,19 +6762,61 @@ var example;
                 document.body.appendChild(this.renderer.view);
                 window.addEventListener('resize', this.resize, true);
                 window.onorientationchange = this.resize;
-                var theme = 'd16a'; /** DarkoverlordofdatA */
-                EZGUI.Theme.load([("res/ezgui/" + theme + "-theme/" + theme + "-theme.json")], function () {
-                    _this.menuScreen = EZGUI.create(Constants.gui, theme);
-                    _this.menuScreen.on('play', function (event, btn) {
-                        _this.menuScreen.visible = false;
+                EZGUI.Theme.load([("res/ezgui/" + Constants.theme + "-theme/" + Constants.theme + "-theme.json")], function () {
+                    /** Menu */
+                    _this.menuScreen = EZGUI.create(Constants.guiMenu, Constants.theme);
+                    EZGUI.components.play.on('click', function (e) {
+                        _this.stage.removeChild(_this.menuScreen);
+                        //this.menuScreen.visible = false;
+                        _this.gameOver.width = window.innerWidth;
+                        _this.gameOver.height = window.innerHeight;
+                        _this.gameOver.visible = false;
                         _this.sprites.visible = true;
                         _this.systems = new GameSystems(_this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
                     });
-                    _this.menuScreen.on('options', function (event, btn) {
+                    EZGUI.components.options.on('click', function () {
+                        _this.sprites.visible = false;
+                        _this.gameOver.visible = true;
+                        var data = Properties.getLeaderboard(3);
+                        for (var k in data) {
+                            var row = data[k];
+                            var i = parseInt(k) + 1;
+                            var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
+                            EZGUI.components[("row" + i)].text = '#' + i;
+                            EZGUI.components[("date" + i)].text = mmddyyyy;
+                            EZGUI.components[("score" + i)].text = row.score;
+                        }
                     });
-                    _this.sprites.visible = false;
-                    _this.stage.addChild(_this.menuScreen);
+                    /** display a random fortune cookie */
+                    EZGUI.components.slogan.text = Constants.fortune[MathUtils.nextInt(Constants.fortune.length)];
+                    /** GameOver */
+                    _this.gameOver = EZGUI.create(Constants.guiOptions, Constants.theme);
+                    EZGUI.components.music.on('click', function (e) {
+                        //console.log('music', e.target.checked);
+                    });
+                    EZGUI.components.sfx.on('click', function (e) {
+                        //console.log('sfx', e.target.checked);
+                    });
+                    EZGUI.components.again.on('click', function (e) {
+                        /**
+                         * TODO: We need world.dispose();
+                         *
+                         * For now, just reload and skip the menu.
+                         *
+                         */
+                        window.localStorage.setItem('skipmenu', 'true');
+                        window.location.reload(false);
+                    });
+                    var auto = Boolean(window.localStorage.getItem('skipmenu'));
+                    window.localStorage.removeItem('skipmenu');
+                    _this.menuScreen.visible = !auto;
+                    _this.gameOver.visible = false;
+                    _this.sprites.visible = auto;
                     _this.stage.addChild(_this.sprites);
+                    _this.stage.addChild(_this.menuScreen);
+                    _this.stage.addChild(_this.gameOver);
+                    if (auto)
+                        _this.systems = new GameSystems(_this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
                 });
                 requestAnimationFrame(this.update);
             }
@@ -6484,6 +6824,7 @@ var example;
              * Load assets and start
              */
             Game.main = function () {
+                Properties.init(Constants.appName, Constants.properties);
                 for (var asset in Constants.assets) {
                     PIXI.loader.add(asset, Constants.assets[asset]);
                 }

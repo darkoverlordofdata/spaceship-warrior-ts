@@ -20,6 +20,7 @@ module example.systems {
   import Timer = artemis.utils.Timer;
   import Game = example.core.Game;
   import GameSystems = example.core.GameSystems;
+  import Properties = example.core.Properties;
 
   import EntitySystem = artemis.EntitySystem;
   import ComponentMapper = artemis.ComponentMapper;
@@ -83,13 +84,8 @@ module example.systems {
           var health:Health = this.hm.get(ship);
           var position:Position = this.pm.get(ship);
 
-          //this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
-          //for (var i = 0; 4 > i; i++) {
-          //  this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
-          //}
-
           mine.deleteFromWorld();
-          health.health -= (this.hm.get(mine).health*Math.random())+1;
+          health.health -= this.hm.get(mine).health;
           if (health.health < 0) {
             health.health = 0;
             ship.deleteFromWorld();
@@ -98,9 +94,7 @@ module example.systems {
             if (lives.size() === 0) {
               /** Game Over!! */
               var game:Game = <Game>EntitySystem.blackBoard.getEntry('game');
-              var sys:GameSystems = <GameSystems>EntitySystem.blackBoard.getEntry('sys');
-              game.sprites.visible = false;
-              game.gameOver.visible = true;
+              game.showLeaderboard(this.score.score);
 
             } else {
               var life:Entity = lives.get(0);
@@ -111,7 +105,6 @@ module example.systems {
                 this.world.createEntityFromTemplate('player').addToWorld();
                 this.timer = null;
               };
-
             }
           }
         }
@@ -174,7 +167,6 @@ module example.systems {
       var a = p1.x - p2.x;
       var b = p1.y - p2.y;
       return Math.sqrt(a * a + b * b) - (b1.radius/Constants.RATIO) < (b2.radius/Constants.RATIO);
-      //return Utils.distance(p1.x, p1.y, p2.x, p2.y)-b1.radius < b2.radius;
     }
   }
 
