@@ -4194,24 +4194,6 @@ var example;
 (function (example) {
     var core;
     (function (core) {
-        var font45 = {
-            size: '45px',
-            fontWeight: 'bold',
-            family: 'OpenDyslexic',
-            color: '8f8'
-        };
-        var font32 = {
-            size: '32px',
-            fontWeight: 'bold',
-            family: 'OpenDyslexic',
-            color: '8f8'
-        };
-        var font20 = {
-            size: '20px',
-            fontWeight: 'bold',
-            family: 'OpenDyslexic',
-            color: '8f8'
-        };
         core.font = { font: '18px Skranji', align: 'left' };
         //export var font = {font: '20px Radio Stars', align: 'left'};
         /**
@@ -4244,8 +4226,8 @@ var example;
                 leaderboard: "off",
                 player: "",
                 userId: "",
-                playMusic: "50",
-                playSfx: "50" // soundfx volume
+                playMusic: "true",
+                playSfx: "true" // soundfx volume
             };
             Constants.assets = {
                 images_json: 'res/images.json',
@@ -4272,103 +4254,6 @@ var example;
                 "There goes the planet"
             ];
             Constants.theme = 'kenney'; //'d16a'; /** DarkoverlordofdatA */
-            Constants.guiOptions = {
-                id: 'gameOver',
-                component: 'Window',
-                padding: 4,
-                position: { x: 0, y: 0 },
-                width: window.innerWidth,
-                height: window.innerHeight,
-                layout: [3, 7],
-                children: [
-                    null, {
-                        id: 'label1',
-                        text: 'High Scores',
-                        font: font45,
-                        component: 'Label',
-                        position: 'center',
-                        width: window.innerWidth,
-                        height: 80
-                    }, null,
-                    null, {
-                        id: 'score',
-                        text: '',
-                        font: font45,
-                        component: 'Label',
-                        position: 'center',
-                        width: window.innerWidth,
-                        height: 80
-                    }, null,
-                    { id: 'row1', text: '', font: font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                    { id: 'date1', text: '', font: font20, component: 'Label', position: '', width: 100, height: 100 },
-                    { id: 'score1', text: '', font: font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                    { id: 'row2', text: '', font: font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                    { id: 'date2', text: '', font: font20, component: 'Label', position: '', width: 100, height: 100 },
-                    { id: 'score2', text: '', font: font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                    { id: 'row3', text: '', font: font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                    { id: 'date3', text: '', font: font20, component: 'Label', position: '', width: 100, height: 100 },
-                    { id: 'score3', text: '', font: font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                    { id: 'music', font: font20, text: ' Music', component: 'Checkbox', position: 'left', width: 40, height: 40 },
-                    { id: 'sfx', font: font20, text: ' Sound FX', component: 'Checkbox', position: 'right', width: 40, height: 40 },
-                    null,
-                    null, {
-                        id: 'again',
-                        text: 'Play',
-                        component: 'Button',
-                        position: 'center',
-                        font: font32,
-                        width: window.innerWidth,
-                        height: 80
-                    }, null
-                ]
-            };
-            Constants.guiMenu = {
-                id: 'mainScreen',
-                component: 'Window',
-                padding: 4,
-                position: { x: 0, y: 0 },
-                width: window.innerWidth,
-                height: window.innerHeight,
-                layout: [1, 4],
-                children: [
-                    {
-                        id: 'label1',
-                        text: 'Schmup Warz',
-                        font: font45,
-                        component: 'Label',
-                        position: 'center',
-                        width: window.innerWidth,
-                        height: 80
-                    },
-                    {
-                        id: 'play',
-                        text: 'Play',
-                        font: font20,
-                        component: 'Button',
-                        position: 'center',
-                        width: 200,
-                        height: 50
-                    },
-                    {
-                        id: 'options',
-                        text: 'Options',
-                        font: font20,
-                        component: 'Button',
-                        position: 'center',
-                        width: 200,
-                        height: 50
-                    },
-                    {
-                        id: 'slogan',
-                        text: 'May the schmup be with you',
-                        component: 'Label',
-                        position: 'center',
-                        width: window.innerWidth,
-                        height: 50,
-                        font: font20
-                    }
-                ]
-            };
             return Constants;
         })();
         core.Constants = Constants;
@@ -5644,7 +5529,6 @@ var example;
         var Groups = example.core.Groups;
         var Mapper = artemis.annotations.Mapper;
         var Timer = artemis.utils.Timer;
-        var Properties = example.core.Properties;
         var EntitySystem = artemis.EntitySystem;
         var Aspect = artemis.Aspect;
         var GroupManager = artemis.managers.GroupManager;
@@ -5685,7 +5569,7 @@ var example;
                         var health = _this.hm.get(ship);
                         var position = _this.pm.get(ship);
                         mine.deleteFromWorld();
-                        health.health -= (_this.hm.get(mine).health * Math.random()) + 1;
+                        health.health -= _this.hm.get(mine).health;
                         if (health.health < 0) {
                             health.health = 0;
                             ship.deleteFromWorld();
@@ -5694,23 +5578,7 @@ var example;
                             if (lives.size() === 0) {
                                 /** Game Over!! */
                                 var game = EntitySystem.blackBoard.getEntry('game');
-                                /** Update leaderboard */
-                                game.sprites.visible = false;
-                                game.gameOver.visible = true;
-                                var score = _this.score.score;
-                                if (score > 0) {
-                                    Properties.setScore(score);
-                                    EZGUI.components.score.text = score;
-                                }
-                                var data = Properties.getLeaderboard(3);
-                                for (var k in data) {
-                                    var row = data[k];
-                                    var i = parseInt(k) + 1;
-                                    var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
-                                    EZGUI.components[("row" + i)].text = '#' + i;
-                                    EZGUI.components[("date" + i)].text = mmddyyyy;
-                                    EZGUI.components[("score" + i)].text = row.score;
-                                }
+                                game.showLeaderboard(_this.score.score);
                             }
                             else {
                                 var life = lives.get(0);
@@ -6502,18 +6370,33 @@ var example;
         var Aspect = artemis.Aspect;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
+        var EntitySystem = artemis.EntitySystem;
         var SoundEffectSystem = (function (_super) {
             __extends(SoundEffectSystem, _super);
             function SoundEffectSystem() {
                 _super.call(this, Aspect.getAspectForAll(SoundEffect));
+                this.playSfx = false;
             }
             SoundEffectSystem.prototype.initialize = function () {
                 var Howl = window['Howl'];
                 this.pew = new Howl({ urls: ['res/sounds/pew.ogg'] });
                 this.asplode = new Howl({ urls: ['res/sounds/asplode.ogg'] });
                 this.smallasplode = new Howl({ urls: ['res/sounds/smallasplode.ogg'] });
+                this.playSfx = EntitySystem.blackBoard.getEntry('playSfx');
+                //var trigger:SimpleTrigger = new SimpleTrigger('playSfx', this.condition, this.onChange);
+                //EntitySystem.blackBoard.addTrigger(trigger);
             };
+            //private onChange(t:TriggerStateType) {
+            //  console.log('changed');
+            //
+            //}
+            //private condition(b:BlackBoard, t:TriggerStateType):boolean {
+            //  console.log('condition');
+            //  return true;
+            //}
             SoundEffectSystem.prototype.processEach = function (e) {
+                if (!this.playSfx)
+                    return;
                 var soundEffect = this.se.get(e);
                 switch (soundEffect.effect) {
                     case EFFECT.PEW:
@@ -6687,6 +6570,308 @@ var example;
     })(core = example.core || (example.core = {}));
 })(example || (example = {}));
 //# sourceMappingURL=GameSystems.js.map
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var Fonts = (function () {
+            function Fonts() {
+            }
+            Fonts.font45 = {
+                size: '45px',
+                fontWeight: 'bold',
+                family: 'OpenDyslexic',
+                color: '8f8'
+            };
+            Fonts.font32 = {
+                size: '32px',
+                fontWeight: 'bold',
+                family: 'OpenDyslexic',
+                color: '8f8'
+            };
+            Fonts.font20 = {
+                size: '20px',
+                fontWeight: 'bold',
+                family: 'OpenDyslexic',
+                color: '8f8'
+            };
+            return Fonts;
+        })();
+        views.Fonts = Fonts;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=Fonts.js.map
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var Constants = example.core.Constants;
+        var AbstractView = (function () {
+            function AbstractView(game, options) {
+                if (options === void 0) { options = {}; }
+                this.game = game;
+                for (var k in options) {
+                    this[k] = options[k];
+                }
+                this.view = EZGUI.create(this, Constants.theme);
+                this.initialize();
+            }
+            Object.defineProperty(AbstractView.prototype, "visible", {
+                get: function () {
+                    return this.view.visible;
+                },
+                set: function (value) {
+                    this.view.visible = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            AbstractView.prototype.initialize = function () { };
+            return AbstractView;
+        })();
+        views.AbstractView = AbstractView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=AbstractView.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var Fonts = example.views.Fonts;
+        var Constants = example.core.Constants;
+        var MathUtils = artemis.utils.MathUtils;
+        var AbstractView = example.views.AbstractView;
+        var MenuView = (function (_super) {
+            __extends(MenuView, _super);
+            function MenuView(game) {
+                _super.call(this, game, {
+                    id: 'mainScreen',
+                    component: 'Window',
+                    padding: 4,
+                    position: { x: 0, y: 0 },
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    layout: [1, 4],
+                    children: [
+                        {
+                            id: 'optionsView_label1',
+                            text: 'Schmup Warz',
+                            font: Fonts.font45,
+                            component: 'Label',
+                            position: 'center',
+                            width: window.innerWidth,
+                            height: 80
+                        },
+                        {
+                            id: 'menuView_play',
+                            text: 'Play',
+                            font: Fonts.font20,
+                            component: 'Button',
+                            position: 'center',
+                            width: 200,
+                            height: 50
+                        },
+                        {
+                            id: 'menuView_options',
+                            text: 'Options',
+                            font: Fonts.font20,
+                            component: 'Button',
+                            position: 'center',
+                            width: 200,
+                            height: 50
+                        },
+                        {
+                            id: 'menuView_slogan',
+                            text: 'May the schmup be with you',
+                            component: 'Label',
+                            position: 'center',
+                            width: window.innerWidth,
+                            height: 50,
+                            font: Fonts.font20
+                        }
+                    ]
+                });
+                this.game = game;
+            }
+            /**
+             * Wire up the events
+             */
+            MenuView.prototype.initialize = function () {
+                var _this = this;
+                EZGUI.components.menuView_play.on('click', function (e) { return _this.playOnClick(e); });
+                EZGUI.components.menuView_options.on('click', function (e) { return _this.optionsOnClick(e); });
+                EZGUI.components.menuView_slogan.text = Constants.fortune[MathUtils.nextInt(Constants.fortune.length)];
+            };
+            MenuView.prototype.playOnClick = function (e) {
+                this.game.stage.removeChild(this.view);
+                this.game.options.width = window.innerWidth;
+                this.game.options.height = window.innerHeight;
+                this.game.options.visible = false;
+                this.game.sprites.visible = true;
+                this.game.start();
+            };
+            MenuView.prototype.optionsOnClick = function (e) {
+                this.game.showLeaderboard();
+            };
+            return MenuView;
+        })(AbstractView);
+        views.MenuView = MenuView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=MenuView.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var Fonts = example.views.Fonts;
+        var EntitySystem = artemis.EntitySystem;
+        var Properties = example.core.Properties;
+        var AbstractView = example.views.AbstractView;
+        var OptionsView = (function (_super) {
+            __extends(OptionsView, _super);
+            function OptionsView(game) {
+                _super.call(this, game, {
+                    id: 'gameOver',
+                    component: 'Window',
+                    padding: 4,
+                    position: { x: 0, y: 0 },
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    layout: [3, 8],
+                    children: [
+                        null, {
+                            id: 'optionsView_label1',
+                            text: 'High Scores',
+                            font: Fonts.font45,
+                            component: 'Label',
+                            position: 'center',
+                            width: window.innerWidth,
+                            height: 80
+                        }, null,
+                        null, {
+                            id: 'optionsView_score',
+                            text: '',
+                            font: Fonts.font45,
+                            component: 'Label',
+                            position: 'center',
+                            width: window.innerWidth,
+                            height: 80
+                        }, null,
+                        { id: 'optionsView_row1', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                        { id: 'optionsView_date1', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
+                        { id: 'optionsView_score1', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                        { id: 'optionsView_row2', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                        { id: 'optionsView_date2', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
+                        { id: 'optionsView_score2', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                        { id: 'optionsView_row3', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                        { id: 'optionsView_date3', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
+                        { id: 'optionsView_score3', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                        { id: 'optionsView_row4', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
+                        { id: 'optionsView_date4', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
+                        { id: 'optionsView_score4', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
+                        { id: 'optionsView_music', font: Fonts.font20, component: 'Checkbox', text: ' Music', position: 'left', width: 40, height: 40 },
+                        { id: 'optionsView_sfx', font: Fonts.font20, component: 'Checkbox', text: ' Sound FX', position: 'right', width: 40, height: 40 },
+                        null,
+                        null, {
+                            id: 'optionsView_again',
+                            text: 'Play',
+                            component: 'Button',
+                            position: 'center',
+                            font: Fonts.font32,
+                            width: window.innerWidth,
+                            height: 80
+                        }, null
+                    ]
+                });
+                this.game = game;
+            }
+            /**
+             * Load data, Wire up the events
+             */
+            OptionsView.prototype.initialize = function () {
+                var _this = this;
+                var game = this.game;
+                var playSfx = EZGUI.components.optionsView_sfx.checked = Properties.get('playSfx') === 'true';
+                EntitySystem.blackBoard.setEntry('playSfx', playSfx);
+                var playMusic = EZGUI.components.optionsView_music.checked = Properties.get('playMusic') === 'true';
+                EntitySystem.blackBoard.setEntry('playMusic', playMusic);
+                var auto = Boolean(window.localStorage.getItem('skipmenu'));
+                window.localStorage.removeItem('skipmenu');
+                this.visible = false;
+                game.menu.visible = !auto;
+                game.sprites.visible = auto;
+                game.stage.addChild(game.sprites);
+                game.stage.addChild(game.menu.view);
+                game.stage.addChild(this.view);
+                EZGUI.components.optionsView_sfx.on('click', function (e) { return _this.sfxOnClick(e); });
+                EZGUI.components.optionsView_music.on('click', function (e) { return _this.playOnClick(e); });
+                EZGUI.components.optionsView_again.on('click', function (e) { return _this.againOnClick(e); });
+                if (auto)
+                    this.game.start();
+            };
+            /**
+             * Show Leaderboard
+             */
+            OptionsView.prototype.showLeaderboard = function (score) {
+                this.game.menu.visible = false;
+                this.game.sprites.visible = false;
+                this.visible = true;
+                if (score) {
+                    Properties.setScore(score);
+                    EZGUI.components.optionsView_score.text = score;
+                }
+                var data = Properties.getLeaderboard(3);
+                for (var k in data) {
+                    var row = data[k];
+                    var i = parseInt(k) + 1;
+                    var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
+                    EZGUI.components[("optionsView_row" + i)].text = '#' + i;
+                    EZGUI.components[("optionsView_date" + i)].text = mmddyyyy;
+                    EZGUI.components[("optionsView_score" + i)].text = row.score;
+                }
+            };
+            /**
+             * Sfx OnClick
+             * @param e
+             */
+            OptionsView.prototype.sfxOnClick = function (e) {
+                Properties.set('playSfx', e.target.checked);
+                EntitySystem.blackBoard.setEntry('playSfx', e.target.checked);
+            };
+            /**
+             * Play OnClick
+             * @param e
+             */
+            OptionsView.prototype.playOnClick = function (e) {
+                Properties.set('playMusic', e.target.checked);
+                EntitySystem.blackBoard.setEntry('playMusic', e.target.checked);
+            };
+            /**
+             * Again OnClick
+             * @param e
+             */
+            OptionsView.prototype.againOnClick = function (e) {
+                window.localStorage.setItem('skipmenu', 'true');
+                window.location.reload(false);
+            };
+            return OptionsView;
+        })(AbstractView);
+        views.OptionsView = OptionsView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=OptionsView.js.map
 /**
  * Game
  *
@@ -6697,12 +6882,12 @@ var example;
     var core;
     (function (core) {
         var Container = PIXI.Container;
-        var GameSystems = example.core.GameSystems;
         var Constants = example.core.Constants;
         var EntitySystem = artemis.EntitySystem;
         var ScaleType = example.core.ScaleType;
-        var MathUtils = artemis.utils.MathUtils;
         var Properties = example.core.Properties;
+        var MenuView = example.views.MenuView;
+        var OptionsView = example.views.OptionsView;
         var Game = (function () {
             /**
              * Create the game instance
@@ -6713,6 +6898,7 @@ var example;
                 this.delta = 0;
                 this.previousTime = 0;
                 this.score = { score: 0 };
+                this.sfx = { sfx: false };
                 /**
                  * Game Loop
                  * @param time
@@ -6763,62 +6949,10 @@ var example;
                 window.addEventListener('resize', this.resize, true);
                 window.onorientationchange = this.resize;
                 EZGUI.Theme.load([("res/ezgui/" + Constants.theme + "-theme/" + Constants.theme + "-theme.json")], function () {
-                    /** Menu */
-                    _this.menuScreen = EZGUI.create(Constants.guiMenu, Constants.theme);
-                    EZGUI.components.play.on('click', function (e) {
-                        _this.stage.removeChild(_this.menuScreen);
-                        //this.menuScreen.visible = false;
-                        _this.gameOver.width = window.innerWidth;
-                        _this.gameOver.height = window.innerHeight;
-                        _this.gameOver.visible = false;
-                        _this.sprites.visible = true;
-                        _this.systems = new GameSystems(_this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
-                    });
-                    EZGUI.components.options.on('click', function () {
-                        _this.sprites.visible = false;
-                        _this.gameOver.visible = true;
-                        var data = Properties.getLeaderboard(3);
-                        for (var k in data) {
-                            var row = data[k];
-                            var i = parseInt(k) + 1;
-                            var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
-                            EZGUI.components[("row" + i)].text = '#' + i;
-                            EZGUI.components[("date" + i)].text = mmddyyyy;
-                            EZGUI.components[("score" + i)].text = row.score;
-                        }
-                    });
-                    /** display a random fortune cookie */
-                    EZGUI.components.slogan.text = Constants.fortune[MathUtils.nextInt(Constants.fortune.length)];
-                    /** GameOver */
-                    _this.gameOver = EZGUI.create(Constants.guiOptions, Constants.theme);
-                    EZGUI.components.music.on('click', function (e) {
-                        //console.log('music', e.target.checked);
-                    });
-                    EZGUI.components.sfx.on('click', function (e) {
-                        //console.log('sfx', e.target.checked);
-                    });
-                    EZGUI.components.again.on('click', function (e) {
-                        /**
-                         * TODO: We need world.dispose();
-                         *
-                         * For now, just reload and skip the menu.
-                         *
-                         */
-                        window.localStorage.setItem('skipmenu', 'true');
-                        window.location.reload(false);
-                    });
-                    var auto = Boolean(window.localStorage.getItem('skipmenu'));
-                    window.localStorage.removeItem('skipmenu');
-                    _this.menuScreen.visible = !auto;
-                    _this.gameOver.visible = false;
-                    _this.sprites.visible = auto;
-                    _this.stage.addChild(_this.sprites);
-                    _this.stage.addChild(_this.menuScreen);
-                    _this.stage.addChild(_this.gameOver);
-                    if (auto)
-                        _this.systems = new GameSystems(_this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
+                    _this.menu = new MenuView(_this);
+                    _this.options = new OptionsView(_this);
+                    requestAnimationFrame(_this.update);
                 });
-                requestAnimationFrame(this.update);
             }
             /**
              * Load assets and start
@@ -6829,6 +6963,15 @@ var example;
                     PIXI.loader.add(asset, Constants.assets[asset]);
                 }
                 PIXI.loader.load(function (loader, resources) { return new Game(resources); });
+            };
+            Game.prototype.showLeaderboard = function (score) {
+                this.options.showLeaderboard(score);
+            };
+            /**
+             * Start the game
+             */
+            Game.prototype.start = function () {
+                this.systems = new core.GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
             };
             return Game;
         })();
