@@ -1,6 +1,6 @@
 {
-  "name": "Spaceship Warriors",
-  "description": "ArtemisTS Demo",
+  "name": "Schmup Wars",
+  "description": "There Goes The Planer...",
   "version": "0.6",
   "manifest_version": 2,
   "app": {
@@ -8,6 +8,12 @@
       "scripts": ["background.js"]
     }
   },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "notifications",
+    "<all_urls>"
+  ],
   "requirements": {
     "3D": {
       "features": ["webgl"]

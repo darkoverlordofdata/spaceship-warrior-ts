@@ -1,22 +1,15 @@
 /**
- *--------------------------------------------------------------------+
- * Properties.ts
- *--------------------------------------------------------------------+
- * Copyright DarkOverlordOfData (c) 2015
- *--------------------------------------------------------------------+
- *
- * This file is a part of Schmup Warz
- *
- * Schmup Warz is free software; you can copy, modify, and distribute
- * it under the terms of the MIT License
- *
- *--------------------------------------------------------------------+
+ * core/Properties.ts
  *
  * Persist properties using LocalStorage
  *
  */
 module example.core {
+
+  declare var chromeStorageDB;
+
   export class Properties {
+
 
     private static db = null;
     private static dbname = "";
@@ -24,25 +17,36 @@ module example.core {
 
     public static init(name, properties) {
 
-      if (Properties.db !== null) {
-        return;
+      if (Properties.db !== null) return;
+
+      /** Initialize the db with the properties */
+      function initializeDb (db) {
+
+        if (db.isNew()) {
+          db.createTable("settings", ["name", "value"]);
+          db.createTable("leaderboard", ["date", "score"]);
+          for (var key in properties) {
+            if (properties.hasOwnProperty(key)) {
+              db.insert("settings", {
+                name: key,
+                value: properties[key]
+              });
+            }
+          }
+          db.commit();
+        }
       }
+
       Properties.dbname = name;
       Properties.properties = properties;
 
-      Properties.db = new localStorageDB(Properties.dbname);
-      var isNew = Properties.db.isNew();
-      if (isNew) {
-        Properties.db.createTable("settings", ["name", "value"]);
-        Properties.db.createTable("leaderboard", ["date", "score"]);
-        for (var key in Properties.properties) {
-          var val = Properties.properties[key];
-          Properties.db.insert("settings", {
-            name: key,
-            value: val
-          });
-        }
-        return Properties.db.commit();
+
+      if (window['cordova']) {
+        // use localStorage
+        initializeDb(Properties.db = new localStorageDB(Properties.dbname));
+      } else {
+        // use chrome.storage, fallback to localStorage
+        chromeStorageDB(Properties.dbname, localStorage, (db) => initializeDb(Properties.db = db));
       }
     }
 

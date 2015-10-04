@@ -1,10 +1,10 @@
 /**
- * Constants
+ * core/Constants.ts
+ *
+ * Core Constants for Schmup Warz
+ *
  */
 module example.core {
-
-  export var font = {font: '18px Skranji', align: 'left'};
-  //export var font = {font: '20px Radio Stars', align: 'left'};
 
   /**
    * GroupManager Groups
@@ -26,6 +26,9 @@ module example.core {
 
     public static isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    public static theme:string = 'kenney';
+    public static font = {font: '18px Skranji', align: 'left'};
+
     public static appName = "schmupwarz";
     public static FRAME_WIDTH:number = window.innerWidth;
     public static FRAME_HEIGHT:number = window.innerHeight;
@@ -34,6 +37,7 @@ module example.core {
     public static SCALE_TYPE:ScaleType = ScaleType.FILL;
 
     public static properties = {
+      skip: "false",
       leaderboard: "off", // use server leaderboard
       player: "",         // player screen name
       userId: "",         // unique user id
@@ -70,7 +74,6 @@ module example.core {
       "There goes the planet"
     ];
 
-    public static theme:string = 'kenney'; //'d16a'; /** DarkoverlordofdatA */
 
   }
 }

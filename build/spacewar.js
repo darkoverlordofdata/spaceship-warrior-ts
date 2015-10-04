@@ -14,6 +14,743 @@
 	License	:	MIT License
 */
 
+!(function (_global, undefined) {
+	function chromeStorageDB(db_name, engine, next) {
+		if (next == null) {
+			next = engine;
+			engine = null;
+		}
+		var db_prefix = 'db_',
+			db_id = db_prefix + db_name,
+			db_new = false,	// this flag determines whether a new database was created during an object initialisation
+			db = null,
+			storage;
+
+			try {
+				if (chrome.storage != null) {
+					storage = (engine == chrome.storage.sync ? chrome.storage.sync: chrome.storage.local);
+				} else {
+					storage = (engine == sessionStorage ? sessionStorage: localStorage);
+				}
+			} catch(e) { // ie8 hack
+				storage = engine;
+			}
+
+		// if the database doesn't exist, create it
+		if (chrome.storage == null) {
+			db = storage[db_id];
+			if (!( db && (db = JSON.parse(db)) && db.tables && db.data )) {
+				if (!validateName(db_name)) {
+					error("The name '" + db_name + "' contains invalid characters");
+				} else {
+					db = {tables: {}, data: {}};
+					commit();
+					db_new = true;
+				}
+			}
+			if (next) return next(publicInterface(db));
+		} else {
+			storage.get(db_id, function(items) {
+				db = items[db_id];
+				if (!( db && (db = JSON.parse(db)) && db.tables && db.data )) {
+					if (!validateName(db_name)) {
+						error("The name '" + db_name + "' contains invalid characters");
+					} else {
+						db = {tables: {}, data: {}};
+						commit(function() {
+							db_new = true;
+							return next(publicInterface(db));
+						});
+					}
+				}
+				return next(publicInterface(db));
+			});
+		}
+
+
+
+		// ______________________ private methods
+
+		// _________ database functions
+		// drop the database
+		function drop(next) {
+			if (chrome.storage == null) {
+				if(storage.hasOwnProperty(db_id)) {
+					delete storage[db_id];
+				}
+				db = null;
+				if (next) return next();
+			} else {
+				storage.remove(db_id, next);
+				db = null;
+			}
+		}
+
+		// number of tables in the database
+		function tableCount() {
+			var count = 0;
+			for(var table in db.tables) {
+				if( db.tables.hasOwnProperty(table) ) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		// _________ table functions
+
+		// returns all fields in a table.
+		function tableFields(table_name) {
+			return db.tables[table_name].fields;
+		}
+
+		// check whether a table exists
+		function tableExists(table_name) {
+			return db.tables[table_name] ? true : false;
+		}
+
+		// check whether a table exists, and if not, throw an error
+		function tableExistsWarn(table_name) {
+			if(!tableExists(table_name)) {
+				error("The table '" + table_name + "' does not exist");
+			}
+		}
+
+		// check whether a table column exists
+		function columnExists(table_name, field_name) {
+			var exists = false;
+			var table_fields = db.tables[table_name].fields;
+			for(var field in table_fields){
+				if(table_fields[field] == field_name)
+				{
+					exists = true;
+					break;
+				}
+			}
+			return exists;
+		}
+
+		// create a table
+		function createTable(table_name, fields) {
+			db.tables[table_name] = {fields: fields, auto_increment: 1};
+			db.data[table_name] = {};
+		}
+
+		// drop a table
+		function dropTable(table_name) {
+			delete db.tables[table_name];
+			delete db.data[table_name];
+		}
+
+		// empty a table
+		function truncate(table_name) {
+			db.tables[table_name].auto_increment = 1;
+			db.data[table_name] = {};
+		}
+
+		//alter a table
+		function alterTable(table_name, new_fields, default_values){
+			db.tables[table_name].fields = db.tables[table_name].fields.concat(new_fields);
+
+			// insert default values in existing table
+			if(typeof default_values != "undefined") {
+				// loop through all the records in the table
+				for(var ID in db.data[table_name]) {
+					if( !db.data[table_name].hasOwnProperty(ID) ) {
+						continue;
+					}
+					for(var field in new_fields) {
+						if(typeof default_values == "object") {
+							db.data[table_name][ID][new_fields[field]] = default_values[new_fields[field]];
+						} else {
+							db.data[table_name][ID][new_fields[field]] = default_values;
+						}
+					}
+				}
+			}
+		}
+
+		// number of rows in a table
+		function rowCount(table_name) {
+			var count = 0;
+			for(var ID in db.data[table_name]) {
+				if( db.data[table_name].hasOwnProperty(ID) ) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		// insert a new row
+		function insert(table_name, data) {
+			data.ID = db.tables[table_name].auto_increment;
+			db.data[table_name][ db.tables[table_name].auto_increment ] = data;
+			db.tables[table_name].auto_increment++;
+			return data.ID;
+		}
+
+		// select rows, given a list of IDs of rows in a table
+		function select(table_name, ids, start, limit, sort, distinct) {
+			var ID = null, results = [], row = null;
+
+			for(var i=0; i<ids.length; i++) {
+				ID = ids[i];
+				row = db.data[table_name][ID];
+				results.push( clone(row) );
+			}
+
+			// there are sorting params
+			if(sort && sort instanceof Array) {
+				for(var i=0; i<sort.length; i++) {
+					results.sort(sort_results(sort[i][0], sort[i].length > 1 ? sort[i][1] : null));
+				}
+			}
+
+			// distinct params
+			if(distinct && distinct instanceof Array) {
+				for(var j=0; j<distinct.length; j++) {
+					var seen = {}, d = distinct[j];
+
+					for(var i=0; i<results.length; i++) {
+						if(results[i] === undefined) {
+							continue;
+						}
+
+						if(results[i].hasOwnProperty(d) && seen.hasOwnProperty(results[i][d])) {
+							delete(results[i]);
+						} else {
+							seen[results[i][d]] = 1;
+						}
+					}
+				}
+
+				// can't use .filter(ie8)
+				var new_results = [];
+				for(var i=0; i<results.length; i++) {
+					if(results[i] !== undefined) {
+						new_results.push(results[i]);
+					}
+				}
+
+				results = new_results;
+			}
+
+			// limit and offset
+			start = start && typeof start === "number" ? start : null;
+			limit = limit && typeof limit === "number" ? limit : null;
+
+			if(start && limit) {
+				results = results.slice(start, start+limit);
+			} else if(start) {
+				results = results.slice(start);
+			} else if(limit) {
+				results = results.slice(start, limit);
+			}
+
+			return results;
+		}
+
+		// sort a result set
+		function sort_results(field, order) {
+			return function(x, y) {
+				// case insensitive comparison for string values
+				var v1 = typeof(x[field]) === "string" ? x[field].toLowerCase() : x[field],
+					v2 = typeof(y[field]) === "string" ? y[field].toLowerCase() : y[field];
+
+				if(order === "DESC") {
+					return v1 == v2 ? 0 : (v1 < v2 ? 1 : -1);
+				} else {
+					return v1 == v2 ? 0 : (v1 > v2 ? 1 : -1);
+				}
+			};
+		}
+
+		// select rows in a table by field-value pairs, returns the IDs of matches
+		function queryByValues(table_name, data) {
+			var result_ids = [],
+				exists = false,
+				row = null;
+
+			// loop through all the records in the table, looking for matches
+			for(var ID in db.data[table_name]) {
+				if( !db.data[table_name].hasOwnProperty(ID) ) {
+					continue;
+				}
+
+				row = db.data[table_name][ID];
+				exists = true;
+
+				for(var field in data) {
+					if( !data.hasOwnProperty(field) ) {
+						continue;
+					}
+
+					if(typeof data[field] == 'string') {	// if the field is a string, do a case insensitive comparison
+						if( row[field] === null || row[field].toString().toLowerCase() != data[field].toString().toLowerCase() ) {
+							exists = false;
+							break;
+						}
+					} else {
+						if(row[field] != data[field]) {
+							exists = false;
+							break;
+						}
+					}
+				}
+				if(exists) {
+					result_ids.push(ID);
+				}
+			}
+
+			return result_ids;
+		}
+
+		// select rows in a table by a function, returns the IDs of matches
+		function queryByFunction(table_name, query_function) {
+			var result_ids = [],
+				exists = false,
+				row = null;
+
+			// loop through all the records in the table, looking for matches
+			for(var ID in db.data[table_name]) {
+				if( !db.data[table_name].hasOwnProperty(ID) ) {
+					continue;
+				}
+
+				row = db.data[table_name][ID];
+
+				if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
+					result_ids.push(ID);
+				}
+			}
+
+			return result_ids;
+		}
+
+		// return all the IDs in a table
+		function getIDs(table_name) {
+			var result_ids = [];
+
+			for(var ID in db.data[table_name]) {
+				if( db.data[table_name].hasOwnProperty(ID) ) {
+					result_ids.push(ID);
+				}
+			}
+			return result_ids;
+		}
+
+		// delete rows, given a list of their IDs in a table
+		function deleteRows(table_name, ids) {
+			for(var i=0; i<ids.length; i++) {
+				if( db.data[table_name].hasOwnProperty(ids[i]) ) {
+					delete db.data[table_name][ ids[i] ];
+				}
+			}
+			return ids.length;
+		}
+
+		// update rows
+		function update(table_name, ids, update_function) {
+			var ID = '', num = 0;
+
+			for(var i=0; i<ids.length; i++) {
+				ID = ids[i];
+
+				var updated_data = update_function( clone(db.data[table_name][ID]) );
+
+				if(updated_data) {
+					delete updated_data['ID']; // no updates possible to ID
+
+					var new_data = db.data[table_name][ID];
+					// merge updated data with existing data
+					for(var field in updated_data) {
+						if( updated_data.hasOwnProperty(field) ) {
+							new_data[field] = updated_data[field];
+						}
+					}
+
+					db.data[table_name][ID] = validFields(table_name, new_data);
+					num++;
+				}
+			}
+			return num;
+		}
+
+		// commit the database to localStorage
+		function commit(next) {
+			if (chrome.storage == null) {
+				try {
+					storage.setItem(db_id, JSON.stringify(db));
+					if (next) return next(true);
+					return true;
+				} catch(e) {
+					if (next) return next(false);
+					return false;
+				}
+			} else {
+				var items = {};
+				items[db_id] = JSON.stringify(db);
+				storage.set(items, next);
+			}
+		}
+
+		// serialize the database
+		function serialize() {
+			return JSON.stringify(db);
+		}
+
+		// throw an error
+		function error(msg) {
+			throw new Error(msg);
+		}
+
+		// clone an object
+		function clone(obj) {
+			var new_obj = {};
+			for(var key in obj) {
+				if( obj.hasOwnProperty(key) ) {
+					new_obj[key] = obj[key];
+				}
+			}
+			return new_obj;
+		}
+
+		// validate db, table, field names (alpha-numeric only)
+		function validateName(name) {
+			return name.toString().match(/[^a-z_0-9]/ig) ? false : true;
+		}
+
+		// given a data list, only retain valid fields in a table
+		function validFields(table_name, data) {
+			var field = '', new_data = {};
+
+			for(var i=0; i<db.tables[table_name].fields.length; i++) {
+				field = db.tables[table_name].fields[i];
+
+				if (data[field] !== undefined) {
+					new_data[field] = data[field];
+				}
+			}
+			return new_data;
+		}
+
+		// given a data list, populate with valid field names of a table
+		function validateData(table_name, data) {
+			var field = '', new_data = {};
+			for(var i=0; i<db.tables[table_name].fields.length; i++) {
+				field = db.tables[table_name].fields[i];
+				new_data[field] = (data[field] === null || data[field] === undefined) ? null : data[field];
+			}
+			return new_data;
+		}
+
+		function publicInterface(db) {
+			// ______________________ public methods
+
+			return {
+				// commit the database to localStorage
+				commit: function(next) {
+					return commit(next);
+				},
+
+				// is this instance a newly created database?
+				isNew: function() {
+					return db_new;
+				},
+
+				// delete the database
+				drop: function() {
+					drop();
+				},
+
+				// serialize the database
+				serialize: function() {
+					return serialize();
+				},
+
+				// check whether a table exists
+				tableExists: function(table_name) {
+					return tableExists(table_name);
+				},
+
+				// list of keys in a table
+				tableFields: function(table_name) {
+					return tableFields(table_name);
+				},
+
+				// number of tables in the database
+				tableCount: function() {
+					return tableCount();
+				},
+
+				columnExists: function(table_name, field_name){
+					return columnExists(table_name, field_name);
+				},
+
+				// create a table
+				createTable: function(table_name, fields) {
+					var result = false;
+					if(!validateName(table_name)) {
+						error("The database name '" + table_name + "' contains invalid characters.");
+					} else if(this.tableExists(table_name)) {
+						error("The table name '" + table_name + "' already exists.");
+					} else {
+						// make sure field names are valid
+						var is_valid = true;
+						for(var i=0; i<fields.length; i++) {
+							if(!validateName(fields[i])) {
+								is_valid = false;
+								break;
+							}
+						}
+
+						if(is_valid) {
+							// cannot use indexOf due to <IE9 incompatibility
+							// de-duplicate the field list
+							var fields_literal = {};
+							for(var i=0; i<fields.length; i++) {
+								fields_literal[ fields[i] ] = true;
+							}
+							delete fields_literal['ID']; // ID is a reserved field name
+
+							fields = ['ID'];
+							for(var field in fields_literal) {
+								if( fields_literal.hasOwnProperty(field) ) {
+									fields.push(field);
+								}
+							}
+
+							createTable(table_name, fields);
+							result = true;
+						} else {
+							error("One or more field names in the table definition contains invalid characters");
+						}
+					}
+
+					return result;
+				},
+
+				// Create a table using array of Objects @ [{k:v,k:v},{k:v,k:v},etc]
+				createTableWithData: function(table_name, data, next) {
+					if(typeof data !== 'object' || !data.length || data.length < 1) {
+						error("Data supplied isn't in object form. Example: [{k:v,k:v},{k:v,k:v} ..]");
+					}
+
+					var fields = Object.keys(data[0]);
+
+					// create the table
+					if( this.createTable(table_name, fields) ) {
+						this.commit(function() {
+
+							// populate
+							for (var i=0; i<data.length; i++) {
+								if( !insert(table_name, data[i]) ) {
+									error("Failed to insert record: [" + JSON.stringify(data[i]) + "]");
+								}
+							}
+							this.commit(next);
+						});
+					}
+					return true;
+				},
+
+				// drop a table
+				dropTable: function(table_name) {
+					tableExistsWarn(table_name);
+					dropTable(table_name);
+				},
+
+				// empty a table
+				truncate: function(table_name) {
+					tableExistsWarn(table_name);
+					truncate(table_name);
+				},
+
+				// alter a table
+				alterTable: function(table_name, new_fields, default_values) {
+					var result = false;
+					if(!validateName(table_name)) {
+						error("The database name '" + table_name + "' contains invalid characters");
+					} else {
+						if(typeof new_fields == "object") {
+							// make sure field names are valid
+							var is_valid = true;
+							for(var i=0; i<new_fields.length; i++) {
+								if(!validateName(new_fields[i])) {
+									is_valid = false;
+									break;
+								}
+							}
+
+							if(is_valid) {
+								// cannot use indexOf due to <IE9 incompatibility
+								// de-duplicate the field list
+								var fields_literal = {};
+								for(var i=0; i<new_fields.length; i++) {
+									fields_literal[ new_fields[i] ] = true;
+								}
+								delete fields_literal['ID']; // ID is a reserved field name
+
+								new_fields = [];
+								for(var field in fields_literal) {
+									if( fields_literal.hasOwnProperty(field) ) {
+										new_fields.push(field);
+									}
+								}
+
+								alterTable(table_name, new_fields, default_values);
+								result = true;
+							} else {
+								error("One or more field names in the table definition contains invalid characters");
+							}
+						} else if(typeof new_fields == "string") {
+							if(validateName(new_fields)) {
+								var new_fields_array = [];
+								new_fields_array.push(new_fields);
+								alterTable(table_name, new_fields_array, default_values);
+								result = true;
+							} else {
+								error("One or more field names in the table definition contains invalid characters");
+							}
+						}
+					}
+
+					return result;
+				},
+
+				// number of rows in a table
+				rowCount: function(table_name) {
+					tableExistsWarn(table_name);
+					return rowCount(table_name);
+				},
+
+				// insert a row
+				insert: function(table_name, data) {
+					tableExistsWarn(table_name);
+					return insert(table_name, validateData(table_name, data) );
+				},
+
+				// insert or update based on a given condition
+				insertOrUpdate: function(table_name, query, data) {
+					tableExistsWarn(table_name);
+
+					var result_ids = [];
+					if(!query) {
+						result_ids = getIDs(table_name);				// there is no query. applies to all records
+					} else if(typeof query == 'object') {				// the query has key-value pairs provided
+						result_ids = queryByValues(table_name, validFields(table_name, query));
+					} else if(typeof query == 'function') {				// the query has a conditional map function provided
+						result_ids = queryByFunction(table_name, query);
+					}
+
+					// no existing records matched, so insert a new row
+					if(result_ids.length == 0) {
+						return insert(table_name, validateData(table_name, data) );
+					} else {
+						var ids = [];
+						for(var n=0; n<result_ids.length; n++) {
+							update(table_name, result_ids, function(o) {
+								ids.push(o.ID);
+								return data;
+							});
+						}
+
+						return ids;
+					}
+				},
+
+				// update rows
+				update: function(table_name, query, update_function) {
+					tableExistsWarn(table_name);
+
+					var result_ids = [];
+					if(!query) {
+						result_ids = getIDs(table_name);				// there is no query. applies to all records
+					} else if(typeof query == 'object') {				// the query has key-value pairs provided
+						result_ids = queryByValues(table_name, validFields(table_name, query));
+					} else if(typeof query == 'function') {				// the query has a conditional map function provided
+						result_ids = queryByFunction(table_name, query);
+					}
+					return update(table_name, result_ids, update_function);
+				},
+
+				// select rows
+				query: function(table_name, query, limit, start, sort, distinct) {
+					tableExistsWarn(table_name);
+
+					var result_ids = [];
+					if(!query) {
+						result_ids = getIDs(table_name, limit, start); // no conditions given, return all records
+					} else if(typeof query == 'object') {			// the query has key-value pairs provided
+						result_ids = queryByValues(table_name, validFields(table_name, query), limit, start);
+					} else if(typeof query == 'function') {		// the query has a conditional map function provided
+						result_ids = queryByFunction(table_name, query, limit, start);
+					}
+
+					return select(table_name, result_ids, start, limit, sort, distinct);
+				},
+
+				// alias for query() that takes a dict of params instead of positional arrguments
+				queryAll: function(table_name, params) {
+					if(!params) {
+						return this.query(table_name)
+					} else {
+						return this.query(table_name,
+							params.hasOwnProperty('query') ? params.query : null,
+							params.hasOwnProperty('limit') ? params.limit : null,
+							params.hasOwnProperty('start') ? params.start : null,
+							params.hasOwnProperty('sort') ? params.sort : null,
+							params.hasOwnProperty('distinct') ? params.distinct : null
+						);
+					}
+				},
+
+				// delete rows
+				deleteRows: function(table_name, query) {
+					tableExistsWarn(table_name);
+
+					var result_ids = [];
+					if(!query) {
+						result_ids = getIDs(table_name);
+					} else if(typeof query == 'object') {
+						result_ids = queryByValues(table_name, validFields(table_name, query));
+					} else if(typeof query == 'function') {
+						result_ids = queryByFunction(table_name, query);
+					}
+					return deleteRows(table_name, result_ids);
+				}
+			}
+		}
+
+	}
+
+	// make amd compatible
+	if(typeof define === 'function' && define.amd) {
+		define(function() {
+			return chromeStorageDB;
+		});
+	} else {
+		_global['chromeStorageDB'] = chromeStorageDB;
+	}
+
+}(window));
+
+/*
+	Kailash Nadh (http://nadh.in)
+
+	localStorageDB v 2.3.1
+	A simple database layer for localStorage
+
+	v 2.3.1 Mar 2015
+	v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
+	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+	v 2.1 Nov 2013
+	v 2.0 June 2013
+	v 1.9 Nov 2012
+
+	License	:	MIT License
+*/
+
 !function(t,e){function n(t,n){function r(){E.hasOwnProperty(_)&&delete E[_],x=null}function a(){var t=0;for(var e in x.tables)x.tables.hasOwnProperty(e)&&t++;return t}function i(t){return x.tables[t].fields}function o(t){return x.tables[t]?!0:!1}function f(t){o(t)||D("The table '"+t+"' does not exist")}function u(t,e){var n=!1,r=x.tables[t].fields;for(var a in r)if(r[a]==e){n=!0;break}return n}function l(t,e){x.tables[t]={fields:e,auto_increment:1},x.data[t]={}}function s(t){delete x.tables[t],delete x.data[t]}function c(t){x.tables[t].auto_increment=1,x.data[t]={}}function d(t,e,n){if(x.tables[t].fields=x.tables[t].fields.concat(e),"undefined"!=typeof n)for(var r in x.data[t])if(x.data[t].hasOwnProperty(r))for(var a in e)x.data[t][r][e[a]]="object"==typeof n?n[e[a]]:n}function h(t){var e=0;for(var n in x.data[t])x.data[t].hasOwnProperty(n)&&e++;return e}function v(t,e){return e.ID=x.tables[t].auto_increment,x.data[t][x.tables[t].auto_increment]=e,x.tables[t].auto_increment++,e.ID}function p(t,n,r,a,i,o){for(var f=null,u=[],l=null,s=0;s<n.length;s++)f=n[s],l=x.data[t][f],u.push(k(l));if(i&&i instanceof Array)for(var s=0;s<i.length;s++)u.sort(y(i[s][0],i[s].length>1?i[s][1]:null));if(o&&o instanceof Array){for(var c=0;c<o.length;c++)for(var d={},h=o[c],s=0;s<u.length;s++)u[s]!==e&&(u[s].hasOwnProperty(h)&&d.hasOwnProperty(u[s][h])?delete u[s]:d[u[s][h]]=1);for(var v=[],s=0;s<u.length;s++)u[s]!==e&&v.push(u[s]);u=v}return r=r&&"number"==typeof r?r:null,a=a&&"number"==typeof a?a:null,r&&a?u=u.slice(r,r+a):r?u=u.slice(r):a&&(u=u.slice(r,a)),u}function y(t,e){return function(n,r){var a="string"==typeof n[t]?n[t].toLowerCase():n[t],i="string"==typeof r[t]?r[t].toLowerCase():r[t];return"DESC"===e?a==i?0:i>a?1:-1:a==i?0:a>i?1:-1}}function b(t,e){var n=[],r=!1,a=null;for(var i in x.data[t])if(x.data[t].hasOwnProperty(i)){a=x.data[t][i],r=!0;for(var o in e)if(e.hasOwnProperty(o))if("string"==typeof e[o]){if(a[o].toString().toLowerCase()!=e[o].toString().toLowerCase()){r=!1;break}}else if(a[o]!=e[o]){r=!1;break}r&&n.push(i)}return n}function g(t,e){var n=[],r=null;for(var a in x.data[t])x.data[t].hasOwnProperty(a)&&(r=x.data[t][a],1==e(k(r))&&n.push(a));return n}function m(t){var e=[];for(var n in x.data[t])x.data[t].hasOwnProperty(n)&&e.push(n);return e}function w(t,e){for(var n=0;n<e.length;n++)x.data[t].hasOwnProperty(e[n])&&delete x.data[t][e[n]];return e.length}function O(t,e,n){for(var r="",a=0,i=0;i<e.length;i++){r=e[i];var o=n(k(x.data[t][r]));if(o){delete o.ID;var f=x.data[t][r];for(var u in o)o.hasOwnProperty(u)&&(f[u]=o[u]);x.data[t][r]=j(t,f),a++}}return a}function P(){try{return E.setItem(_,JSON.stringify(x)),!0}catch(t){return!1}}function S(){return JSON.stringify(x)}function D(t){throw new Error(t)}function k(t){var e={};for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);return e}function T(t){return t.toString().match(/[^a-z_0-9]/gi)?!1:!0}function j(t,n){for(var r="",a={},i=0;i<x.tables[t].fields.length;i++)r=x.tables[t].fields[i],n[r]!==e&&(a[r]=n[r]);return a}function I(t,n){for(var r="",a={},i=0;i<x.tables[t].fields.length;i++)r=x.tables[t].fields[i],a[r]=null===n[r]||n[r]===e?null:n[r];return a}var C="db_",_=C+t,q=!1,x=null;try{var E=n==sessionStorage?sessionStorage:localStorage}catch(N){var E=n}return x=E[_],x&&(x=JSON.parse(x))&&x.tables&&x.data||(T(t)?(x={tables:{},data:{}},P(),q=!0):D("The name '"+t+"' contains invalid characters")),{commit:function(){return P()},isNew:function(){return q},drop:function(){r()},serialize:function(){return S()},tableExists:function(t){return o(t)},tableFields:function(t){return i(t)},tableCount:function(){return a()},columnExists:function(t,e){return u(t,e)},createTable:function(t,e){var n=!1;if(T(t))if(this.tableExists(t))D("The table name '"+t+"' already exists.");else{for(var r=!0,a=0;a<e.length;a++)if(!T(e[a])){r=!1;break}if(r){for(var i={},a=0;a<e.length;a++)i[e[a]]=!0;delete i.ID,e=["ID"];for(var o in i)i.hasOwnProperty(o)&&e.push(o);l(t,e),n=!0}else D("One or more field names in the table definition contains invalid characters")}else D("The database name '"+t+"' contains invalid characters.");return n},createTableWithData:function(t,e){("object"!=typeof e||!e.length||e.length<1)&&D("Data supplied isn't in object form. Example: [{k:v,k:v},{k:v,k:v} ..]");var n=Object.keys(e[0]);if(this.createTable(t,n)){this.commit();for(var r=0;r<e.length;r++)v(t,e[r])||D("Failed to insert record: ["+JSON.stringify(e[r])+"]");this.commit()}return!0},dropTable:function(t){f(t),s(t)},truncate:function(t){f(t),c(t)},alterTable:function(t,e,n){var r=!1;if(T(t)){if("object"==typeof e){for(var a=!0,i=0;i<e.length;i++)if(!T(e[i])){a=!1;break}if(a){for(var o={},i=0;i<e.length;i++)o[e[i]]=!0;delete o.ID,e=[];for(var f in o)o.hasOwnProperty(f)&&e.push(f);d(t,e,n),r=!0}else D("One or more field names in the table definition contains invalid characters")}else if("string"==typeof e)if(T(e)){var u=[];u.push(e),d(t,u,n),r=!0}else D("One or more field names in the table definition contains invalid characters")}else D("The database name '"+t+"' contains invalid characters");return r},rowCount:function(t){return f(t),h(t)},insert:function(t,e){return f(t),v(t,I(t,e))},insertOrUpdate:function(t,e,n){f(t);var r=[];if(e?"object"==typeof e?r=b(t,j(t,e)):"function"==typeof e&&(r=g(t,e)):r=m(t),0==r.length)return v(t,I(t,n));for(var a=[],i=0;i<r.length;i++)O(t,r,function(t){return a.push(t.ID),n});return a},update:function(t,e,n){f(t);var r=[];return e?"object"==typeof e?r=b(t,j(t,e)):"function"==typeof e&&(r=g(t,e)):r=m(t),O(t,r,n)},query:function(t,e,n,r,a,i){f(t);var o=[];return e?"object"==typeof e?o=b(t,j(t,e),n,r):"function"==typeof e&&(o=g(t,e,n,r)):o=m(t,n,r),p(t,o,r,n,a,i)},queryAll:function(t,e){return e?this.query(t,e.hasOwnProperty("query")?e.query:null,e.hasOwnProperty("limit")?e.limit:null,e.hasOwnProperty("start")?e.start:null,e.hasOwnProperty("sort")?e.sort:null,e.hasOwnProperty("distinct")?e.distinct:null):this.query(t)},deleteRows:function(t,e){f(t);var n=[];return e?"object"==typeof e?n=b(t,j(t,e)):"function"==typeof e&&(n=g(t,e)):n=m(t),w(t,n)}}}"function"==typeof define&&define.amd?define(function(){return n}):t.localStorageDB=n}(window);
 /*!
  *  howler.js v1.1.26
@@ -4188,14 +4925,15 @@ VoidEntitySystem})(systems=artemis.systems||(artemis.systems={}))})(artemis||(ar
 return IntervalEntityProcessingSystem}(IntervalEntitySystem);systems.IntervalEntityProcessingSystem=IntervalEntityProcessingSystem})(systems=artemis.systems||(artemis.systems={}))})(artemis||(artemis={}));
 
 /**
- * Constants
+ * core/Constants.ts
+ *
+ * Core Constants for Schmup Warz
+ *
  */
 var example;
 (function (example) {
     var core;
     (function (core) {
-        core.font = { font: '18px Skranji', align: 'left' };
-        //export var font = {font: '20px Radio Stars', align: 'left'};
         /**
          * GroupManager Groups
          */
@@ -4217,12 +4955,15 @@ var example;
             function Constants() {
             }
             Constants.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            Constants.theme = 'kenney';
+            Constants.font = { font: '18px Skranji', align: 'left' };
             Constants.appName = "schmupwarz";
             Constants.FRAME_WIDTH = window.innerWidth;
             Constants.FRAME_HEIGHT = window.innerHeight;
             Constants.RATIO = window.devicePixelRatio * .6;
             Constants.SCALE_TYPE = ScaleType.FILL;
             Constants.properties = {
+                skip: "false",
                 leaderboard: "off",
                 player: "",
                 userId: "",
@@ -4253,7 +4994,6 @@ var example;
                 'Schmup is the path to the\n dark side',
                 "There goes the planet"
             ];
-            Constants.theme = 'kenney'; //'d16a'; /** DarkoverlordofdatA */
             return Constants;
         })();
         core.Constants = Constants;
@@ -4261,18 +5001,7 @@ var example;
 })(example || (example = {}));
 //# sourceMappingURL=Constants.js.map
 /**
- *--------------------------------------------------------------------+
- * Properties.ts
- *--------------------------------------------------------------------+
- * Copyright DarkOverlordOfData (c) 2015
- *--------------------------------------------------------------------+
- *
- * This file is a part of Schmup Warz
- *
- * Schmup Warz is free software; you can copy, modify, and distribute
- * it under the terms of the MIT License
- *
- *--------------------------------------------------------------------+
+ * core/Properties.ts
  *
  * Persist properties using LocalStorage
  *
@@ -4281,6 +5010,7 @@ var example;
 (function (example) {
     var core;
     (function (core) {
+        var isCordova = !!window['cordova'];
         var Properties = (function () {
             function Properties() {
             }
@@ -4288,21 +5018,30 @@ var example;
                 if (Properties.db !== null) {
                     return;
                 }
+                function init(db) {
+                    if (db.isNew()) {
+                        db.createTable("settings", ["name", "value"]);
+                        db.createTable("leaderboard", ["date", "score"]);
+                        for (var key in properties) {
+                            if (properties.hasOwnProperty(key)) {
+                                db.insert("settings", {
+                                    name: key,
+                                    value: properties[key]
+                                });
+                            }
+                        }
+                        db.commit();
+                    }
+                }
                 Properties.dbname = name;
                 Properties.properties = properties;
-                Properties.db = new localStorageDB(Properties.dbname);
-                var isNew = Properties.db.isNew();
-                if (isNew) {
-                    Properties.db.createTable("settings", ["name", "value"]);
-                    Properties.db.createTable("leaderboard", ["date", "score"]);
-                    for (var key in Properties.properties) {
-                        var val = Properties.properties[key];
-                        Properties.db.insert("settings", {
-                            name: key,
-                            value: val
-                        });
-                    }
-                    return Properties.db.commit();
+                if (window['cordova']) {
+                    // PhoneGap application
+                    init(Properties.db = new localStorageDB(Properties.dbname));
+                }
+                else {
+                    // Web page
+                    chromeStorageDB(Properties.dbname, localStorage, function (db) { return init(Properties.db = db); });
                 }
             };
             /*
@@ -5459,6 +6198,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
     }
 };
+/**
+ * systems/BackgroundSystem.ts
+ *
+ * Display player status
+ */
 var example;
 (function (example) {
     var systems;
@@ -5867,6 +6611,7 @@ var example;
         var EntitySystem = artemis.EntitySystem;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Mapper = artemis.annotations.Mapper;
+        var Constants = example.core.Constants;
         var InvertFilter = PIXI.filters.InvertFilter;
         var HealthRenderSystem = (function (_super) {
             __extends(HealthRenderSystem, _super);
@@ -5876,32 +6621,12 @@ var example;
             }
             HealthRenderSystem.prototype.initialize = function () {
                 this.sprites = EntitySystem.blackBoard.getEntry('sprites');
-                this.font = example.core.font;
+                this.font = Constants.font;
             };
-            //public inserted(e:Entity) {
-            //  var sprite:Sprite = this.sm.get(e);
-            //  var text:BitmapText = new BitmapText('100%', this.font);
-            //  text['layer'] = sprite.layer+.5;
-            //  text.scale.set(1/Constants.RATIO);
-            //  this.sprites.addChild(text);
-            //  this.texts[e.uuid] = text;
-            //
-            //}
-            //protected removed(e:Entity) {
-            //  this.sprites.removeChild(this.texts[e.uuid]);
-            //  this.texts[e.uuid] = null;
-            //  delete this.texts[e.uuid];
-            //}
             HealthRenderSystem.prototype.processEach = function (e) {
-                // update the text element on the sprite
-                //if (this.texts[e.uuid]) {
-                var position = this.pm.get(e);
+                //var position:Position = this.pm.get(e);
                 var health = this.hm.get(e);
                 var percentage = Math.round(health.health / health.maximumHealth * 100);
-                //var text:BitmapText = this.texts[e.uuid];
-                //
-                //text.position.set(position.x, position.y);
-                //text.text = `${percentage}%`;
                 if (percentage < 100) {
                     var sprite = this.sm.get(e).sprite_;
                     if (!sprite.filters) {
@@ -5967,10 +6692,9 @@ var example;
                 this.fps = 0;
             }
             HudRenderSystem.prototype.initialize = function () {
-                this.isMobile = false;
                 this.score = EntitySystem.blackBoard.getEntry('score');
                 var sprites = EntitySystem.blackBoard.getEntry('sprites');
-                var font = example.core.font;
+                var font = Constants.font;
                 this.framesPerSecond = new BitmapText('FPS: 60', font);
                 this.framesPerSecond['layer'] = Layer.TEXT;
                 var scale = 1 / Constants.RATIO;
@@ -5983,7 +6707,7 @@ var example;
                 this.totalScore.scale = new Point(scale, scale);
                 this.totalScore.position = new Point(Constants.FRAME_WIDTH / 2, 20 / Constants.RATIO);
                 sprites.addChild(this.totalScore);
-                if (!this.isMobile) {
+                if (!Constants.isMobile) {
                     this.activeEntities = new BitmapText('Active entities: ', font);
                     this.totalCreated = new BitmapText('Total created: ', font);
                     this.totalDeleted = new BitmapText('Total deleted: ', font);
@@ -6011,7 +6735,7 @@ var example;
                 }
                 this.framesPerSecond.text = "FPS: " + this.fps;
                 this.totalScore.text = "Score: " + this.score.score;
-                if (!this.isMobile) {
+                if (!Constants.isMobile) {
                     this.activeEntities.text = "Active entities: " + this.world.getEntityManager().getActiveEntityCount();
                     this.totalCreated.text = "Total created: " + this.world.getEntityManager().getTotalCreated();
                     this.totalDeleted.text = "Total deleted: " + this.world.getEntityManager().getTotalDeleted();
@@ -6497,9 +7221,10 @@ var example;
 })(example || (example = {}));
 //# sourceMappingURL=SpriteRenderSystem.js.map
 /**
- * GameSystems
+ * core/GameSystems.ts
  *
- * the main game loop
+ * The main game loop
+ *
  */
 var example;
 (function (example) {
@@ -6601,6 +7326,12 @@ var example;
     })(views = example.views || (example.views = {}));
 })(example || (example = {}));
 //# sourceMappingURL=Fonts.js.map
+/**
+ * views/AbstractView.ts
+ *
+ * Base class for Views
+ *
+ */
 var example;
 (function (example) {
     var views;
@@ -6610,18 +7341,23 @@ var example;
             function AbstractView(game, options) {
                 if (options === void 0) { options = {}; }
                 this.game = game;
-                for (var k in options) {
-                    this[k] = options[k];
-                }
-                this.view = EZGUI.create(this, Constants.theme);
+                this.options = options;
+                this._view = EZGUI.create(this.options, Constants.theme);
                 this.initialize();
             }
+            Object.defineProperty(AbstractView.prototype, "view", {
+                get: function () {
+                    return this._view;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(AbstractView.prototype, "visible", {
                 get: function () {
-                    return this.view.visible;
+                    return this._view.visible;
                 },
                 set: function (value) {
-                    this.view.visible = value;
+                    this._view.visible = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -6639,6 +7375,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/**
+ * views/MenuView.ts
+ *
+ * Main application menu
+ *
+ */
 var example;
 (function (example) {
     var views;
@@ -6650,6 +7392,7 @@ var example;
         var MenuView = (function (_super) {
             __extends(MenuView, _super);
             function MenuView(game) {
+                var _this = this;
                 _super.call(this, game, {
                     id: 'mainScreen',
                     component: 'Window',
@@ -6698,6 +7441,15 @@ var example;
                     ]
                 });
                 this.game = game;
+                this.playOnClick = function (e) {
+                    _this.game.stage.removeChild(_this.view);
+                    _this.game.options.visible = false;
+                    _this.game.sprites.visible = true;
+                    _this.game.start();
+                };
+                this.optionsOnClick = function (e) {
+                    _this.game.showLeaderboard();
+                };
             }
             /**
              * Wire up the events
@@ -6707,17 +7459,6 @@ var example;
                 EZGUI.components.menuView_play.on('click', function (e) { return _this.playOnClick(e); });
                 EZGUI.components.menuView_options.on('click', function (e) { return _this.optionsOnClick(e); });
                 EZGUI.components.menuView_slogan.text = Constants.fortune[MathUtils.nextInt(Constants.fortune.length)];
-            };
-            MenuView.prototype.playOnClick = function (e) {
-                this.game.stage.removeChild(this.view);
-                this.game.options.width = window.innerWidth;
-                this.game.options.height = window.innerHeight;
-                this.game.options.visible = false;
-                this.game.sprites.visible = true;
-                this.game.start();
-            };
-            MenuView.prototype.optionsOnClick = function (e) {
-                this.game.showLeaderboard();
             };
             return MenuView;
         })(AbstractView);
@@ -6731,6 +7472,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/**
+ * views/OptionsView.ts
+ *
+ * Set preferences, view scores
+ *
+ */
 var example;
 (function (example) {
     var views;
@@ -6785,7 +7532,7 @@ var example;
                         { id: 'optionsView_sfx', font: Fonts.font20, component: 'Checkbox', text: ' Sound FX', position: 'right', width: 40, height: 40 },
                         null,
                         null, {
-                            id: 'optionsView_again',
+                            id: 'optionsView_play',
                             text: 'Play',
                             component: 'Button',
                             position: 'center',
@@ -6796,30 +7543,50 @@ var example;
                     ]
                 });
                 this.game = game;
+                /**
+                 * Sfx OnClick
+                 * @param e
+                 */
+                this.sfxOnClick = function (e) {
+                    Properties.set('playSfx', e.target.checked);
+                    EntitySystem.blackBoard.setEntry('playSfx', e.target.checked);
+                };
+                /**
+                 * Music OnClick
+                 * @param e
+                 */
+                this.musicOnClick = function (e) {
+                    Properties.set('playMusic', e.target.checked);
+                    EntitySystem.blackBoard.setEntry('playMusic', e.target.checked);
+                };
+                /**
+                 * Play OnClick
+                 * @param e
+                 */
+                this.playOnClick = function (e) {
+                    Properties.set('skip', 'true');
+                    try {
+                        chrome.runtime.reload();
+                    }
+                    catch (e) {
+                        window.location.reload(true);
+                    }
+                };
             }
             /**
              * Load data, Wire up the events
              */
             OptionsView.prototype.initialize = function () {
                 var _this = this;
-                var game = this.game;
-                var playSfx = EZGUI.components.optionsView_sfx.checked = Properties.get('playSfx') === 'true';
+                var playSfx = Properties.get('playSfx') === 'true';
                 EntitySystem.blackBoard.setEntry('playSfx', playSfx);
-                var playMusic = EZGUI.components.optionsView_music.checked = Properties.get('playMusic') === 'true';
+                var playMusic = Properties.get('playMusic') === 'true';
                 EntitySystem.blackBoard.setEntry('playMusic', playMusic);
-                var auto = Boolean(window.localStorage.getItem('skipmenu'));
-                window.localStorage.removeItem('skipmenu');
-                this.visible = false;
-                game.menu.visible = !auto;
-                game.sprites.visible = auto;
-                game.stage.addChild(game.sprites);
-                game.stage.addChild(game.menu.view);
-                game.stage.addChild(this.view);
+                EZGUI.components.optionsView_sfx.checked = playSfx;
+                EZGUI.components.optionsView_music.checked = playMusic;
                 EZGUI.components.optionsView_sfx.on('click', function (e) { return _this.sfxOnClick(e); });
-                EZGUI.components.optionsView_music.on('click', function (e) { return _this.playOnClick(e); });
-                EZGUI.components.optionsView_again.on('click', function (e) { return _this.againOnClick(e); });
-                if (auto)
-                    this.game.start();
+                EZGUI.components.optionsView_music.on('click', function (e) { return _this.musicOnClick(e); });
+                EZGUI.components.optionsView_play.on('click', function (e) { return _this.playOnClick(e); });
             };
             /**
              * Show Leaderboard
@@ -6842,30 +7609,6 @@ var example;
                     EZGUI.components[("optionsView_score" + i)].text = row.score;
                 }
             };
-            /**
-             * Sfx OnClick
-             * @param e
-             */
-            OptionsView.prototype.sfxOnClick = function (e) {
-                Properties.set('playSfx', e.target.checked);
-                EntitySystem.blackBoard.setEntry('playSfx', e.target.checked);
-            };
-            /**
-             * Play OnClick
-             * @param e
-             */
-            OptionsView.prototype.playOnClick = function (e) {
-                Properties.set('playMusic', e.target.checked);
-                EntitySystem.blackBoard.setEntry('playMusic', e.target.checked);
-            };
-            /**
-             * Again OnClick
-             * @param e
-             */
-            OptionsView.prototype.againOnClick = function (e) {
-                window.localStorage.setItem('skipmenu', 'true');
-                window.location.reload(false);
-            };
             return OptionsView;
         })(AbstractView);
         views.OptionsView = OptionsView;
@@ -6873,9 +7616,10 @@ var example;
 })(example || (example = {}));
 //# sourceMappingURL=OptionsView.js.map
 /**
- * Game
+ * core/Game.ts
  *
- * connects the environment to the ecs
+ * Top level application object
+ *
  */
 var example;
 (function (example) {
@@ -6898,7 +7642,6 @@ var example;
                 this.delta = 0;
                 this.previousTime = 0;
                 this.score = { score: 0 };
-                this.sfx = { sfx: false };
                 /**
                  * Game Loop
                  * @param time
@@ -6949,8 +7692,18 @@ var example;
                 window.addEventListener('resize', this.resize, true);
                 window.onorientationchange = this.resize;
                 EZGUI.Theme.load([("res/ezgui/" + Constants.theme + "-theme/" + Constants.theme + "-theme.json")], function () {
+                    var auto = Properties.get('skip') === 'true';
+                    Properties.set('skip', 'false');
                     _this.menu = new MenuView(_this);
                     _this.options = new OptionsView(_this);
+                    _this.options.visible = false;
+                    _this.menu.visible = !auto;
+                    _this.sprites.visible = auto;
+                    _this.stage.addChild(_this.sprites);
+                    _this.stage.addChild(_this.menu.view);
+                    _this.stage.addChild(_this.options.view);
+                    if (auto)
+                        _this.start();
                     requestAnimationFrame(_this.update);
                 });
             }

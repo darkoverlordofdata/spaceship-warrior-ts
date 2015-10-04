@@ -1,7 +1,8 @@
 /**
- * Game
+ * core/Game.ts
  *
- * connects the environment to the ecs
+ * Top level application object
+ *
  */
 module example.core {
 
@@ -26,7 +27,7 @@ module example.core {
     private delta:number=0;
     private previousTime:number=0;
     private score = {score: 0};
-    private sfx = {sfx: false};
+    //private sfx = {sfx: false};
 
     public options:OptionsView;
     public menu:MenuView;
@@ -74,8 +75,20 @@ module example.core {
 
       EZGUI.Theme.load([`res/ezgui/${Constants.theme}-theme/${Constants.theme}-theme.json`], () => {
 
+        var auto = Properties.get('skip') === 'true';
+        Properties.set('skip', 'false');
+
         this.menu = new MenuView(this);
         this.options = new OptionsView(this);
+
+        this.options.visible =  false;
+        this.menu.visible = !auto;
+        this.sprites.visible = auto;
+        this.stage.addChild(this.sprites);
+        this.stage.addChild(this.menu.view);
+        this.stage.addChild(this.options.view);
+        if (auto) this.start();
+
         requestAnimationFrame(this.update);
 
       });

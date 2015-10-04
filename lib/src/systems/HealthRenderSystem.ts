@@ -44,44 +44,21 @@ module example.systems {
 
     public initialize() {
       this.sprites = EntitySystem.blackBoard.getEntry<Container>('sprites');
-      this.font = example.core.font;
+      this.font = Constants.font;
     }
 
-
-    //public inserted(e:Entity) {
-    //  var sprite:Sprite = this.sm.get(e);
-    //  var text:BitmapText = new BitmapText('100%', this.font);
-    //  text['layer'] = sprite.layer+.5;
-    //  text.scale.set(1/Constants.RATIO);
-    //  this.sprites.addChild(text);
-    //  this.texts[e.uuid] = text;
-    //
-    //}
-    //protected removed(e:Entity) {
-    //  this.sprites.removeChild(this.texts[e.uuid]);
-    //  this.texts[e.uuid] = null;
-    //  delete this.texts[e.uuid];
-    //}
-
 		public processEach(e:Entity) {
-      // update the text element on the sprite
-      //if (this.texts[e.uuid]) {
-        var position:Position = this.pm.get(e);
-        var health:Health = this.hm.get(e);
-        var percentage:number = Math.round(health.health / health.maximumHealth * 100);
+      //var position:Position = this.pm.get(e);
+      var health:Health = this.hm.get(e);
+      var percentage:number = Math.round(health.health / health.maximumHealth * 100);
 
-        //var text:BitmapText = this.texts[e.uuid];
-        //
-        //text.position.set(position.x, position.y);
-        //text.text = `${percentage}%`;
-        if (percentage < 100) {
+      if (percentage < 100) {
 
-          var sprite:PIXI.Sprite = this.sm.get(e).sprite_;
-          if (!sprite.filters) {
-            sprite.filters = [new InvertFilter()];
-          }
-          sprite.filters[0]['invert'] = (100-percentage)/100;
-        //}
+        var sprite:PIXI.Sprite = this.sm.get(e).sprite_;
+        if (!sprite.filters) {
+          sprite.filters = [new InvertFilter()];
+        }
+        sprite.filters[0]['invert'] = (100-percentage)/100;
 
       }
 		}

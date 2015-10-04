@@ -1,3 +1,9 @@
+/**
+ * views/MenuView.ts
+ *
+ * Main application menu
+ *
+ */
 module example.views {
 
   import Fonts = example.views.Fonts;
@@ -70,17 +76,15 @@ module example.views {
     }
 
 
-    playOnClick(e) {
+    private playOnClick = (e) => {
       this.game.stage.removeChild(this.view);
-      this.game.options.width = window.innerWidth;
-      this.game.options.height = window.innerHeight;
       this.game.options.visible = false;
       this.game.sprites.visible = true;
       this.game.start();
-    }
+    };
 
-    optionsOnClick(e) {
+    private optionsOnClick = (e) => {
       this.game.showLeaderboard();
-    }
+    };
   }
 }

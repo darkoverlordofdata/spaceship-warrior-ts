@@ -1,7 +1,8 @@
 /**
- * GameSystems
+ * core/GameSystems.ts
  *
- * the main game loop
+ * The main game loop
+ *
  */
 module example.core {
 

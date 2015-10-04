@@ -32,7 +32,6 @@ module example.systems {
     private totalFrames:number=0;
     private elapsedTime:number=0;
     private fps:number=0;
-    private isMobile:boolean;
     private lives:number;
     private score;
 
@@ -41,11 +40,10 @@ module example.systems {
     }
 
     public initialize() {
-      this.isMobile = false;
       this.score = EntitySystem.blackBoard.getEntry('score');
 
       var sprites:Container = EntitySystem.blackBoard.getEntry<Container>('sprites');
-      var font = example.core.font;
+      var font = Constants.font;
 
       this.framesPerSecond = new BitmapText('FPS: 60', font);
       this.framesPerSecond['layer'] = Layer.TEXT;
@@ -62,7 +60,7 @@ module example.systems {
       sprites.addChild(this.totalScore);
 
 
-      if (!this.isMobile) {
+      if (!Constants.isMobile) {
         this.activeEntities = new BitmapText('Active entities: ', font);
         this.totalCreated = new BitmapText('Total created: ', font);
         this.totalDeleted = new BitmapText('Total deleted: ', font);
@@ -96,7 +94,7 @@ module example.systems {
 
       this.framesPerSecond.text = `FPS: ${this.fps}`;
       this.totalScore.text = `Score: ${this.score.score}`;
-      if (!this.isMobile) {
+      if (!Constants.isMobile) {
         this.activeEntities.text = `Active entities: ${this.world.getEntityManager().getActiveEntityCount()}`;
         this.totalCreated.text = `Total created: ${this.world.getEntityManager().getTotalCreated()}`;
         this.totalDeleted.text = `Total deleted: ${this.world.getEntityManager().getTotalDeleted()}`;

@@ -1,4 +1,12 @@
+/**
+ * views/OptionsView.ts
+ *
+ * Set preferences, view scores
+ *
+ */
 module example.views {
+
+  declare var chrome;
 
   import Fonts = example.views.Fonts;
   import Game = example.core.Game;
@@ -61,7 +69,7 @@ module example.views {
           null,
 
           null, {
-            id: 'optionsView_again',
+            id: 'optionsView_play',
             text: 'Play',
             component: 'Button',
             position: 'center',
@@ -77,29 +85,18 @@ module example.views {
      * Load data, Wire up the events
      */
     protected initialize() {
-      var game = this.game;
-
-      var playSfx = EZGUI.components.optionsView_sfx.checked = Properties.get('playSfx') === 'true';
+      var playSfx = Properties.get('playSfx') === 'true';
       EntitySystem.blackBoard.setEntry('playSfx', playSfx);
 
-      var playMusic = EZGUI.components.optionsView_music.checked = Properties.get('playMusic') === 'true';
+      var playMusic = Properties.get('playMusic') === 'true';
       EntitySystem.blackBoard.setEntry('playMusic', playMusic);
 
-      var auto = Boolean(window.localStorage.getItem('skipmenu'));
-      window.localStorage.removeItem('skipmenu');
-
-      this.visible =  false;
-      game.menu.visible = !auto;
-      game.sprites.visible = auto;
-      game.stage.addChild(game.sprites);
-      game.stage.addChild(game.menu.view);
-      game.stage.addChild(this.view);
+      EZGUI.components.optionsView_sfx.checked = playSfx;
+      EZGUI.components.optionsView_music.checked = playMusic;
 
       EZGUI.components.optionsView_sfx.on('click', (e) => this.sfxOnClick(e));
-      EZGUI.components.optionsView_music.on('click', (e) => this.playOnClick(e));
-      EZGUI.components.optionsView_again.on('click', (e) => this.againOnClick(e));
-
-      if (auto) this.game.start();
+      EZGUI.components.optionsView_music.on('click', (e) => this.musicOnClick(e));
+      EZGUI.components.optionsView_play.on('click', (e) => this.playOnClick(e));
     }
 
     /**
@@ -131,28 +128,33 @@ module example.views {
      * Sfx OnClick
      * @param e
      */
-    sfxOnClick(e) {
+    private sfxOnClick = (e) => {
       Properties.set('playSfx', e.target.checked);
       EntitySystem.blackBoard.setEntry('playSfx', e.target.checked);
-    }
+    };
+
+    /**
+     * Music OnClick
+     * @param e
+     */
+    private musicOnClick = (e) => {
+      Properties.set('playMusic', e.target.checked);
+      EntitySystem.blackBoard.setEntry('playMusic', e.target.checked);
+    };
 
     /**
      * Play OnClick
      * @param e
      */
-    playOnClick(e) {
-      Properties.set('playMusic', e.target.checked);
-      EntitySystem.blackBoard.setEntry('playMusic', e.target.checked);
-    }
+    private playOnClick = (e) => {
 
-    /**
-     * Again OnClick
-     * @param e
-     */
-    againOnClick(e) {
-      window.localStorage.setItem('skipmenu', 'true');
-      window.location.reload(false);
-    }
+      Properties.set('skip', 'true');
+      try {
+        chrome.runtime.reload();
+      } catch (e) {
+        window.location.reload(true);
+      }
+    };
 
 
 

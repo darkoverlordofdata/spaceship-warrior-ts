@@ -1,3 +1,8 @@
+/**
+ * systems/BackgroundSystem.ts
+ *
+ * Display player status
+ */
 module example.systems {
 
   import Background = example.components.Background;
