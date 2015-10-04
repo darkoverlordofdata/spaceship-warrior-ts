@@ -10,7 +10,7 @@
 },
 "enemy1.png":
 {
-	"frame": {"x":578,"y":325,"w":46,"h":45},
+	"frame": {"x":610,"y":325,"w":46,"h":45},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1,"w":46,"h":45},
@@ -42,7 +42,7 @@
 },
 "fighter.png":
 {
-	"frame": {"x":508,"y":325,"w":68,"h":85},
+	"frame": {"x":508,"y":349,"w":68,"h":85},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":1,"w":68,"h":85},
@@ -50,7 +50,7 @@
 },
 "life.png":
 {
-	"frame": {"x":626,"y":325,"w":33,"h":42},
+	"frame": {"x":508,"y":436,"w":33,"h":42},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":1,"w":33,"h":42},
@@ -87,6 +87,22 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":20},
 	"sourceSize": {"w":18,"h":20}
+},
+"status_red.png":
+{
+	"frame": {"x":508,"y":325,"w":100,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":10},
+	"sourceSize": {"w":100,"h":10}
+},
+"status_yellow.png":
+{
+	"frame": {"x":508,"y":337,"w":100,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":10},
+	"sourceSize": {"w":100,"h":10}
 }},
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
@@ -95,6 +111,6 @@
 	"format": "RGBA8888",
 	"size": {"w":674,"h":508},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:0b4d7b2b3848dbc9853615162e996f21:63585f7b8b8f1217a4ef36dbb2d49407:9be8c185d95a5be4a06ec0067a3d8380$"
+	"smartupdate": "$TexturePacker:SmartUpdate:4759b0fa15f454eeb5355a605398d55c:c31315fb749396b5b1e695692946d843:9be8c185d95a5be4a06ec0067a3d8380$"
 }
 }
