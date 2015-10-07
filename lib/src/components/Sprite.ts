@@ -37,26 +37,35 @@ module example.components {
     public name:string;
     public sprite_:ZSprite;
 
-    initialize(name?:string|Function, lambda?) {
-      switch(typeof name) {
+    initialize(name?:string|Function|Object, lambda?) {
 
-        case 'string':
+      var ctor = {
+        'string': () => {
           this.name = <string>name;
           var s = this.sprite_ = new ZSprite(Texture.fromFrame(`${this.name}.png`));
           s.scale.set(1 / Constants.RATIO);
           s.anchor.set(.5, .5);
-          break;
-
-        case 'function':
+        },
+        'object': () => {
+          this.sprite_ = <ZSprite>name;
+        },
+        'function': () => {
           this.sprite_ = new ZSprite();
           lambda = name;
-          break;
-      }
+        }
+      }[typeof name];
+      if (ctor) ctor();
       if (lambda) lambda(this);
     }
 
     addTo(layer:Container) {
-      layer.addChild(this.sprite_);
+      this.sprite_['layer'] = this.layer;
+      layer.addChild(this.sprite_, 0);
+      layer.children.sort((a, b) => {
+        if (a['layer'] < b['layer']) return -1;
+        if (a['layer'] > b['layer']) return 1;
+        return 0;
+      });
     }
 
     removeFrom(layer:Container) {

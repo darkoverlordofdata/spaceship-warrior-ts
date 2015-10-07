@@ -3,6 +3,7 @@ module example.systems {
   import ImmutableBag = artemis.utils.ImmutableBag;
 
   import Bag = artemis.utils.Bag;
+  import Gui = example.components.Gui;
   import Bounds = example.components.Bounds;
   import ColorAnimation = example.components.ColorAnimation;
   import Expires = example.components.Expires;
@@ -29,6 +30,7 @@ module example.systems {
   import GroupManager = artemis.managers.GroupManager;
   import Container = PIXI.Container;
 
+  import MenuView = example.views.MenuView;
 
   export class CollisionSystem extends EntitySystem {
     @Mapper(Position) pm:ComponentMapper<Position>;
@@ -94,7 +96,10 @@ module example.systems {
             if (lives.size() === 0) {
               /** Game Over!! */
               var game:Game = <Game>EntitySystem.blackBoard.getEntry('game');
-              game.showLeaderboard(this.score.score);
+              game.systems.stop();
+              var gui = EntitySystem.blackBoard.getEntry<MenuView>('gui');
+              gui.show();
+              //game.showLeaderboard(this.score.score);
 
             } else {
               var life:Entity = lives.get(0);

@@ -5,23 +5,30 @@ module example.systems {
 
   import HashMap = artemis.utils.HashMap;
 
+  import Aspect = artemis.Aspect;
+  import Player = example.components.Player;
+  import Vital = example.components.Vital;
+  import Health = example.components.Health;
   import Position = example.components.Position;
   import Sprite = example.components.Sprite;
   import Constants = example.core.Constants;
   import Layer = example.components.Layer;
 
+  import Entity = artemis.Entity;
   import EntitySystem = artemis.EntitySystem;
   import ComponentMapper = artemis.ComponentMapper;
   import VoidEntitySystem = artemis.systems.VoidEntitySystem;
   import Mapper = artemis.annotations.Mapper;
+  import EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
 
   import BitmapText = PIXI.extras.BitmapText;
   import Container = PIXI.Container;
   import Point = PIXI.Point;
 
-  export class HudRenderSystem extends VoidEntitySystem {
-    @Mapper(Position) pm:ComponentMapper<Position>;
-    @Mapper(Sprite) sm:ComponentMapper<Sprite>;
+  export class HudRenderSystem extends EntityProcessingSystem {
+
+    @Mapper(Health) hm:ComponentMapper<Health>;
+    @Mapper(Vital) vm:ComponentMapper<Vital>;
 
     private framesPerSecond:BitmapText;
     private activeEntities:BitmapText;
@@ -34,9 +41,10 @@ module example.systems {
     private fps:number=0;
     private lives:number;
     private score;
+    private status:Entity;
 
     constructor() {
-      super();
+      super(Aspect.getAspectForAll(Player, Health));
     }
 
     public initialize() {
@@ -49,16 +57,15 @@ module example.systems {
       this.framesPerSecond['layer'] = Layer.TEXT;
       var scale = 1 / Constants.RATIO;
       this.framesPerSecond.scale = new Point(scale, scale);
-      this.framesPerSecond.position = new Point(0, 20 / Constants.RATIO);
+      this.framesPerSecond.position = new Point(20, 20 / Constants.RATIO);
       sprites.addChild(this.framesPerSecond);
 
-      this.totalScore = new BitmapText('Score: 0', font);
+      this.totalScore = new BitmapText('Score: 00000', font);
       this.totalScore['layer'] = Layer.TEXT;
       var scale = 1 / Constants.RATIO;
       this.totalScore.scale = new Point(scale, scale);
-      this.totalScore.position = new Point(Constants.FRAME_WIDTH/2, 20 / Constants.RATIO);
+      this.totalScore.position = new Point(Constants.FRAME_WIDTH-this.totalScore.width-20, 20 / Constants.RATIO);
       sprites.addChild(this.totalScore);
-
 
       if (!Constants.isMobile) {
         this.activeEntities = new BitmapText('Active entities: ', font);
@@ -73,9 +80,9 @@ module example.systems {
         this.totalCreated.scale = new Point(scale, scale);
         this.totalDeleted.scale = new Point(scale, scale);
 
-        this.activeEntities.position = new Point(0, 40 / Constants.RATIO);
-        this.totalCreated.position = new Point(0, 60 / Constants.RATIO);
-        this.totalDeleted.position = new Point(0, 80 / Constants.RATIO);
+        this.activeEntities.position = new Point(20, 40 / Constants.RATIO);
+        this.totalCreated.position = new Point(20, 60 / Constants.RATIO);
+        this.totalDeleted.position = new Point(20, 80 / Constants.RATIO);
 
         sprites.addChild(this.activeEntities);
         sprites.addChild(this.totalCreated);
@@ -83,7 +90,17 @@ module example.systems {
       }
     }
 
-    public processSystem() {
+    setStatus(status:Entity) {
+      this.status = status;
+    }
+
+    public processEach(e:Entity) {
+
+      var health:Health = this.hm.get(e);
+      var vital:Vital = this.vm.get(this.status);
+
+      vital.good.width = ~~Math.round(health.health / health.maximumHealth * 100);
+
       this.totalFrames++;
       this.elapsedTime += this.world.delta;
       if (this.elapsedTime > 1) {

@@ -16,7 +16,7 @@ module example.core {
   import MathUtils = artemis.utils.MathUtils;
   import Properties = example.core.Properties;
   import MenuView = example.views.MenuView;
-  import OptionsView = example.views.OptionsView;
+  import GameSystems = example.core.GameSystems;
 
   export class Game {
 
@@ -29,7 +29,6 @@ module example.core {
     private score = {score: 0};
     //private sfx = {sfx: false};
 
-    public options:OptionsView;
     public menu:MenuView;
 
     /**
@@ -72,39 +71,19 @@ module example.core {
       document.body.appendChild(this.renderer.view);
       window.addEventListener('resize', this.resize, true);
       window.onorientationchange = this.resize;
+      this.stage.addChild(this.sprites);
 
       EZGUI.Theme.load([`res/ezgui/${Constants.theme}-theme/${Constants.theme}-theme.json`], () => {
 
         var auto = Properties.get('skip') === 'true';
         Properties.set('skip', 'false');
 
-        this.menu = new MenuView(this);
-        this.options = new OptionsView(this);
-
-        this.options.visible =  false;
-        this.menu.visible = !auto;
-        this.sprites.visible = auto;
-        this.stage.addChild(this.sprites);
-        this.stage.addChild(this.menu.view);
-        this.stage.addChild(this.options.view);
-        if (auto) this.start();
-
+        this.systems = new GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
         requestAnimationFrame(this.update);
 
       });
     }
 
-    showLeaderboard(score?:number) {
-      this.options.showLeaderboard(score);
-    }
-
-    /**
-     * Start the game
-     */
-    start() {
-      this.systems = new GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
-
-    }
     /**
      * Game Loop
      * @param time

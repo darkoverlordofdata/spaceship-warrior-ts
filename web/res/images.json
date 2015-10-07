@@ -2,7 +2,7 @@
 
 "bullet.png":
 {
-	"frame": {"x":668,"y":220,"w":3,"h":10},
+	"frame": {"x":1305,"y":220,"w":3,"h":10},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":10},
@@ -10,7 +10,7 @@
 },
 "enemy1.png":
 {
-	"frame": {"x":578,"y":325,"w":46,"h":45},
+	"frame": {"x":578,"y":385,"w":46,"h":45},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1,"w":46,"h":45},
@@ -18,7 +18,7 @@
 },
 "enemy2.png":
 {
-	"frame": {"x":508,"y":198,"w":144,"h":125},
+	"frame": {"x":1145,"y":198,"w":144,"h":125},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":5,"w":144,"h":125},
@@ -26,7 +26,7 @@
 },
 "enemy3.png":
 {
-	"frame": {"x":508,"y":2,"w":164,"h":194},
+	"frame": {"x":1145,"y":2,"w":164,"h":194},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":57,"y":18,"w":164,"h":194},
@@ -42,7 +42,7 @@
 },
 "fighter.png":
 {
-	"frame": {"x":508,"y":325,"w":68,"h":85},
+	"frame": {"x":508,"y":385,"w":68,"h":85},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":1,"w":68,"h":85},
@@ -50,7 +50,7 @@
 },
 "life.png":
 {
-	"frame": {"x":626,"y":325,"w":33,"h":42},
+	"frame": {"x":610,"y":432,"w":33,"h":42},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":1,"w":33,"h":42},
@@ -58,7 +58,7 @@
 },
 "mine1.png":
 {
-	"frame": {"x":654,"y":220,"w":12,"h":20},
+	"frame": {"x":1291,"y":220,"w":12,"h":20},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":20},
@@ -66,15 +66,23 @@
 },
 "mine2.png":
 {
-	"frame": {"x":654,"y":242,"w":12,"h":19},
+	"frame": {"x":1291,"y":242,"w":12,"h":19},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1,"w":12,"h":19},
 	"sourceSize": {"w":12,"h":20}
 },
+"panel.png":
+{
+	"frame": {"x":508,"y":2,"w":635,"h":381},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":10,"w":635,"h":381},
+	"sourceSize": {"w":650,"h":400}
+},
 "particle.png":
 {
-	"frame": {"x":668,"y":232,"w":3,"h":3},
+	"frame": {"x":1305,"y":232,"w":3,"h":3},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
@@ -82,19 +90,35 @@
 },
 "star.png":
 {
-	"frame": {"x":654,"y":198,"w":18,"h":20},
+	"frame": {"x":1291,"y":198,"w":18,"h":20},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":20},
 	"sourceSize": {"w":18,"h":20}
+},
+"status_red.png":
+{
+	"frame": {"x":508,"y":472,"w":100,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":10},
+	"sourceSize": {"w":100,"h":10}
+},
+"status_yellow.png":
+{
+	"frame": {"x":508,"y":484,"w":100,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":10},
+	"sourceSize": {"w":100,"h":10}
 }},
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "images.png",
 	"format": "RGBA8888",
-	"size": {"w":674,"h":508},
+	"size": {"w":1311,"h":508},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:0b4d7b2b3848dbc9853615162e996f21:63585f7b8b8f1217a4ef36dbb2d49407:9be8c185d95a5be4a06ec0067a3d8380$"
+	"smartupdate": "$TexturePacker:SmartUpdate:070af5d31d4e210a1c278087cb8b1b3a:2e91fcfbabf36c795e03dc105d46a044:9be8c185d95a5be4a06ec0067a3d8380$"
 }
 }

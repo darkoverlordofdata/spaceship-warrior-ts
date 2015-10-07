@@ -24,7 +24,7 @@ module example.templates {
 
     public buildEntity(entity:Entity, world:World, ordinal:number):Entity {
 
-      var x = Constants.FRAME_WIDTH-((ordinal+1) * 40);
+      var x = (Constants.FRAME_WIDTH/2)-((ordinal+1) * 40)+87;
       var y = 80;
 
       entity.addComponent(Position, ~~x, ~~y);

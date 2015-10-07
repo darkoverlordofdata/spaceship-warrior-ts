@@ -49,16 +49,16 @@ module example.systems {
     }
 
 
-    public inserted(e:Entity) {
-      var sprite:Sprite = this.sm.get(e);
-      sprite.sprite_['layer'] = sprite.layer;
-
-      this.sprites.children.sort((a, b) => {
-        if (a['layer'] < b['layer']) return -1;
-        if (a['layer'] > b['layer']) return 1;
-        return 0;
-      });
-    }
+    //public inserted(e:Entity) {
+    //  var sprite:Sprite = this.sm.get(e);
+    //  sprite.sprite_['layer'] = sprite.layer;
+    //
+    //  this.sprites.children.sort((a, b) => {
+    //    if (a['layer'] < b['layer']) return -1;
+    //    if (a['layer'] > b['layer']) return 1;
+    //    return 0;
+    //  });
+    //}
 
 
     protected removed(e:Entity) {

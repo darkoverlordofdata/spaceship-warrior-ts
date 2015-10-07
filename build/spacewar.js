@@ -4941,9 +4941,13 @@ var example;
             Groups[Groups["PLAYER_BULLETS"] = 0] = "PLAYER_BULLETS";
             Groups[Groups["PLAYER_SHIP"] = 1] = "PLAYER_SHIP";
             Groups[Groups["PLAYER_LIVES"] = 2] = "PLAYER_LIVES";
-            Groups[Groups["ENEMY_SHIPS"] = 3] = "ENEMY_SHIPS";
-            Groups[Groups["ENEMY_BULLETS"] = 4] = "ENEMY_BULLETS";
-            Groups[Groups["ENEMY_MINES"] = 5] = "ENEMY_MINES";
+            Groups[Groups["PLAYER_STATUS"] = 3] = "PLAYER_STATUS";
+            Groups[Groups["ENEMY_SHIPS"] = 4] = "ENEMY_SHIPS";
+            Groups[Groups["ENEMY_BULLETS"] = 5] = "ENEMY_BULLETS";
+            Groups[Groups["ENEMY_MINES"] = 6] = "ENEMY_MINES";
+            Groups[Groups["GUI"] = 7] = "GUI";
+            Groups[Groups["GUI_CREDITS"] = 8] = "GUI_CREDITS";
+            Groups[Groups["GUI_LEADERBOARD"] = 9] = "GUI_LEADERBOARD";
         })(core.Groups || (core.Groups = {}));
         var Groups = core.Groups;
         (function (ScaleType) {
@@ -4972,6 +4976,11 @@ var example;
             };
             Constants.assets = {
                 images_json: 'res/images.json',
+                logo_png: 'res/images/logo.png',
+                panel_png: 'res/images/panel.png',
+                opendyslexic20_fnt: 'res/ezgui/fonts/OpenDyslexic20.fnt',
+                opendyslexic24_fnt: 'res/ezgui/fonts/OpenDyslexic24.fnt',
+                opendyslexic32_fnt: 'res/ezgui/fonts/OpenDyslexic32.fnt',
                 normal_fnt: 'res/ezgui/fonts/normal.fnt',
                 hud_fnt: 'res/ezgui/fonts/hud.fnt',
                 desyrel_fnt: 'res/ezgui/fonts/desyrel.fnt',
@@ -4994,6 +5003,7 @@ var example;
                 'Schmup is the path to the\n dark side',
                 "There goes the planet"
             ];
+            Constants.credits = "\n    Built by darkoverlordofdata, using artmemis, pixi.js,\n    localStorageDB, howler, and ezgui.\n\n    Schmup Warz is a demo of ArtemisTS, and is based on\n    Spaceship Warrior by @Flet\n    (https://github.com/Flet/spaceship-warrior-gradle)\n\n    MIT License\n    ";
             return Constants;
         })();
         core.Constants = Constants;
@@ -5010,15 +5020,14 @@ var example;
 (function (example) {
     var core;
     (function (core) {
-        var isCordova = !!window['cordova'];
         var Properties = (function () {
             function Properties() {
             }
             Properties.init = function (name, properties) {
-                if (Properties.db !== null) {
+                if (Properties.db !== null)
                     return;
-                }
-                function init(db) {
+                /** Initialize the db with the properties */
+                function initializeDb(db) {
                     if (db.isNew()) {
                         db.createTable("settings", ["name", "value"]);
                         db.createTable("leaderboard", ["date", "score"]);
@@ -5035,13 +5044,14 @@ var example;
                 }
                 Properties.dbname = name;
                 Properties.properties = properties;
-                if (window['cordova']) {
-                    // PhoneGap application
-                    init(Properties.db = new localStorageDB(Properties.dbname));
+                //initializeDb(Properties.db = new localStorageDB(Properties.dbname));
+                if (window['cordova'] || navigator['isCocoonJS']) {
+                    // use localStorage only
+                    initializeDb(Properties.db = new localStorageDB(Properties.dbname));
                 }
                 else {
-                    // Web page
-                    chromeStorageDB(Properties.dbname, localStorage, function (db) { return init(Properties.db = db); });
+                    // try chrome.storage with fallback to localStorage
+                    chromeStorageDB(Properties.dbname, localStorage, function (db) { return initializeDb(Properties.db = db); });
                 }
             };
             /*
@@ -5296,6 +5306,45 @@ var example;
     })(components = example.components || (example.components = {}));
 })(example || (example = {}));
 //# sourceMappingURL=Expires.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var components;
+    (function (components) {
+        var PooledComponent = artemis.PooledComponent;
+        var Pooled = artemis.annotations.Pooled;
+        var Gui = (function (_super) {
+            __extends(Gui, _super);
+            function Gui() {
+                _super.apply(this, arguments);
+            }
+            Gui.prototype.initialize = function (gui) {
+                this.gui = gui;
+            };
+            Gui.className = 'Gui';
+            Gui = __decorate([
+                Pooled()
+            ], Gui);
+            return Gui;
+        })(PooledComponent);
+        components.Gui = Gui;
+        Gui.prototype.gui = null;
+    })(components = example.components || (example.components = {}));
+})(example || (example = {}));
+//# sourceMappingURL=Gui.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5563,23 +5612,37 @@ var example;
                 _super.apply(this, arguments);
             }
             Sprite.prototype.initialize = function (name, lambda) {
-                switch (typeof name) {
-                    case 'string':
-                        this.name = name;
-                        var s = this.sprite_ = new ZSprite(Texture.fromFrame(this.name + ".png"));
+                var _this = this;
+                var ctor = {
+                    'string': function () {
+                        _this.name = name;
+                        var s = _this.sprite_ = new ZSprite(Texture.fromFrame(_this.name + ".png"));
                         s.scale.set(1 / Constants.RATIO);
                         s.anchor.set(.5, .5);
-                        break;
-                    case 'function':
-                        this.sprite_ = new ZSprite();
+                    },
+                    'object': function () {
+                        _this.sprite_ = name;
+                    },
+                    'function': function () {
+                        _this.sprite_ = new ZSprite();
                         lambda = name;
-                        break;
-                }
+                    }
+                }[typeof name];
+                if (ctor)
+                    ctor();
                 if (lambda)
                     lambda(this);
             };
             Sprite.prototype.addTo = function (layer) {
-                layer.addChild(this.sprite_);
+                this.sprite_['layer'] = this.layer;
+                layer.addChild(this.sprite_, 0);
+                layer.children.sort(function (a, b) {
+                    if (a['layer'] < b['layer'])
+                        return -1;
+                    if (a['layer'] > b['layer'])
+                        return 1;
+                    return 0;
+                });
             };
             Sprite.prototype.removeFrom = function (layer) {
                 layer.removeChild(this.sprite_);
@@ -5600,6 +5663,49 @@ var example;
     })(components = example.components || (example.components = {}));
 })(example || (example = {}));
 //# sourceMappingURL=Sprite.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var components;
+    (function (components) {
+        var PooledComponent = artemis.PooledComponent;
+        var Pooled = artemis.annotations.Pooled;
+        var Sprite = PIXI.Sprite;
+        var Texture = PIXI.Texture;
+        var Vital = (function (_super) {
+            __extends(Vital, _super);
+            function Vital() {
+                _super.apply(this, arguments);
+            }
+            Vital.prototype.initialize = function (good, bad, lambda) {
+                this.good = new Sprite(Texture.fromFrame(good + ".png"));
+                this.bad = new Sprite(Texture.fromFrame(bad + ".png"));
+                if (lambda)
+                    lambda(this);
+            };
+            Vital.className = 'Vital';
+            Vital = __decorate([
+                Pooled()
+            ], Vital);
+            return Vital;
+        })(PooledComponent);
+        components.Vital = Vital;
+    })(components = example.components || (example.components = {}));
+})(example || (example = {}));
+//# sourceMappingURL=Vital.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5643,6 +5749,426 @@ var example;
     })(components = example.components || (example.components = {}));
 })(example || (example = {}));
 //# sourceMappingURL=Velocity.js.map
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var Fonts = (function () {
+            function Fonts() {
+            }
+            Fonts.font45 = {
+                size: '45px',
+                fontWeight: 'bold',
+                family: 'OpenDyslexic',
+                color: '8f8'
+            };
+            Fonts.font32 = {
+                size: '32px',
+                fontWeight: 'bold',
+                family: 'OpenDyslexic',
+                color: '8f8'
+            };
+            Fonts.font20 = {
+                size: '20px',
+                fontWeight: 'bold',
+                family: 'OpenDyslexic',
+                color: '8f8'
+            };
+            return Fonts;
+        })();
+        views.Fonts = Fonts;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=Fonts.js.map
+/**
+ * views/AbstractView.ts
+ *
+ * Base class for Views
+ *
+ */
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var Constants = example.core.Constants;
+        var AbstractView = (function () {
+            function AbstractView(options) {
+                if (options === void 0) { options = {}; }
+                this.options = options;
+                this._view = EZGUI.create(this.options, Constants.theme);
+                this.initialize();
+            }
+            Object.defineProperty(AbstractView.prototype, "view", {
+                get: function () {
+                    return this._view;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AbstractView.prototype, "visible", {
+                get: function () {
+                    return this._view.visible;
+                },
+                set: function (value) {
+                    this._view.visible = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            AbstractView.prototype.initialize = function () { };
+            return AbstractView;
+        })();
+        views.AbstractView = AbstractView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=AbstractView.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/**
+ * views/MenuView.ts
+ *
+ * Main application menu
+ *
+ */
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var color = '#c0c0c0';
+        var EntitySystem = artemis.EntitySystem;
+        var AbstractView = example.views.AbstractView;
+        var CreditsView = (function (_super) {
+            __extends(CreditsView, _super);
+            function CreditsView(parent) {
+                var _this = this;
+                _super.call(this, {
+                    id: 'creditsScreen',
+                    component: 'Window',
+                    padding: 4,
+                    color: '#bcd8fe',
+                    position: { x: 0, y: 0 },
+                    //header: { position: { x: 20, y: 20 }, height: 120, width: 360, image:'res/images/Logo.png', },
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    layout: [1, 1],
+                    children: [
+                        {
+                            id: 'buttonCreditsBack',
+                            text: 'BACK',
+                            component: 'Button',
+                            position: { x: (window.innerWidth - 200) / 2, y: window.innerHeight * .85 },
+                            color: color,
+                            font: {
+                                size: '24px',
+                                family: 'Skranji',
+                                color: 'white'
+                            },
+                            anchor: { x: 0.5, y: 0.5 },
+                            width: 200,
+                            height: 50
+                        }
+                    ]
+                });
+                this.parent = parent;
+                this.backOnClick = function (e) {
+                    _this.parent.system.hideCredits();
+                    _this.hide(_this.next);
+                };
+                this.show = function (next) {
+                    _this.next = next;
+                    _this._view.visible = true;
+                };
+                this.hide = function (next) {
+                    _this._view.visible = false;
+                    next();
+                };
+            }
+            CreditsView.prototype.initialize = function () {
+                var _this = this;
+                this.back = EZGUI.components.buttonCreditsBack;
+                this.back.on('click', function (e) { return _this.backOnClick(e); });
+                this.view['layer'] = -1;
+                var c = EntitySystem.blackBoard.getEntry('sprites');
+                c.addChild(this.view);
+            };
+            return CreditsView;
+        })(AbstractView);
+        views.CreditsView = CreditsView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=CreditsView.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/**
+ * views/OptionsView.ts
+ *
+ * Set preferences, view scores
+ *
+ */
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var color = '#c0c0c0';
+        var font = {
+            size: '12px',
+            family: 'Skranji',
+            color: 'white'
+        };
+        var EntitySystem = artemis.EntitySystem;
+        var AbstractView = example.views.AbstractView;
+        var LeaderboardView = (function (_super) {
+            __extends(LeaderboardView, _super);
+            function LeaderboardView(parent) {
+                var _this = this;
+                _super.call(this, {
+                    id: 'scoreScreen',
+                    component: 'Window',
+                    padding: 4,
+                    color: '#bcd8fe',
+                    position: { x: 0, y: 0 },
+                    //header: { position: { x: 20, y: 20 }, height: 120, width: 360, image:'res/images/Logo.png', },
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    layout: [1, 1],
+                    children: [
+                        {
+                            id: 'buttonLeaderboardBack',
+                            text: 'BACK',
+                            component: 'Button',
+                            position: { x: (window.innerWidth - 200) / 2, y: window.innerHeight * .85 },
+                            color: color,
+                            font: {
+                                size: '24px',
+                                family: 'Skranji',
+                                color: 'white'
+                            },
+                            anchor: { x: 0.5, y: 0.5 },
+                            width: 200,
+                            height: 50
+                        }
+                    ]
+                });
+                this.parent = parent;
+                this.backOnClick = function (e) {
+                    _this.hide(_this.next);
+                    _this.parent.system.hideLeaderboard();
+                };
+                this.show = function (next) {
+                    _this.next = next;
+                    _this._view.visible = true;
+                };
+                this.hide = function (next) {
+                    _this._view.visible = false;
+                    next();
+                };
+            }
+            LeaderboardView.prototype.initialize = function () {
+                var _this = this;
+                this.back = EZGUI.components.buttonLeaderboardBack;
+                this.back.on('click', function (e) { return _this.backOnClick(e); });
+                this.view['layer'] = -1;
+                var c = EntitySystem.blackBoard.getEntry('sprites');
+                c.addChild(this.view);
+            };
+            return LeaderboardView;
+        })(AbstractView);
+        views.LeaderboardView = LeaderboardView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=LeaderboardView.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/**
+ * views/MenuView.ts
+ *
+ * Main application menu
+ *
+ */
+var example;
+(function (example) {
+    var views;
+    (function (views) {
+        var AbstractView = example.views.AbstractView;
+        var LeaderboardView = example.views.LeaderboardView;
+        var CreditsView = example.views.CreditsView;
+        //const color = '#29d87e';
+        var color = '#c0c0c0';
+        var MenuView = (function (_super) {
+            __extends(MenuView, _super);
+            function MenuView(system) {
+                var _this = this;
+                _super.call(this, {
+                    id: 'mainScreen',
+                    component: 'Window',
+                    padding: 4,
+                    color: '#bcd8fe',
+                    position: { x: 0, y: 0 },
+                    //header: { position: { x: 20, y: 20 }, height: 120, width: 360, image:'res/images/Logo.png', },
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    layout: [1, 7],
+                    children: [
+                        {
+                            id: 'labelTitle',
+                            component: 'label',
+                            position: { x: -1000, y: -1000 },
+                            height: 120,
+                            width: 380,
+                            color: color,
+                            text: 'Schmup Warz',
+                            font: {
+                                size: '44px',
+                                family: 'Skranji',
+                                color: 'white'
+                            }
+                        },
+                        {
+                            id: 'buttonPlay',
+                            text: 'PLAY',
+                            component: 'Button',
+                            position: { x: -1000, y: -1000 },
+                            color: color,
+                            font: {
+                                size: '32px',
+                                family: 'Skranji',
+                                color: 'white'
+                            },
+                            anchor: { x: 0.5, y: 0.5 },
+                            width: 200,
+                            height: 50
+                        },
+                        {
+                            id: 'buttonHighScore',
+                            text: 'HIGHSCORE',
+                            component: 'Button',
+                            //position: 'center',
+                            position: { x: -1000, y: -1000 },
+                            color: color,
+                            font: {
+                                size: '32px',
+                                family: 'Skranji',
+                                color: 'white'
+                            },
+                            anchor: { x: 0.5, y: 0.5 },
+                            width: 200,
+                            height: 50
+                        },
+                        {
+                            id: 'buttonCredits',
+                            text: 'CREDITS',
+                            component: 'Button',
+                            position: { x: -1000, y: -1000 },
+                            //position: 'center',
+                            color: color,
+                            font: {
+                                size: '32px',
+                                family: 'Skranji',
+                                color: 'white'
+                            },
+                            anchor: { x: 0.5, y: 0.5 },
+                            width: 200,
+                            height: 50
+                        }
+                    ]
+                });
+                this.system = system;
+                this.hide = function (next) {
+                    _this.title.animatePosTo(_this.title.position.x, -20 - _this.title.settings.height, 500, EZGUI.Easing.Back.Out, function () {
+                        _this.title.visible = false;
+                        _this.play.animatePosTo(_this.play.position.x, -20 - _this.play.settings.height, 200, EZGUI.Easing.Circular.Out, function () {
+                            _this.play.visible = false;
+                            _this.highScore.animatePosTo(_this.highScore.position.x, -20 - _this.highScore.settings.height, 200, EZGUI.Easing.Circular.Out, function () {
+                                _this.highScore.visible = false;
+                                _this.credits.animatePosTo(_this.highScore.position.x, -20 - _this.credits.settings.height, 200, EZGUI.Easing.Circular.Out, function () {
+                                    if (next)
+                                        next();
+                                });
+                            });
+                        });
+                    });
+                };
+                this.show = function (next) {
+                    _this.title.visible = true;
+                    _this.title.position.x = ((window.innerWidth - _this.title.settings.width) / 2);
+                    _this.title.position.y = -20 - _this.title.settings.height;
+                    _this.title.animatePosTo(_this.title.position.x, 10, 500, EZGUI.Easing.Back.Out, function () {
+                        _this.play.visible = true;
+                        _this.play.position.x = ((window.innerWidth - _this.play.settings.width) / 2) + 100;
+                        _this.play.position.y = -20 - _this.play.settings.height;
+                        var targetY = ((window.innerHeight - _this.play.settings.height) / 2) - 40;
+                        _this.play.animatePosTo(_this.play.position.x, targetY, 200, EZGUI.Easing.Circular.Out, function () {
+                            _this.highScore.visible = true;
+                            _this.highScore.position.x = ((window.innerWidth - _this.highScore.settings.width) / 2) + 100;
+                            _this.highScore.position.y = -20 - _this.highScore.settings.height;
+                            var targetY = ((window.innerHeight - _this.highScore.settings.height) / 2) + 28;
+                            _this.highScore.animatePosTo(_this.highScore.position.x, targetY, 200, EZGUI.Easing.Circular.Out, function () {
+                                _this.credits.visible = true;
+                                _this.credits.position.x = ((window.innerWidth - _this.credits.settings.width) / 2) + 100;
+                                _this.credits.position.y = -20 - _this.credits.settings.height;
+                                var targetY = ((window.innerHeight - _this.credits.settings.height) / 2) + 28 + 66;
+                                _this.credits.animatePosTo(_this.credits.position.x, targetY, 200, EZGUI.Easing.Circular.Out, function () {
+                                    if (next)
+                                        next();
+                                });
+                            });
+                        });
+                    });
+                };
+                this.playOnClick = function (e) {
+                    _this.hide(function () {
+                        _this.system.start();
+                    });
+                };
+                this.highScoreOnClick = function (e) {
+                    _this.hide(function () {
+                        if (!_this.leader)
+                            _this.leader = new LeaderboardView(_this);
+                        _this.leader.show(_this.show);
+                        _this.system.showLeaderboard();
+                    });
+                };
+                this.creditsOnClick = function (e) {
+                    _this.hide(function () {
+                        if (!_this.help)
+                            _this.help = new CreditsView(_this);
+                        _this.help.show(_this.show);
+                        _this.system.showCredits();
+                    });
+                };
+            }
+            /**
+             * Wire up the events
+             */
+            MenuView.prototype.initialize = function () {
+                var _this = this;
+                this.title = EZGUI.components.labelTitle;
+                this.play = EZGUI.components.buttonPlay;
+                this.highScore = EZGUI.components.buttonHighScore;
+                this.credits = EZGUI.components.buttonCredits;
+                this.play.on('click', function (e) { return _this.playOnClick(e); });
+                this.highScore.on('click', function (e) { return _this.highScoreOnClick(e); });
+                this.credits.on('click', function (e) { return _this.creditsOnClick(e); });
+                this.view['layer'] = -1;
+            };
+            return MenuView;
+        })(AbstractView);
+        views.MenuView = MenuView;
+    })(views = example.views || (example.views = {}));
+})(example || (example = {}));
+//# sourceMappingURL=MenuView.js.map
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
     switch (arguments.length) {
@@ -5694,6 +6220,57 @@ var example;
     })(templates = example.templates || (example.templates = {}));
 })(example || (example = {}));
 //# sourceMappingURL=BackgroundTemplate.js.map
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var templates;
+    (function (templates) {
+        var GroupManager = artemis.managers.GroupManager;
+        var EntitySystem = artemis.EntitySystem;
+        var EntityTemplate = artemis.annotations.EntityTemplate;
+        var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
+        var Constants = example.core.Constants;
+        var Groups = example.core.Groups;
+        var CreditsTemplate = (function () {
+            function CreditsTemplate() {
+            }
+            CreditsTemplate.prototype.buildEntity = function (entity, world) {
+                var x = window.innerWidth / 2;
+                var y = window.innerHeight / 2;
+                var f = window.devicePixelRatio === 1 ? 2 : 1;
+                var text = new PIXI.Text(Constants.credits, Constants.font);
+                text.anchor.set(0);
+                text.position.set(-(x / f), -(y / 2));
+                entity.addComponent(Position, ~~x, ~~y);
+                entity.addComponent(Sprite, 'panel', function (sprite) {
+                    var s = sprite.sprite_;
+                    s.addChild(text);
+                    s.width = window.innerWidth * .75;
+                    s.height = window.innerHeight / 2;
+                    s.position.set(~~x, ~~y);
+                    sprite.layer = 5;
+                    sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
+                });
+                world.getManager(GroupManager).add(entity, Groups.GUI_CREDITS);
+                return entity;
+            };
+            CreditsTemplate = __decorate([
+                EntityTemplate('credits')
+            ], CreditsTemplate);
+            return CreditsTemplate;
+        })();
+        templates.CreditsTemplate = CreditsTemplate;
+    })(templates = example.templates || (example.templates = {}));
+})(example || (example = {}));
+//# sourceMappingURL=CreditsTemplate.js.map
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
     switch (arguments.length) {
@@ -5872,6 +6449,120 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
     }
 };
+console.log('loading GuiTemplate');
+var example;
+(function (example) {
+    var templates;
+    (function (templates) {
+        var GroupManager = artemis.managers.GroupManager;
+        var EntitySystem = artemis.EntitySystem;
+        var EntityTemplate = artemis.annotations.EntityTemplate;
+        var Gui = example.components.Gui;
+        var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
+        var Groups = example.core.Groups;
+        var MenuView = example.views.MenuView;
+        var GuiTemplate = (function () {
+            function GuiTemplate() {
+            }
+            GuiTemplate.prototype.buildEntity = function (entity, world, system) {
+                this.gui = new MenuView(system);
+                this.gui.show();
+                EntitySystem.blackBoard.setEntry('gui', this.gui);
+                entity.addComponent(Gui, this.gui);
+                entity.addComponent(Position, 0, 0);
+                entity.addComponent(Sprite, this.gui.view, function (sprite) {
+                    //var s:PIXI.Sprite = sprite.sprite_;
+                    //s.position.set(0, 0);
+                    sprite.layer = -1;
+                    sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
+                });
+                world.getManager(GroupManager).add(entity, Groups.GUI);
+                return entity;
+            };
+            GuiTemplate = __decorate([
+                EntityTemplate('gui')
+            ], GuiTemplate);
+            return GuiTemplate;
+        })();
+        templates.GuiTemplate = GuiTemplate;
+    })(templates = example.templates || (example.templates = {}));
+})(example || (example = {}));
+//# sourceMappingURL=GuiTemplate.js.map
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var templates;
+    (function (templates) {
+        var GroupManager = artemis.managers.GroupManager;
+        var EntitySystem = artemis.EntitySystem;
+        var EntityTemplate = artemis.annotations.EntityTemplate;
+        var Properties = example.core.Properties;
+        var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
+        var Groups = example.core.Groups;
+        var font = {
+            font: '40px Skranji',
+            tint: 0xfffff
+        };
+        var LeaderboardTemplate = (function () {
+            function LeaderboardTemplate() {
+            }
+            LeaderboardTemplate.prototype.buildEntity = function (entity, world) {
+                var x = window.innerWidth / 2;
+                var y = window.innerHeight / 2;
+                var f1 = window.devicePixelRatio === 1 ? 0 : 1;
+                var f2 = window.devicePixelRatio === 1 ? 1 : 0;
+                entity.addComponent(Position, ~~x, ~~y);
+                entity.addComponent(Sprite, 'panel', function (sprite) {
+                    var s = sprite.sprite_;
+                    var data = Properties.getLeaderboard(3);
+                    for (var k in data) {
+                        var row = data[k];
+                        var i = parseInt(k) + 1;
+                        var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
+                        var text = new PIXI.extras.BitmapText(mmddyyyy + '', font);
+                        //text.anchor.set(0);
+                        text.position.set(-(x / 2) - (100 * f1), -(y / 2) + (i * 40));
+                        s.addChild(text);
+                        var text = new PIXI.extras.BitmapText(row.score + '', font);
+                        //text.anchor.set(0);
+                        text.position.set(-(x / 2) + 200 + (100 * f2), -(y / 2) + (i * 40));
+                        s.addChild(text);
+                    }
+                    s.width = window.innerWidth * .75;
+                    s.height = window.innerHeight / 2;
+                    s.position.set(~~x, ~~y);
+                    sprite.layer = 5;
+                    sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
+                });
+                world.getManager(GroupManager).add(entity, Groups.GUI_LEADERBOARD);
+                return entity;
+            };
+            LeaderboardTemplate = __decorate([
+                EntityTemplate('leaderboard')
+            ], LeaderboardTemplate);
+            return LeaderboardTemplate;
+        })();
+        templates.LeaderboardTemplate = LeaderboardTemplate;
+    })(templates = example.templates || (example.templates = {}));
+})(example || (example = {}));
+//# sourceMappingURL=LeaderboardTemplate.js.map
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
 var example;
 (function (example) {
     var templates;
@@ -5888,7 +6579,7 @@ var example;
             function LifeTemplate() {
             }
             LifeTemplate.prototype.buildEntity = function (entity, world, ordinal) {
-                var x = Constants.FRAME_WIDTH - ((ordinal + 1) * 40);
+                var x = (Constants.FRAME_WIDTH / 2) - ((ordinal + 1) * 40) + 87;
                 var y = 80;
                 entity.addComponent(Position, ~~x, ~~y);
                 entity.addComponent(Sprite, 'life', function (sprite) {
@@ -6109,7 +6800,7 @@ var example;
                 entity.addComponent(Player);
                 entity.addComponent(Sprite, 'fighter', function (sprite) {
                     var s = sprite.sprite_;
-                    s.tint = 0x5dff81;
+                    //s.tint = 0x5dff81;
                     s.position.set(~~x, ~~y);
                     sprite.layer = Layer.ACTORS_3;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
@@ -6184,6 +6875,56 @@ var example;
     })(templates = example.templates || (example.templates = {}));
 })(example || (example = {}));
 //# sourceMappingURL=StarTemplate.js.map
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var example;
+(function (example) {
+    var templates;
+    (function (templates) {
+        var GroupManager = artemis.managers.GroupManager;
+        var EntitySystem = artemis.EntitySystem;
+        var EntityTemplate = artemis.annotations.EntityTemplate;
+        var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
+        var Vital = example.components.Vital;
+        var Layer = example.components.Layer;
+        var Constants = example.core.Constants;
+        var Groups = example.core.Groups;
+        var StatusTemplate = (function () {
+            function StatusTemplate() {
+            }
+            StatusTemplate.prototype.buildEntity = function (entity, world) {
+                var x = (Constants.FRAME_WIDTH / 2) - 50;
+                var y = 20;
+                entity.addComponent(Position, ~~x, ~~y);
+                entity.addComponent(Sprite, new PIXI.Sprite(), function (sprite) {
+                    var s = sprite.sprite_;
+                    entity.addComponent(Vital, 'status_yellow', 'status_red', function (vital) {
+                        s.addChild(vital.bad);
+                        s.addChild(vital.good);
+                    });
+                    s.position.set(~~x, ~~y);
+                    sprite.layer = Layer.LIVES;
+                    sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
+                });
+                world.getManager(GroupManager).add(entity, Groups.PLAYER_STATUS);
+                return entity;
+            };
+            StatusTemplate = __decorate([
+                EntityTemplate('status')
+            ], StatusTemplate);
+            return StatusTemplate;
+        })();
+        templates.StatusTemplate = StatusTemplate;
+    })(templates = example.templates || (example.templates = {}));
+})(example || (example = {}));
+//# sourceMappingURL=StatusTemplate.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6322,7 +7063,9 @@ var example;
                             if (lives.size() === 0) {
                                 /** Game Over!! */
                                 var game = EntitySystem.blackBoard.getEntry('game');
-                                game.showLeaderboard(_this.score.score);
+                                game.systems.stop();
+                                var gui = EntitySystem.blackBoard.getEntry('gui');
+                                gui.show();
                             }
                             else {
                                 var life = lives.get(0);
@@ -6674,19 +7417,21 @@ var example;
 (function (example) {
     var systems;
     (function (systems) {
-        var Position = example.components.Position;
-        var Sprite = example.components.Sprite;
+        var Aspect = artemis.Aspect;
+        var Player = example.components.Player;
+        var Vital = example.components.Vital;
+        var Health = example.components.Health;
         var Constants = example.core.Constants;
         var Layer = example.components.Layer;
         var EntitySystem = artemis.EntitySystem;
-        var VoidEntitySystem = artemis.systems.VoidEntitySystem;
         var Mapper = artemis.annotations.Mapper;
+        var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var BitmapText = PIXI.extras.BitmapText;
         var Point = PIXI.Point;
         var HudRenderSystem = (function (_super) {
             __extends(HudRenderSystem, _super);
             function HudRenderSystem() {
-                _super.call(this);
+                _super.call(this, Aspect.getAspectForAll(Player, Health));
                 this.totalFrames = 0;
                 this.elapsedTime = 0;
                 this.fps = 0;
@@ -6699,13 +7444,13 @@ var example;
                 this.framesPerSecond['layer'] = Layer.TEXT;
                 var scale = 1 / Constants.RATIO;
                 this.framesPerSecond.scale = new Point(scale, scale);
-                this.framesPerSecond.position = new Point(0, 20 / Constants.RATIO);
+                this.framesPerSecond.position = new Point(20, 20 / Constants.RATIO);
                 sprites.addChild(this.framesPerSecond);
-                this.totalScore = new BitmapText('Score: 0', font);
+                this.totalScore = new BitmapText('Score: 00000', font);
                 this.totalScore['layer'] = Layer.TEXT;
                 var scale = 1 / Constants.RATIO;
                 this.totalScore.scale = new Point(scale, scale);
-                this.totalScore.position = new Point(Constants.FRAME_WIDTH / 2, 20 / Constants.RATIO);
+                this.totalScore.position = new Point(Constants.FRAME_WIDTH - this.totalScore.width - 20, 20 / Constants.RATIO);
                 sprites.addChild(this.totalScore);
                 if (!Constants.isMobile) {
                     this.activeEntities = new BitmapText('Active entities: ', font);
@@ -6717,15 +7462,21 @@ var example;
                     this.activeEntities.scale = new Point(scale, scale);
                     this.totalCreated.scale = new Point(scale, scale);
                     this.totalDeleted.scale = new Point(scale, scale);
-                    this.activeEntities.position = new Point(0, 40 / Constants.RATIO);
-                    this.totalCreated.position = new Point(0, 60 / Constants.RATIO);
-                    this.totalDeleted.position = new Point(0, 80 / Constants.RATIO);
+                    this.activeEntities.position = new Point(20, 40 / Constants.RATIO);
+                    this.totalCreated.position = new Point(20, 60 / Constants.RATIO);
+                    this.totalDeleted.position = new Point(20, 80 / Constants.RATIO);
                     sprites.addChild(this.activeEntities);
                     sprites.addChild(this.totalCreated);
                     sprites.addChild(this.totalDeleted);
                 }
             };
-            HudRenderSystem.prototype.processSystem = function () {
+            HudRenderSystem.prototype.setStatus = function (status) {
+                this.status = status;
+            };
+            HudRenderSystem.prototype.processEach = function (e) {
+                var health = this.hm.get(e);
+                var vital = this.vm.get(this.status);
+                vital.good.width = ~~Math.round(health.health / health.maximumHealth * 100);
                 this.totalFrames++;
                 this.elapsedTime += this.world.delta;
                 if (this.elapsedTime > 1) {
@@ -6742,13 +7493,13 @@ var example;
                 }
             };
             __decorate([
-                Mapper(Position)
-            ], HudRenderSystem.prototype, "pm");
+                Mapper(Health)
+            ], HudRenderSystem.prototype, "hm");
             __decorate([
-                Mapper(Sprite)
-            ], HudRenderSystem.prototype, "sm");
+                Mapper(Vital)
+            ], HudRenderSystem.prototype, "vm");
             return HudRenderSystem;
-        })(VoidEntitySystem);
+        })(EntityProcessingSystem);
         systems.HudRenderSystem = HudRenderSystem;
     })(systems = example.systems || (example.systems = {}));
 })(example || (example = {}));
@@ -7193,17 +7944,16 @@ var example;
                     sprite.sprite_.position.set(position.x, position.y);
                 }
             };
-            SpriteRenderSystem.prototype.inserted = function (e) {
-                var sprite = this.sm.get(e);
-                sprite.sprite_['layer'] = sprite.layer;
-                this.sprites.children.sort(function (a, b) {
-                    if (a['layer'] < b['layer'])
-                        return -1;
-                    if (a['layer'] > b['layer'])
-                        return 1;
-                    return 0;
-                });
-            };
+            //public inserted(e:Entity) {
+            //  var sprite:Sprite = this.sm.get(e);
+            //  sprite.sprite_['layer'] = sprite.layer;
+            //
+            //  this.sprites.children.sort((a, b) => {
+            //    if (a['layer'] < b['layer']) return -1;
+            //    if (a['layer'] > b['layer']) return 1;
+            //    return 0;
+            //  });
+            //}
             SpriteRenderSystem.prototype.removed = function (e) {
                 var c = e.getComponentByType(Sprite);
                 c.removeFrom(this.sprites);
@@ -7231,6 +7981,7 @@ var example;
     var core;
     (function (core) {
         var GroupManager = artemis.managers.GroupManager;
+        var EntitySystem = artemis.EntitySystem;
         var BackgroundSystem = example.systems.BackgroundSystem;
         var CollisionSystem = example.systems.CollisionSystem;
         var ColorAnimationSystem = example.systems.ColorAnimationSystem;
@@ -7247,7 +7998,9 @@ var example;
         var SpriteRenderSystem = example.systems.SpriteRenderSystem;
         var GameSystems = (function () {
             function GameSystems(webgl) {
+                this.webgl = webgl;
                 artemis.utils.TrigLUT.init(true);
+                this.score = EntitySystem.blackBoard.getEntry('score');
                 var world = this.world = new artemis.World();
                 world.setManager(new GroupManager());
                 world.setSystem(new MovementSystem());
@@ -7269,19 +8022,46 @@ var example;
                 this.healthRenderSystem = world.setSystem(new HealthRenderSystem(), true);
                 this.hudRenderSystem = world.setSystem(new HudRenderSystem(), true);
                 world.initialize();
+                world.createEntityFromTemplate('gui', this).addToWorld();
+            }
+            GameSystems.prototype.start = function () {
+                this.score.score = 0;
+                var world = this.world;
                 world.createEntityFromTemplate('player').addToWorld();
                 for (var life = 0; life < 3; life++) {
                     world.createEntityFromTemplate('life', life).addToWorld();
                 }
-                if (webgl) {
-                    world.createEntityFromTemplate('background').addToWorld();
+                this.status = world.createEntityFromTemplate('status');
+                this.status.addToWorld();
+                this.hudRenderSystem.setStatus(this.status);
+                if (this.webgl) {
+                    this.bg = world.createEntityFromTemplate('background');
+                    this.bg.addToWorld();
                 }
                 else {
                     for (var i = 0; 500 > i; i++) {
                         world.createEntityFromTemplate('star').addToWorld();
                     }
                 }
-            }
+            };
+            GameSystems.prototype.stop = function () {
+                this.bg.deleteFromWorld();
+                this.status.deleteFromWorld();
+            };
+            GameSystems.prototype.showCredits = function () {
+                this.credits = this.world.createEntityFromTemplate('credits');
+                this.credits.addToWorld();
+            };
+            GameSystems.prototype.hideCredits = function () {
+                this.credits.deleteFromWorld();
+            };
+            GameSystems.prototype.showLeaderboard = function () {
+                this.leaderboard = this.world.createEntityFromTemplate('leaderboard');
+                this.leaderboard.addToWorld();
+            };
+            GameSystems.prototype.hideLeaderboard = function () {
+                this.leaderboard.deleteFromWorld();
+            };
             GameSystems.prototype.update = function (delta) {
                 this.world.setDelta(delta);
                 this.world.process();
@@ -7295,326 +8075,6 @@ var example;
     })(core = example.core || (example.core = {}));
 })(example || (example = {}));
 //# sourceMappingURL=GameSystems.js.map
-var example;
-(function (example) {
-    var views;
-    (function (views) {
-        var Fonts = (function () {
-            function Fonts() {
-            }
-            Fonts.font45 = {
-                size: '45px',
-                fontWeight: 'bold',
-                family: 'OpenDyslexic',
-                color: '8f8'
-            };
-            Fonts.font32 = {
-                size: '32px',
-                fontWeight: 'bold',
-                family: 'OpenDyslexic',
-                color: '8f8'
-            };
-            Fonts.font20 = {
-                size: '20px',
-                fontWeight: 'bold',
-                family: 'OpenDyslexic',
-                color: '8f8'
-            };
-            return Fonts;
-        })();
-        views.Fonts = Fonts;
-    })(views = example.views || (example.views = {}));
-})(example || (example = {}));
-//# sourceMappingURL=Fonts.js.map
-/**
- * views/AbstractView.ts
- *
- * Base class for Views
- *
- */
-var example;
-(function (example) {
-    var views;
-    (function (views) {
-        var Constants = example.core.Constants;
-        var AbstractView = (function () {
-            function AbstractView(game, options) {
-                if (options === void 0) { options = {}; }
-                this.game = game;
-                this.options = options;
-                this._view = EZGUI.create(this.options, Constants.theme);
-                this.initialize();
-            }
-            Object.defineProperty(AbstractView.prototype, "view", {
-                get: function () {
-                    return this._view;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(AbstractView.prototype, "visible", {
-                get: function () {
-                    return this._view.visible;
-                },
-                set: function (value) {
-                    this._view.visible = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            AbstractView.prototype.initialize = function () { };
-            return AbstractView;
-        })();
-        views.AbstractView = AbstractView;
-    })(views = example.views || (example.views = {}));
-})(example || (example = {}));
-//# sourceMappingURL=AbstractView.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/**
- * views/MenuView.ts
- *
- * Main application menu
- *
- */
-var example;
-(function (example) {
-    var views;
-    (function (views) {
-        var Fonts = example.views.Fonts;
-        var Constants = example.core.Constants;
-        var MathUtils = artemis.utils.MathUtils;
-        var AbstractView = example.views.AbstractView;
-        var MenuView = (function (_super) {
-            __extends(MenuView, _super);
-            function MenuView(game) {
-                var _this = this;
-                _super.call(this, game, {
-                    id: 'mainScreen',
-                    component: 'Window',
-                    padding: 4,
-                    position: { x: 0, y: 0 },
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                    layout: [1, 4],
-                    children: [
-                        {
-                            id: 'optionsView_label1',
-                            text: 'Schmup Warz',
-                            font: Fonts.font45,
-                            component: 'Label',
-                            position: 'center',
-                            width: window.innerWidth,
-                            height: 80
-                        },
-                        {
-                            id: 'menuView_play',
-                            text: 'Play',
-                            font: Fonts.font20,
-                            component: 'Button',
-                            position: 'center',
-                            width: 200,
-                            height: 50
-                        },
-                        {
-                            id: 'menuView_options',
-                            text: 'Options',
-                            font: Fonts.font20,
-                            component: 'Button',
-                            position: 'center',
-                            width: 200,
-                            height: 50
-                        },
-                        {
-                            id: 'menuView_slogan',
-                            text: 'May the schmup be with you',
-                            component: 'Label',
-                            position: 'center',
-                            width: window.innerWidth,
-                            height: 50,
-                            font: Fonts.font20
-                        }
-                    ]
-                });
-                this.game = game;
-                this.playOnClick = function (e) {
-                    _this.game.stage.removeChild(_this.view);
-                    _this.game.options.visible = false;
-                    _this.game.sprites.visible = true;
-                    _this.game.start();
-                };
-                this.optionsOnClick = function (e) {
-                    _this.game.showLeaderboard();
-                };
-            }
-            /**
-             * Wire up the events
-             */
-            MenuView.prototype.initialize = function () {
-                var _this = this;
-                EZGUI.components.menuView_play.on('click', function (e) { return _this.playOnClick(e); });
-                EZGUI.components.menuView_options.on('click', function (e) { return _this.optionsOnClick(e); });
-                EZGUI.components.menuView_slogan.text = Constants.fortune[MathUtils.nextInt(Constants.fortune.length)];
-            };
-            return MenuView;
-        })(AbstractView);
-        views.MenuView = MenuView;
-    })(views = example.views || (example.views = {}));
-})(example || (example = {}));
-//# sourceMappingURL=MenuView.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/**
- * views/OptionsView.ts
- *
- * Set preferences, view scores
- *
- */
-var example;
-(function (example) {
-    var views;
-    (function (views) {
-        var Fonts = example.views.Fonts;
-        var EntitySystem = artemis.EntitySystem;
-        var Properties = example.core.Properties;
-        var AbstractView = example.views.AbstractView;
-        var OptionsView = (function (_super) {
-            __extends(OptionsView, _super);
-            function OptionsView(game) {
-                _super.call(this, game, {
-                    id: 'gameOver',
-                    component: 'Window',
-                    padding: 4,
-                    position: { x: 0, y: 0 },
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                    layout: [3, 8],
-                    children: [
-                        null, {
-                            id: 'optionsView_label1',
-                            text: 'High Scores',
-                            font: Fonts.font45,
-                            component: 'Label',
-                            position: 'center',
-                            width: window.innerWidth,
-                            height: 80
-                        }, null,
-                        null, {
-                            id: 'optionsView_score',
-                            text: '',
-                            font: Fonts.font45,
-                            component: 'Label',
-                            position: 'center',
-                            width: window.innerWidth,
-                            height: 80
-                        }, null,
-                        { id: 'optionsView_row1', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                        { id: 'optionsView_date1', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
-                        { id: 'optionsView_score1', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                        { id: 'optionsView_row2', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                        { id: 'optionsView_date2', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
-                        { id: 'optionsView_score2', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                        { id: 'optionsView_row3', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                        { id: 'optionsView_date3', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
-                        { id: 'optionsView_score3', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                        { id: 'optionsView_row4', font: Fonts.font20, component: 'Label', position: 'left', width: 100, height: 100 },
-                        { id: 'optionsView_date4', font: Fonts.font20, component: 'Label', position: '', width: 100, height: 100 },
-                        { id: 'optionsView_score4', font: Fonts.font20, component: 'Label', position: 'right', width: 100, height: 100 },
-                        { id: 'optionsView_music', font: Fonts.font20, component: 'Checkbox', text: ' Music', position: 'left', width: 40, height: 40 },
-                        { id: 'optionsView_sfx', font: Fonts.font20, component: 'Checkbox', text: ' Sound FX', position: 'right', width: 40, height: 40 },
-                        null,
-                        null, {
-                            id: 'optionsView_play',
-                            text: 'Play',
-                            component: 'Button',
-                            position: 'center',
-                            font: Fonts.font32,
-                            width: window.innerWidth,
-                            height: 80
-                        }, null
-                    ]
-                });
-                this.game = game;
-                /**
-                 * Sfx OnClick
-                 * @param e
-                 */
-                this.sfxOnClick = function (e) {
-                    Properties.set('playSfx', e.target.checked);
-                    EntitySystem.blackBoard.setEntry('playSfx', e.target.checked);
-                };
-                /**
-                 * Music OnClick
-                 * @param e
-                 */
-                this.musicOnClick = function (e) {
-                    Properties.set('playMusic', e.target.checked);
-                    EntitySystem.blackBoard.setEntry('playMusic', e.target.checked);
-                };
-                /**
-                 * Play OnClick
-                 * @param e
-                 */
-                this.playOnClick = function (e) {
-                    Properties.set('skip', 'true');
-                    try {
-                        chrome.runtime.reload();
-                    }
-                    catch (e) {
-                        window.location.reload(true);
-                    }
-                };
-            }
-            /**
-             * Load data, Wire up the events
-             */
-            OptionsView.prototype.initialize = function () {
-                var _this = this;
-                var playSfx = Properties.get('playSfx') === 'true';
-                EntitySystem.blackBoard.setEntry('playSfx', playSfx);
-                var playMusic = Properties.get('playMusic') === 'true';
-                EntitySystem.blackBoard.setEntry('playMusic', playMusic);
-                EZGUI.components.optionsView_sfx.checked = playSfx;
-                EZGUI.components.optionsView_music.checked = playMusic;
-                EZGUI.components.optionsView_sfx.on('click', function (e) { return _this.sfxOnClick(e); });
-                EZGUI.components.optionsView_music.on('click', function (e) { return _this.musicOnClick(e); });
-                EZGUI.components.optionsView_play.on('click', function (e) { return _this.playOnClick(e); });
-            };
-            /**
-             * Show Leaderboard
-             */
-            OptionsView.prototype.showLeaderboard = function (score) {
-                this.game.menu.visible = false;
-                this.game.sprites.visible = false;
-                this.visible = true;
-                if (score) {
-                    Properties.setScore(score);
-                    EZGUI.components.optionsView_score.text = score;
-                }
-                var data = Properties.getLeaderboard(3);
-                for (var k in data) {
-                    var row = data[k];
-                    var i = parseInt(k) + 1;
-                    var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
-                    EZGUI.components[("optionsView_row" + i)].text = '#' + i;
-                    EZGUI.components[("optionsView_date" + i)].text = mmddyyyy;
-                    EZGUI.components[("optionsView_score" + i)].text = row.score;
-                }
-            };
-            return OptionsView;
-        })(AbstractView);
-        views.OptionsView = OptionsView;
-    })(views = example.views || (example.views = {}));
-})(example || (example = {}));
-//# sourceMappingURL=OptionsView.js.map
 /**
  * core/Game.ts
  *
@@ -7630,8 +8090,7 @@ var example;
         var EntitySystem = artemis.EntitySystem;
         var ScaleType = example.core.ScaleType;
         var Properties = example.core.Properties;
-        var MenuView = example.views.MenuView;
-        var OptionsView = example.views.OptionsView;
+        var GameSystems = example.core.GameSystems;
         var Game = (function () {
             /**
              * Create the game instance
@@ -7691,19 +8150,11 @@ var example;
                 document.body.appendChild(this.renderer.view);
                 window.addEventListener('resize', this.resize, true);
                 window.onorientationchange = this.resize;
+                this.stage.addChild(this.sprites);
                 EZGUI.Theme.load([("res/ezgui/" + Constants.theme + "-theme/" + Constants.theme + "-theme.json")], function () {
                     var auto = Properties.get('skip') === 'true';
                     Properties.set('skip', 'false');
-                    _this.menu = new MenuView(_this);
-                    _this.options = new OptionsView(_this);
-                    _this.options.visible = false;
-                    _this.menu.visible = !auto;
-                    _this.sprites.visible = auto;
-                    _this.stage.addChild(_this.sprites);
-                    _this.stage.addChild(_this.menu.view);
-                    _this.stage.addChild(_this.options.view);
-                    if (auto)
-                        _this.start();
+                    _this.systems = new GameSystems(_this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
                     requestAnimationFrame(_this.update);
                 });
             }
@@ -7716,15 +8167,6 @@ var example;
                     PIXI.loader.add(asset, Constants.assets[asset]);
                 }
                 PIXI.loader.load(function (loader, resources) { return new Game(resources); });
-            };
-            Game.prototype.showLeaderboard = function (score) {
-                this.options.showLeaderboard(score);
-            };
-            /**
-             * Start the game
-             */
-            Game.prototype.start = function () {
-                this.systems = new core.GameSystems(this.renderer.type === PIXI.RENDERER_TYPE.WEBGL);
             };
             return Game;
         })();

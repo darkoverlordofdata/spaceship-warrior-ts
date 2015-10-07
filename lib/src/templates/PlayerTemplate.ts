@@ -35,7 +35,7 @@ module example.templates {
       entity.addComponent(Player);
       entity.addComponent(Sprite, 'fighter', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
-        s.tint = 0x5dff81;
+        //s.tint = 0x5dff81;
         s.position.set(~~x, ~~y);
         sprite.layer = Layer.ACTORS_3;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));

@@ -201,6 +201,9 @@
             <filename>images/life.png</filename>
             <filename>images/mine1.png</filename>
             <filename>images/mine2.png</filename>
+            <filename>images/status_red.png</filename>
+            <filename>images/status_yellow.png</filename>
+            <filename>images/panel.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

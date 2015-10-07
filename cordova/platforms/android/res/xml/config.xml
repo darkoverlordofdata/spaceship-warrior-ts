@@ -10,9 +10,9 @@
     <preference default="--disable-pull-to-refresh-effect" name="xwalkCommandLine" />
     <preference default="embedded" name="xwalkMode" />
     <allow-intent href="market:*" />
-    <name>SpaceshipWarriors</name>
+    <name>Schmup Warz</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        With great schmup come great responsibility.
     </description>
     <author email="brucedavidson@darkoverlordofdata.com" href="http://darkoverlordofdata.com">
         Dark Overlord of Data

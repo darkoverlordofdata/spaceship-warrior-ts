@@ -13,9 +13,13 @@ module example.core {
     PLAYER_BULLETS,
     PLAYER_SHIP,
     PLAYER_LIVES,
+    PLAYER_STATUS,
     ENEMY_SHIPS,
     ENEMY_BULLETS,
-    ENEMY_MINES
+    ENEMY_MINES,
+    GUI,
+    GUI_CREDITS,
+    GUI_LEADERBOARD
   }
 
   export enum ScaleType {
@@ -49,6 +53,11 @@ module example.core {
     public static assets = {
 
       images_json         : 'res/images.json',
+      logo_png            : 'res/images/logo.png',
+      panel_png           : 'res/images/panel.png',
+      opendyslexic20_fnt  : 'res/ezgui/fonts/OpenDyslexic20.fnt',
+      opendyslexic24_fnt  : 'res/ezgui/fonts/OpenDyslexic24.fnt',
+      opendyslexic32_fnt  : 'res/ezgui/fonts/OpenDyslexic32.fnt',
       normal_fnt          : 'res/ezgui/fonts/normal.fnt',
       hud_fnt             : 'res/ezgui/fonts/hud.fnt',
       desyrel_fnt         : 'res/ezgui/fonts/desyrel.fnt',
@@ -74,6 +83,16 @@ module example.core {
       "There goes the planet"
     ];
 
+    public static credits = `
+    Built by darkoverlordofdata, using artmemis, pixi.js,
+    localStorageDB, howler, and ezgui.
+
+    Schmup Warz is a demo of ArtemisTS, and is based on
+    Spaceship Warrior by @Flet
+    (https://github.com/Flet/spaceship-warrior-gradle)
+
+    MIT License
+    `;
 
   }
 }
