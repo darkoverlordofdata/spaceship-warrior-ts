@@ -198,12 +198,14 @@
             <filename>images/fighter.png</filename>
             <filename>images/particle.png</filename>
             <filename>images/star.png</filename>
-            <filename>images/life.png</filename>
             <filename>images/mine1.png</filename>
             <filename>images/mine2.png</filename>
+            <filename>images/panel.png</filename>
             <filename>images/status_red.png</filename>
             <filename>images/status_yellow.png</filename>
-            <filename>images/panel.png</filename>
+            <filename>images/life.png</filename>
+            <filename>images/powerup.png</filename>
+            <filename>images/d16a.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

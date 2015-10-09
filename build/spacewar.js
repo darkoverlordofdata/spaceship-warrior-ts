@@ -5003,7 +5003,8 @@ var example;
                 'Schmup is the path to the\n dark side',
                 "There goes the planet"
             ];
-            Constants.credits = "\n    Built by darkoverlordofdata, using artmemis, pixi.js,\n    localStorageDB, howler, and ezgui.\n\n    Schmup Warz is a demo of ArtemisTS, and is based on\n    Spaceship Warrior by @Flet\n    (https://github.com/Flet/spaceship-warrior-gradle)\n\n    MIT License\n    ";
+            Constants.credits = "\n    Built by darkoverlordofdata, using artmemis, pixi.js,\n    localStorageDB, howler, and ezgui.\n\n    Schmup Warz is a demo of ArtemisTS, and is based on\n    Spaceship Warrior by @Flet\n    (https://github.com/Flet/spaceship-warrior-gradle)\n\n    MIT License\n\n                            [tap for legend]\n    ";
+            Constants.about = "\n    Destroy colony ships from the BEM homeworld\n    before they can land on Earth.\n    They don't fire guns. They use sub-space\n    mines that our bullets can't seem to hit.\n\n    Clearing all the ships from the screen resets\n    your current health to 100%. You won't be able\n    to clear the screen *and* dodge mines.\n\n    Space/Touch to fire  |  Mouse/Touch to move.\n\n                            [tap for credits]\n    ";
             return Constants;
         })();
         core.Constants = Constants;
@@ -5044,14 +5045,11 @@ var example;
                 }
                 Properties.dbname = name;
                 Properties.properties = properties;
-                //initializeDb(Properties.db = new localStorageDB(Properties.dbname));
-                if (window['cordova'] || navigator['isCocoonJS']) {
-                    // use localStorage only
-                    initializeDb(Properties.db = new localStorageDB(Properties.dbname));
+                if (window['chrome']) {
+                    chromeStorageDB(Properties.dbname, localStorage, function (db) { return initializeDb(Properties.db = db); });
                 }
                 else {
-                    // try chrome.storage with fallback to localStorage
-                    chromeStorageDB(Properties.dbname, localStorage, function (db) { return initializeDb(Properties.db = db); });
+                    initializeDb(Properties.db = new localStorageDB(Properties.dbname));
                 }
             };
             /*
@@ -5604,6 +5602,7 @@ var example;
             Layer[Layer["ACTORS_2"] = 6] = "ACTORS_2";
             Layer[Layer["ACTORS_3"] = 7] = "ACTORS_3";
             Layer[Layer["PARTICLES"] = 8] = "PARTICLES";
+            Layer[Layer["GUI"] = 9] = "GUI";
         })(components.Layer || (components.Layer = {}));
         var Layer = components.Layer;
         var Sprite = (function (_super) {
@@ -5635,7 +5634,7 @@ var example;
             };
             Sprite.prototype.addTo = function (layer) {
                 this.sprite_['layer'] = this.layer;
-                layer.addChild(this.sprite_, 0);
+                layer.addChild(this.sprite_);
                 layer.children.sort(function (a, b) {
                     if (a['layer'] < b['layer'])
                         return -1;
@@ -5854,13 +5853,27 @@ var example;
                     //header: { position: { x: 20, y: 20 }, height: 120, width: 360, image:'res/images/Logo.png', },
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    layout: [1, 1],
+                    layout: [1, 4],
                     children: [
+                        {
+                            id: 'labelTitle',
+                            component: 'label',
+                            position: { x: (window.innerWidth - 380) / 2, y: 20 },
+                            height: 120,
+                            width: 380,
+                            color: color,
+                            text: 'Schmup Warz',
+                            font: {
+                                size: '44px',
+                                family: 'Skranji',
+                                color: 'white'
+                            }
+                        }, null, null,
                         {
                             id: 'buttonCreditsBack',
                             text: 'BACK',
                             component: 'Button',
-                            position: { x: (window.innerWidth - 200) / 2, y: window.innerHeight * .85 },
+                            position: { x: (window.innerWidth - 200) / 2, y: 0 },
                             color: color,
                             font: {
                                 size: '24px',
@@ -5938,13 +5951,28 @@ var example;
                     //header: { position: { x: 20, y: 20 }, height: 120, width: 360, image:'res/images/Logo.png', },
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    layout: [1, 1],
+                    layout: [1, 4],
                     children: [
+                        {
+                            id: 'labelTitle',
+                            component: 'label',
+                            position: { x: (window.innerWidth - 380) / 2, y: 20 },
+                            height: 120,
+                            width: 380,
+                            color: color,
+                            text: 'Schmup Warz',
+                            font: {
+                                size: '44px',
+                                family: 'Skranji',
+                                color: 'white'
+                            }
+                        },
+                        null, null,
                         {
                             id: 'buttonLeaderboardBack',
                             text: 'BACK',
                             component: 'Button',
-                            position: { x: (window.innerWidth - 200) / 2, y: window.innerHeight * .85 },
+                            position: { x: (window.innerWidth - 200) / 2, y: 0 },
                             color: color,
                             font: {
                                 size: '24px',
@@ -6068,7 +6096,7 @@ var example;
                         },
                         {
                             id: 'buttonCredits',
-                            text: 'CREDITS',
+                            text: 'ABOUT',
                             component: 'Button',
                             position: { x: -1000, y: -1000 },
                             //position: 'center',
@@ -6093,6 +6121,7 @@ var example;
                             _this.highScore.animatePosTo(_this.highScore.position.x, -20 - _this.highScore.settings.height, 200, EZGUI.Easing.Circular.Out, function () {
                                 _this.highScore.visible = false;
                                 _this.credits.animatePosTo(_this.highScore.position.x, -20 - _this.credits.settings.height, 200, EZGUI.Easing.Circular.Out, function () {
+                                    _this.credits.visible = false;
                                     if (next)
                                         next();
                                 });
@@ -6142,9 +6171,9 @@ var example;
                 };
                 this.creditsOnClick = function (e) {
                     _this.hide(function () {
-                        if (!_this.help)
-                            _this.help = new CreditsView(_this);
-                        _this.help.show(_this.show);
+                        if (!_this.creditsView)
+                            _this.creditsView = new CreditsView(_this);
+                        _this.creditsView.show(_this.show);
                         _this.system.showCredits();
                     });
                 };
@@ -6232,31 +6261,113 @@ var example;
 (function (example) {
     var templates;
     (function (templates) {
+        var Container = PIXI.Container;
         var GroupManager = artemis.managers.GroupManager;
         var EntitySystem = artemis.EntitySystem;
         var EntityTemplate = artemis.annotations.EntityTemplate;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
-        var Constants = example.core.Constants;
+        var Layer = example.components.Layer;
         var Groups = example.core.Groups;
+        var font = { font: '20px Arial', align: 'left' };
+        var font1 = { font: 'bold 24px Arial', align: 'left' };
         var CreditsTemplate = (function () {
             function CreditsTemplate() {
             }
-            CreditsTemplate.prototype.buildEntity = function (entity, world) {
+            CreditsTemplate.prototype.buildEntity = function (entity, world, texts) {
                 var x = window.innerWidth / 2;
                 var y = window.innerHeight / 2;
+                var index = 0;
                 var f = window.devicePixelRatio === 1 ? 2 : 1;
-                var text = new PIXI.Text(Constants.credits, Constants.font);
+                var f2 = window.devicePixelRatio === 1 ? 0 : 50;
+                var logo = new PIXI.Sprite(PIXI.Texture.fromFrame('d16a.png'));
+                var text = new PIXI.Text(texts[index], font);
                 text.anchor.set(0);
-                text.position.set(-(x / f), -(y / 2));
+                text.position.set(-(x / f) - f2, -(y / 2));
+                var panel = new Container();
+                logo.position.set(225, 100);
+                panel.addChild(text);
+                panel.addChild(logo);
+                text.text = texts[0];
                 entity.addComponent(Position, ~~x, ~~y);
                 entity.addComponent(Sprite, 'panel', function (sprite) {
                     var s = sprite.sprite_;
-                    s.addChild(text);
+                    s.addChild(panel);
                     s.width = window.innerWidth * .75;
                     s.height = window.innerHeight / 2;
                     s.position.set(~~x, ~~y);
-                    sprite.layer = 5;
+                    var onTouchStart = function () {
+                        index = (index + 1) % 3;
+                        switch (index) {
+                            case 0:
+                                panel.removeChildren();
+                                logo.position.set(225, 100);
+                                panel.addChild(text);
+                                panel.addChild(logo);
+                                text.text = texts[index];
+                                break;
+                            case 1:
+                                panel.removeChildren();
+                                logo.position.set(225, 100);
+                                panel.addChild(text);
+                                panel.addChild(logo);
+                                text.text = texts[index];
+                                break;
+                            case 2:
+                                panel.removeChildren();
+                                var text01 = new PIXI.Text('Supply - 20', font1);
+                                var enemy1 = new PIXI.Sprite(PIXI.Texture.fromFrame('enemy1.png'));
+                                text01.position.set(-250, -50);
+                                panel.addChild(text01);
+                                enemy1.width = 40;
+                                enemy1.height = 40;
+                                enemy1.anchor.set(1, 1);
+                                enemy1.position.set(0, -50);
+                                panel.addChild(enemy1);
+                                var text02 = new PIXI.Text('Scout - 10', font1);
+                                var enemy2 = new PIXI.Sprite(PIXI.Texture.fromFrame('enemy2.png'));
+                                text02.position.set(-50, -50);
+                                panel.addChild(text02);
+                                enemy2.width = 80;
+                                enemy2.height = 80;
+                                enemy2.anchor.set(1, 1);
+                                enemy2.position.set(-150, -50);
+                                panel.addChild(enemy2);
+                                var text03 = new PIXI.Text('Creche - 60', font1);
+                                var enemy3 = new PIXI.Sprite(PIXI.Texture.fromFrame('enemy3.png'));
+                                text03.position.set(100, -50);
+                                panel.addChild(text03);
+                                enemy3.width = 90;
+                                enemy3.height = 90;
+                                enemy3.anchor.set(1, 1);
+                                enemy3.position.set(200, -50);
+                                panel.addChild(enemy3);
+                                var textNext = new PIXI.Text('[tap for about]', font);
+                                textNext.position.set(-50, 0);
+                                panel.addChild(textNext);
+                                var text11 = new PIXI.Text('Damage - 10', font1);
+                                var mine1 = new PIXI.Sprite(PIXI.Texture.fromFrame('mine1.png'));
+                                text11.position.set(-175, 100);
+                                panel.addChild(text11);
+                                mine1.anchor.set(1, 1);
+                                mine1.position.set(-125, 100);
+                                panel.addChild(mine1);
+                                var text12 = new PIXI.Text('Damage - 20', font1);
+                                var mine2 = new PIXI.Sprite(PIXI.Texture.fromFrame('mine2.png'));
+                                text12.position.set(25, 100);
+                                panel.addChild(text12);
+                                mine2.anchor.set(1, 1);
+                                mine2.position.set(75, 100);
+                                panel.addChild(mine2);
+                                logo.position.set(225, 100);
+                                panel.addChild(logo);
+                                break;
+                        }
+                    };
+                    s.interactive = true;
+                    s.on('mousedown', onTouchStart);
+                    s.on('touchstart', onTouchStart);
+                    sprite.layer = Layer.GUI;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
                 world.getManager(GroupManager).add(entity, Groups.GUI_CREDITS);
@@ -6507,6 +6618,7 @@ var example;
         var Properties = example.core.Properties;
         var Position = example.components.Position;
         var Sprite = example.components.Sprite;
+        var Layer = example.components.Layer;
         var Groups = example.core.Groups;
         var font = {
             font: '40px Skranji',
@@ -6523,24 +6635,22 @@ var example;
                 entity.addComponent(Position, ~~x, ~~y);
                 entity.addComponent(Sprite, 'panel', function (sprite) {
                     var s = sprite.sprite_;
-                    var data = Properties.getLeaderboard(3);
+                    var data = Properties.getLeaderboard(6);
                     for (var k in data) {
                         var row = data[k];
                         var i = parseInt(k) + 1;
                         var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
                         var text = new PIXI.extras.BitmapText(mmddyyyy + '', font);
-                        //text.anchor.set(0);
                         text.position.set(-(x / 2) - (100 * f1), -(y / 2) + (i * 40));
                         s.addChild(text);
                         var text = new PIXI.extras.BitmapText(row.score + '', font);
-                        //text.anchor.set(0);
                         text.position.set(-(x / 2) + 200 + (100 * f2), -(y / 2) + (i * 40));
                         s.addChild(text);
                     }
                     s.width = window.innerWidth * .75;
                     s.height = window.innerHeight / 2;
                     s.position.set(~~x, ~~y);
-                    sprite.layer = 5;
+                    sprite.layer = Layer.GUI;
                     sprite.addTo(EntitySystem.blackBoard.getEntry('sprites'));
                 });
                 world.getManager(GroupManager).add(entity, Groups.GUI_LEADERBOARD);
@@ -6793,6 +6903,7 @@ var example;
             PlayerTemplate.prototype.buildEntity = function (entity, world) {
                 var x = Constants.FRAME_WIDTH / 2;
                 var y = Constants.FRAME_HEIGHT - 80;
+                //'ColorMatrixFilter'
                 entity.addComponent(Position, ~~x, ~~y);
                 entity.addComponent(Velocity, 0, 0);
                 entity.addComponent(Bounds, 43);
@@ -6961,19 +7072,19 @@ var example;
             }
             BackgroundSystem.prototype.processEach = function (e) {
                 var background = this.bm.get(e);
-                var sprite = this.sm.get(e);
+                var sprite = this.sm.get(e).sprite_;
                 var uniforms = background.filter.uniforms;
-                if (uniforms.time.value === 0) {
-                    uniforms.time.value = MathUtils.nextInt(1000) + 500;
+                var time = uniforms.time;
+                if (time.value === 0) {
+                    time.value = MathUtils.nextInt(1000) + 500;
                 }
                 else {
-                    uniforms.time.value += this.world.delta;
+                    time.value += this.world.delta;
                 }
                 //uniforms.time.value += this.world.delta;
-                uniforms.resolution.value = [window.innerHeight, window.innerWidth];
-                var value = uniforms.resolution.value;
-                sprite.sprite_.height = value[0] = window.innerHeight;
-                sprite.sprite_.width = value[1] = window.innerWidth;
+                var value = uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+                sprite.height = value[0] = window.innerHeight;
+                sprite.width = value[1] = window.innerWidth;
             };
             __decorate([
                 Mapper(Background)
@@ -7010,10 +7121,12 @@ var example;
         var Expires = example.components.Expires;
         var Health = example.components.Health;
         var Position = example.components.Position;
+        var Sprite = example.components.Sprite;
         var Constants = example.core.Constants;
         var Groups = example.core.Groups;
         var Mapper = artemis.annotations.Mapper;
         var Timer = artemis.utils.Timer;
+        var Properties = example.core.Properties;
         var EntitySystem = artemis.EntitySystem;
         var Aspect = artemis.Aspect;
         var GroupManager = artemis.managers.GroupManager;
@@ -7024,18 +7137,23 @@ var example;
             }
             CollisionSystem.prototype.initialize = function () {
                 var _this = this;
+                var world = this.world;
                 this.score = EntitySystem.blackBoard.getEntry('score');
-                this.groupManager = this.world.getManager(GroupManager);
+                this.groupManager = world.getManager(GroupManager);
                 this.collisionPairs = new Bag();
+                this.enemies = world.getManager(GroupManager).getEntities(Groups.ENEMY_SHIPS);
+                this.players = world.getManager(GroupManager).getEntities(Groups.PLAYER_SHIP);
+                this.bullets = world.getManager(GroupManager).getEntities(Groups.PLAYER_BULLETS);
+                this.mines = world.getManager(GroupManager).getEntities(Groups.ENEMY_MINES);
                 /** Check for bullets hitting enemy ship */
-                this.collisionPairs.add(new CollisionPair(this, Groups.PLAYER_BULLETS, Groups.ENEMY_SHIPS, {
+                this.collisionPairs.add(new CollisionPair(this, this.bullets, this.enemies, {
                     handleCollision: function (bullet, ship) {
                         var bp = _this.pm.get(bullet);
                         var health = _this.hm.get(ship);
                         var position = _this.pm.get(ship);
-                        _this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
+                        world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
                         for (var i = 0; 4 > i; i++) {
-                            _this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
+                            world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
                         }
                         bullet.deleteFromWorld();
                         health.health -= 1;
@@ -7043,14 +7161,13 @@ var example;
                             _this.score.score += health.maximumHealth;
                             health.health = 0;
                             ship.deleteFromWorld();
-                            _this.world.createEntityFromTemplate('big', position.x, position.y).addToWorld();
+                            world.createEntityFromTemplate('big', position.x, position.y).addToWorld();
                         }
                     }
                 }));
                 /** Check for enemy mines hitting player ship */
-                this.collisionPairs.add(new CollisionPair(this, Groups.ENEMY_MINES, Groups.PLAYER_SHIP, {
+                this.collisionPairs.add(new CollisionPair(this, this.mines, this.players, {
                     handleCollision: function (mine, ship) {
-                        var bp = _this.pm.get(mine);
                         var health = _this.hm.get(ship);
                         var position = _this.pm.get(ship);
                         mine.deleteFromWorld();
@@ -7058,7 +7175,7 @@ var example;
                         if (health.health < 0) {
                             health.health = 0;
                             ship.deleteFromWorld();
-                            _this.world.createEntityFromTemplate('huge', position.x, position.y).addToWorld();
+                            world.createEntityFromTemplate('huge', position.x, position.y).addToWorld();
                             var lives = _this.groupManager.getEntities(Groups.PLAYER_LIVES);
                             if (lives.size() === 0) {
                                 /** Game Over!! */
@@ -7066,6 +7183,7 @@ var example;
                                 game.systems.stop();
                                 var gui = EntitySystem.blackBoard.getEntry('gui');
                                 gui.show();
+                                Properties.setScore(_this.score.score);
                             }
                             else {
                                 var life = lives.get(0);
@@ -7073,7 +7191,7 @@ var example;
                                 _this.groupManager.remove(life, Groups.PLAYER_LIVES);
                                 _this.timer = new Timer(1, true);
                                 _this.timer.execute = function () {
-                                    _this.world.createEntityFromTemplate('player').addToWorld();
+                                    world.createEntityFromTemplate('player').addToWorld();
                                     _this.timer = null;
                                 };
                             }
@@ -7082,8 +7200,27 @@ var example;
                 }));
             };
             CollisionSystem.prototype.processEntities = function (entities) {
-                for (var i = 0; this.collisionPairs.size() > i; i++) {
-                    this.collisionPairs.get(i).checkForCollisions();
+                if (this.enemies.size() === 0) {
+                    /**
+                     * You cleared the screen
+                     *
+                     * Get a POWER-UP!!
+                     *
+                     */
+                    var players = this.players;
+                    if (players.size() > 0) {
+                        var player = players.get(0);
+                        var health = this.hm.get(player);
+                        var sprite = this.sm.get(player);
+                        health.health = health.maximumHealth;
+                        sprite.sprite_.filters = null;
+                    }
+                }
+                else {
+                    var collisionPairs = this.collisionPairs;
+                    for (var i = 0, l = collisionPairs.size(); l > i; i++) {
+                        collisionPairs.get(i).checkForCollisions();
+                    }
                 }
                 if (this.timer) {
                     this.timer.update(this.world.delta);
@@ -7095,6 +7232,9 @@ var example;
             __decorate([
                 Mapper(Position)
             ], CollisionSystem.prototype, "pm");
+            __decorate([
+                Mapper(Sprite)
+            ], CollisionSystem.prototype, "sm");
             __decorate([
                 Mapper(Bounds)
             ], CollisionSystem.prototype, "bm");
@@ -7109,18 +7249,23 @@ var example;
         systems.CollisionSystem = CollisionSystem;
         var CollisionPair = (function () {
             function CollisionPair(cs, group1, group2, handler) {
-                this.groupEntitiesA = cs.world.getManager(GroupManager).getEntities(group1);
-                this.groupEntitiesB = cs.world.getManager(GroupManager).getEntities(group2);
+                this.groupEntitiesA = group1;
+                this.groupEntitiesB = group2;
                 this.handler = handler;
                 this.cs = cs;
             }
             CollisionPair.prototype.checkForCollisions = function () {
-                for (var a = 0; this.groupEntitiesA.size() > a; a++) {
-                    var entityA = this.groupEntitiesA.get(a);
-                    for (var b = 0; this.groupEntitiesB.size() > b; b++) {
-                        var entityB = this.groupEntitiesB.get(b);
+                var handler = this.handler;
+                var groupEntitiesA = this.groupEntitiesA;
+                var groupEntitiesB = this.groupEntitiesB;
+                var sizeA = groupEntitiesA.size();
+                var sizeB = groupEntitiesB.size();
+                for (var a = 0; sizeA > a; a++) {
+                    var entityA = groupEntitiesA.get(a);
+                    for (var b = 0; sizeB > b; b++) {
+                        var entityB = groupEntitiesB.get(b);
                         if (this.collisionExists(entityA, entityB)) {
-                            this.handler.handleCollision(entityA, entityB);
+                            handler.handleCollision(entityA, entityB);
                         }
                     }
                 }
@@ -7128,14 +7273,17 @@ var example;
             CollisionPair.prototype.collisionExists = function (e1, e2) {
                 if (e1 === null || e2 === null)
                     return false;
+                var pm = this.cs.pm;
+                var bm = this.cs.bm;
                 //NPE!!!
-                var p1 = this.cs.pm.get(e1);
-                var p2 = this.cs.pm.get(e2);
-                var b1 = this.cs.bm.get(e1);
-                var b2 = this.cs.bm.get(e2);
+                var p1 = pm.get(e1);
+                var p2 = pm.get(e2);
+                var b1 = bm.get(e1);
+                var b2 = bm.get(e2);
                 var a = p1.x - p2.x;
                 var b = p1.y - p2.y;
-                return Math.sqrt(a * a + b * b) - (b1.radius / Constants.RATIO) < (b2.radius / Constants.RATIO);
+                var r = Constants.RATIO;
+                return Math.sqrt(a * a + b * b) - (b1.radius / r) < (b2.radius / r);
             };
             return CollisionPair;
         })();
@@ -7474,11 +7622,12 @@ var example;
                 this.status = status;
             };
             HudRenderSystem.prototype.processEach = function (e) {
+                var world = this.world;
                 var health = this.hm.get(e);
                 var vital = this.vm.get(this.status);
                 vital.good.width = ~~Math.round(health.health / health.maximumHealth * 100);
                 this.totalFrames++;
-                this.elapsedTime += this.world.delta;
+                this.elapsedTime += world.delta;
                 if (this.elapsedTime > 1) {
                     this.fps = this.totalFrames;
                     this.totalFrames = 0;
@@ -7487,9 +7636,9 @@ var example;
                 this.framesPerSecond.text = "FPS: " + this.fps;
                 this.totalScore.text = "Score: " + this.score.score;
                 if (!Constants.isMobile) {
-                    this.activeEntities.text = "Active entities: " + this.world.getEntityManager().getActiveEntityCount();
-                    this.totalCreated.text = "Total created: " + this.world.getEntityManager().getTotalCreated();
-                    this.totalDeleted.text = "Total deleted: " + this.world.getEntityManager().getTotalDeleted();
+                    this.activeEntities.text = "Active entities: " + world.getEntityManager().getActiveEntityCount();
+                    this.totalCreated.text = "Total created: " + world.getEntityManager().getTotalCreated();
+                    this.totalDeleted.text = "Total deleted: " + world.getEntityManager().getTotalDeleted();
                 }
             };
             __decorate([
@@ -7622,6 +7771,22 @@ var example;
         var Mapper = artemis.annotations.Mapper;
         var EntityProcessingSystem = artemis.systems.EntityProcessingSystem;
         var Constants = example.core.Constants;
+        var KeyPoll = (function () {
+            function KeyPoll() {
+                var _this = this;
+                this.states = {};
+                this.isDown = function (keyCode) { return _this.states[keyCode]; };
+                this.isUp = function (keyCode) { return !_this.states[keyCode]; };
+                window.addEventListener('keydown', function (event) {
+                    _this.states[event.keyCode] = true;
+                });
+                window.addEventListener('keyup', function (event) {
+                    if (_this.states[event.keyCode])
+                        _this.states[event.keyCode] = false;
+                });
+            }
+            return KeyPoll;
+        })();
         var PlayerInputSystem = (function (_super) {
             __extends(PlayerInputSystem, _super);
             function PlayerInputSystem() {
@@ -7668,6 +7833,7 @@ var example;
                 };
             }
             PlayerInputSystem.prototype.initialize = function () {
+                this.kbd = new KeyPoll();
                 document.addEventListener('touchstart', this.onTouchStart, true);
                 document.addEventListener('touchmove', this.onTouchMove, true);
                 document.addEventListener('touchend', this.onTouchEnd, true);
@@ -7678,24 +7844,25 @@ var example;
             PlayerInputSystem.prototype.processEach = function (e) {
                 if (this.mouseVector === undefined)
                     return;
+                var mouseVector = this.mouseVector;
+                var world = this.world;
                 var position = this.pm.get(e);
-                var velocity = this.vm.get(e);
-                var destinationX = this.mouseVector.x;
-                var destinationY = this.mouseVector.y;
+                var destinationX = mouseVector.x;
+                var destinationY = mouseVector.y;
                 if (destinationX === undefined || destinationY === undefined)
                     return;
-                position.x = this.mouseVector.x;
-                position.y = this.mouseVector.y - 60;
-                if (this.shoot) {
+                position.x = mouseVector.x;
+                position.y = mouseVector.y - 60;
+                if (this.shoot || this.kbd.isDown(' '.charCodeAt(0))) {
                     if (this.timeToFire <= 0) {
                         var s = ~~(24 / Constants.RATIO);
-                        this.world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
-                        this.world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
+                        world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
+                        world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
                         this.timeToFire = PlayerInputSystem.FireRate;
                     }
                 }
                 if (this.timeToFire > 0) {
-                    this.timeToFire -= this.world.delta;
+                    this.timeToFire -= world.delta;
                     if (this.timeToFire < 0) {
                         this.timeToFire = 0;
                     }
@@ -7858,6 +8025,10 @@ var example;
                 this.asplode = new Howl({ urls: ['res/sounds/asplode.ogg'] });
                 this.smallasplode = new Howl({ urls: ['res/sounds/smallasplode.ogg'] });
                 this.playSfx = EntitySystem.blackBoard.getEntry('playSfx');
+                this.effect = [];
+                this.effect[EFFECT.PEW] = this.pew;
+                this.effect[EFFECT.ASPLODE] = this.asplode;
+                this.effect[EFFECT.SMALLASPLODE] = this.smallasplode;
                 //var trigger:SimpleTrigger = new SimpleTrigger('playSfx', this.condition, this.onChange);
                 //EntitySystem.blackBoard.addTrigger(trigger);
             };
@@ -7872,21 +8043,11 @@ var example;
             SoundEffectSystem.prototype.processEach = function (e) {
                 if (!this.playSfx)
                     return;
-                var soundEffect = this.se.get(e);
-                switch (soundEffect.effect) {
-                    case EFFECT.PEW:
-                        this.pew.play();
-                        break;
-                    case EFFECT.ASPLODE:
-                        this.asplode.play();
-                        break;
-                    case EFFECT.SMALLASPLODE:
-                        this.smallasplode.play();
-                        break;
-                    default:
-                        break;
-                }
-                e.removeComponentInstance(soundEffect);
+                var effect = this.se.get(e);
+                var sound = this.effect[effect.effect];
+                if (sound)
+                    sound.play();
+                e.removeComponentInstance(effect);
                 e.changedInWorld();
             };
             __decorate([
@@ -7933,27 +8094,18 @@ var example;
                 return true;
             };
             SpriteRenderSystem.prototype.processEntities = function (entities) {
+                var pm = this.pm;
+                var sm = this.sm;
                 for (var i = 0, l = entities.size(); i < l; i++) {
-                    this.processEach(entities.get(i));
+                    var e = entities.get(i);
+                    if (pm.has(e)) {
+                        var position = pm.getSafe(e);
+                        var sprite = sm.get(e);
+                        if (sprite)
+                            sprite.sprite_.position.set(position.x, position.y);
+                    }
                 }
             };
-            SpriteRenderSystem.prototype.processEach = function (e) {
-                if (this.pm.has(e)) {
-                    var position = this.pm.getSafe(e);
-                    var sprite = this.sm.get(e);
-                    sprite.sprite_.position.set(position.x, position.y);
-                }
-            };
-            //public inserted(e:Entity) {
-            //  var sprite:Sprite = this.sm.get(e);
-            //  sprite.sprite_['layer'] = sprite.layer;
-            //
-            //  this.sprites.children.sort((a, b) => {
-            //    if (a['layer'] < b['layer']) return -1;
-            //    if (a['layer'] > b['layer']) return 1;
-            //    return 0;
-            //  });
-            //}
             SpriteRenderSystem.prototype.removed = function (e) {
                 var c = e.getComponentByType(Sprite);
                 c.removeFrom(this.sprites);
@@ -7996,6 +8148,7 @@ var example;
         var ScaleAnimationSystem = example.systems.ScaleAnimationSystem;
         var SoundEffectSystem = example.systems.SoundEffectSystem;
         var SpriteRenderSystem = example.systems.SpriteRenderSystem;
+        var Constants = example.core.Constants;
         var GameSystems = (function () {
             function GameSystems(webgl) {
                 this.webgl = webgl;
@@ -8049,11 +8202,14 @@ var example;
                 this.status.deleteFromWorld();
             };
             GameSystems.prototype.showCredits = function () {
-                this.credits = this.world.createEntityFromTemplate('credits');
+                this.credits = this.world.createEntityFromTemplate('credits', [Constants.about, Constants.credits]);
                 this.credits.addToWorld();
             };
             GameSystems.prototype.hideCredits = function () {
-                this.credits.deleteFromWorld();
+                if (this.about)
+                    this.about.deleteFromWorld();
+                if (this.credits)
+                    this.credits.deleteFromWorld();
             };
             GameSystems.prototype.showLeaderboard = function () {
                 this.leaderboard = this.world.createEntityFromTemplate('leaderboard');
@@ -8135,6 +8291,7 @@ var example;
                 EntitySystem.blackBoard.setEntry('sprites', this.sprites);
                 EntitySystem.blackBoard.setEntry('resources', resources);
                 EntitySystem.blackBoard.setEntry('score', this.score);
+                EntitySystem.blackBoard.setEntry('playSfx', Properties.get('playSfx'));
                 var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, { backgroundColor: 0x000000 });
                 switch (Constants.SCALE_TYPE) {
                     case ScaleType.FILL:

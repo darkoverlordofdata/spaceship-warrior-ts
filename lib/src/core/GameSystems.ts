@@ -37,6 +37,7 @@ module example.core {
     public status:Entity;
     public credits:Entity;
     public leaderboard:Entity;
+    public about:Entity;
 
     private spriteRenderSystem:SpriteRenderSystem;
     private healthRenderSystem:HealthRenderSystem;
@@ -104,12 +105,13 @@ module example.core {
     }
 
     showCredits() {
-      this.credits = this.world.createEntityFromTemplate('credits');
+      this.credits = this.world.createEntityFromTemplate('credits', [Constants.about, Constants.credits]);
       this.credits.addToWorld();
     }
 
     hideCredits() {
-      this.credits.deleteFromWorld();
+      if (this.about) this.about.deleteFromWorld();
+      if (this.credits)this.credits.deleteFromWorld();
     }
 
     showLeaderboard() {

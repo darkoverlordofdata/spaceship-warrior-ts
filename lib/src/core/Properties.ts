@@ -39,16 +39,13 @@ module example.core {
 
       Properties.dbname = name;
       Properties.properties = properties;
-      //initializeDb(Properties.db = new localStorageDB(Properties.dbname));
 
-
-      if (window['cordova'] || navigator['isCocoonJS']) {
-        // use localStorage only
-        initializeDb(Properties.db = new localStorageDB(Properties.dbname));
-      } else {
-        // try chrome.storage with fallback to localStorage
+      if (window['chrome']) {
         chromeStorageDB(Properties.dbname, localStorage, (db) => initializeDb(Properties.db = db));
+      } else {
+        initializeDb(Properties.db = new localStorageDB(Properties.dbname));
       }
+
     }
 
     /*

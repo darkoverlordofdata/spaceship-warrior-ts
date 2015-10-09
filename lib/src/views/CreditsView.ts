@@ -14,6 +14,7 @@ module example.views {
   import EntitySystem = artemis.EntitySystem;
   import Properties = example.core.Properties;
   import AbstractView = example.views.AbstractView;
+  import Container = PIXI.Container;
 
   export class CreditsView extends AbstractView {
     public back:EZGUI.Component.Button;
@@ -28,13 +29,28 @@ module example.views {
         //header: { position: { x: 20, y: 20 }, height: 120, width: 360, image:'res/images/Logo.png', },
         width: window.innerWidth,
         height: window.innerHeight,
-        layout: [1, 1],
+        layout: [1,4],
         children: [
+          {
+            id: 'labelTitle',
+            component: 'label',
+            position: {x: (window.innerWidth-380) / 2, y: 20},
+            height: 120,
+            width: 380,
+            color: color,
+            text: 'Schmup Warz',
+            font: {
+              size: '44px',
+              family: 'Skranji',
+              color: 'white'
+            }
+            //image: 'res/images/logo.png'
+          },null,null,
           {
             id: 'buttonCreditsBack',
             text: 'BACK',
             component: 'Button',
-            position: {x: (window.innerWidth-200)/2, y: window.innerHeight*.85},
+            position: {x: (window.innerWidth-200)/2, y: 0},
             color: color,
             font: {
               size: '24px',
@@ -54,7 +70,7 @@ module example.views {
       this.back.on('click', (e) => this.backOnClick(e));
 
       this.view['layer'] = -1;
-      var c:Container = EntitySystem.blackBoard.getEntry<Container>('sprites'));
+      var c:Container = EntitySystem.blackBoard.getEntry<Container>('sprites');
       c.addChild(this.view);
     }
 

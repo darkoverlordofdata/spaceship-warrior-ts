@@ -28,6 +28,7 @@ module example.templates {
       var x = Constants.FRAME_WIDTH/2;
       var y = Constants.FRAME_HEIGHT-80;
 
+      //'ColorMatrixFilter'
       entity.addComponent(Position, ~~x, ~~y);
       entity.addComponent(Velocity, 0, 0);
       entity.addComponent(Bounds, 43);

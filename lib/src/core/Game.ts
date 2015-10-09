@@ -54,6 +54,7 @@ module example.core {
       EntitySystem.blackBoard.setEntry('sprites', this.sprites);
       EntitySystem.blackBoard.setEntry('resources', resources);
       EntitySystem.blackBoard.setEntry('score', this.score);
+      EntitySystem.blackBoard.setEntry('playSfx', Properties.get('playSfx'));
 
       var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
       switch (Constants.SCALE_TYPE) {

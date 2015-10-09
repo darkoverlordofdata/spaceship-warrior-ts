@@ -22,7 +22,8 @@ module example.components {
     ACTORS_1,
     ACTORS_2,
     ACTORS_3,
-    PARTICLES
+    PARTICLES,
+    GUI
 
     // getLayerId() {
     // 	return ordinal();
@@ -60,7 +61,7 @@ module example.components {
 
     addTo(layer:Container) {
       this.sprite_['layer'] = this.layer;
-      layer.addChild(this.sprite_, 0);
+      layer.addChild(this.sprite_);
       layer.children.sort((a, b) => {
         if (a['layer'] < b['layer']) return -1;
         if (a['layer'] > b['layer']) return 1;

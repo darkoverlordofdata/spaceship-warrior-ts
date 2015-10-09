@@ -25,19 +25,20 @@ module example.systems {
 
     public processEach(e:Entity) {
       var background = this.bm.get(e);
-      var sprite = this.sm.get(e);
+      var sprite = this.sm.get(e).sprite_;
 
       var uniforms = background.filter.uniforms;
-      if (uniforms.time.value === 0) {
-        uniforms.time.value = MathUtils.nextInt(1000)+500;
+      var time = uniforms.time;
+
+      if (time.value === 0) {
+        time.value = MathUtils.nextInt(1000)+500;
       } else {
-        uniforms.time.value += this.world.delta;
+        time.value += this.world.delta;
       }
       //uniforms.time.value += this.world.delta;
-      uniforms.resolution.value = [window.innerHeight, window.innerWidth];
-      var value = uniforms.resolution.value;
-      sprite.sprite_.height = value[0] = window.innerHeight;
-      sprite.sprite_.width = value[1] = window.innerWidth;
+      var value = uniforms.resolution.value = [window.innerHeight, window.innerWidth];
+      sprite.height = value[0] = window.innerHeight;
+      sprite.width = value[1] = window.innerWidth;
 
     }
   }

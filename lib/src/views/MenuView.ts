@@ -83,7 +83,7 @@ module example.views {
           },
           {
             id: 'buttonCredits',
-            text: 'CREDITS',
+            text: 'ABOUT',
             component: 'Button',
             position: {x: -1000, y: -1000},
             //position: 'center',
@@ -97,8 +97,6 @@ module example.views {
             width: 200,
             height: 50
           }
-
-
         ]
       });
     }
@@ -107,8 +105,9 @@ module example.views {
     public play:Button;
     public highScore:Button;
     public credits:Button;
+    public about:Button;
     public leader:LeaderboardView;
-    public help:CreditsView;
+    public creditsView:CreditsView;
 
     /**
      * Wire up the events
@@ -139,6 +138,7 @@ module example.views {
             this.highScore.visible = false;
 
             this.credits.animatePosTo(this.highScore.position.x,  -20 - this.credits.settings.height, 200, EZGUI.Easing.Circular.Out, () => {
+              this.credits.visible = false;
               if (next) next();
             });
           });
@@ -193,13 +193,11 @@ module example.views {
 
     private creditsOnClick = (e) => {
       this.hide(() => {
-        if (!this.help) this.help = new CreditsView(this);
-        this.help.show(this.show);
+        if (!this.creditsView) this.creditsView = new CreditsView(this);
+        this.creditsView.show(this.show);
         this.system.showCredits();
       });
     };
+
   }
-
-
-
 }

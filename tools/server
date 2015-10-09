@@ -6,6 +6,7 @@
  * 
  * author: darkoverlordofdata@gmail.com
  */
+console.log(process.argv);
 (function() {
 	var gulp = require('gulp');
 	var server = require('gulp-webserver');

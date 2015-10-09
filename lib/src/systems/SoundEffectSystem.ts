@@ -22,6 +22,7 @@ module example.systems {
     private asplode;
     private smallasplode;
     private playSfx:boolean=false;
+    private effect;
 
     constructor() {
       super(Aspect.getAspectForAll(SoundEffect));
@@ -34,6 +35,11 @@ module example.systems {
       this.asplode = new Howl({urls:['res/sounds/asplode.ogg']});
       this.smallasplode = new Howl({urls:['res/sounds/smallasplode.ogg']});
       this.playSfx = <boolean>EntitySystem.blackBoard.getEntry('playSfx');
+
+      this.effect = [];
+      this.effect[EFFECT.PEW] = this.pew;
+      this.effect[EFFECT.ASPLODE] = this.asplode;
+      this.effect[EFFECT.SMALLASPLODE] = this.smallasplode;
 
       //var trigger:SimpleTrigger = new SimpleTrigger('playSfx', this.condition, this.onChange);
       //EntitySystem.blackBoard.addTrigger(trigger);
@@ -52,23 +58,10 @@ module example.systems {
 
       if (!this.playSfx) return;
 
-      var soundEffect:SoundEffect = this.se.get(e);
-
-      switch (soundEffect.effect) {
-        case EFFECT.PEW:
-          this.pew.play();
-          break;
-        case EFFECT.ASPLODE:
-          this.asplode.play();
-          break;
-        case EFFECT.SMALLASPLODE:
-          this.smallasplode.play();
-          break;
-        default:
-          break;
-      }
-
-      e.removeComponentInstance(soundEffect);
+      var effect = this.se.get(e);
+      var sound = this.effect[effect.effect];
+      if (sound) sound.play();
+      e.removeComponentInstance(effect);
       e.changedInWorld();
     }
   }

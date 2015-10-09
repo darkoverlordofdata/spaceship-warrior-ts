@@ -254,7 +254,7 @@ declare module EZGUI {
         theme: Theme;
         protected textObj: any;
         protected rootSprite: any;
-        settings: string;
+        settings: any;
         text: string;
         constructor(_settings: any, themeId: any);
         protected parsePercentageValue(str: any): number;

@@ -92,6 +92,23 @@ module example.core {
     (https://github.com/Flet/spaceship-warrior-gradle)
 
     MIT License
+
+                            [tap for legend]
+    `;
+
+    public static about = `
+    Destroy colony ships from the BEM homeworld
+    before they can land on Earth.
+    They don't fire guns. They use sub-space
+    mines that our bullets can't seem to hit.
+
+    Clearing all the ships from the screen resets
+    your current health to 100%. You won't be able
+    to clear the screen *and* dodge mines.
+
+    Space/Touch to fire  |  Mouse/Touch to move.
+
+                            [tap for credits]
     `;
 
   }

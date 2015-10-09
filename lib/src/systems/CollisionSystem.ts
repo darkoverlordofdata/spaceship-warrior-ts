@@ -34,6 +34,7 @@ module example.systems {
 
   export class CollisionSystem extends EntitySystem {
     @Mapper(Position) pm:ComponentMapper<Position>;
+    @Mapper(Sprite) sm:ComponentMapper<Sprite>;
     @Mapper(Bounds) bm:ComponentMapper<Bounds>;
     @Mapper(Health) hm:ComponentMapper<Health>;
     @Mapper(Expires) ex:ComponentMapper<Expires>;
@@ -42,6 +43,10 @@ module example.systems {
     private groupManager:GroupManager;
     private timer:Timer;
     private score;
+    private enemies:ImmutableBag<Entity>;
+    private players:ImmutableBag<Entity>;
+    private bullets:ImmutableBag<Entity>;
+    private mines:ImmutableBag<Entity>;
 
     constructor() {
       super(Aspect.getAspectForAll(Position, Bounds));
@@ -49,21 +54,27 @@ module example.systems {
 
 
     public initialize() {
+      var world = this.world;
+
       this.score = EntitySystem.blackBoard.getEntry('score');
-      this.groupManager = <GroupManager>this.world.getManager(GroupManager);
+      this.groupManager = <GroupManager>world.getManager(GroupManager);
       this.collisionPairs = new Bag<CollisionPair>();
+      this.enemies = world.getManager<GroupManager>(GroupManager).getEntities(Groups.ENEMY_SHIPS);
+      this.players = world.getManager<GroupManager>(GroupManager).getEntities(Groups.PLAYER_SHIP);
+      this.bullets = world.getManager<GroupManager>(GroupManager).getEntities(Groups.PLAYER_BULLETS);
+      this.mines = world.getManager<GroupManager>(GroupManager).getEntities(Groups.ENEMY_MINES);
 
       /** Check for bullets hitting enemy ship */
-      this.collisionPairs.add(new CollisionPair(this, Groups.PLAYER_BULLETS, Groups.ENEMY_SHIPS, {
+      this.collisionPairs.add(new CollisionPair(this, this.bullets, this.enemies, {
 
         handleCollision: (bullet:Entity, ship:Entity) => {
           var bp:Position = this.pm.get(bullet);
           var health:Health = this.hm.get(ship);
           var position:Position = this.pm.get(ship);
 
-          this.world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
+          world.createEntityFromTemplate('small', bp.x, bp.y).addToWorld();
           for (var i = 0; 4 > i; i++) {
-            this.world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
+            world.createEntityFromTemplate('particle', bp.x, bp.y).addToWorld();
           }
 
           bullet.deleteFromWorld();
@@ -72,17 +83,16 @@ module example.systems {
             this.score.score += health.maximumHealth;
             health.health = 0;
             ship.deleteFromWorld();
-            this.world.createEntityFromTemplate('big', position.x, position.y).addToWorld();
+            world.createEntityFromTemplate('big', position.x, position.y).addToWorld();
 
           }
         }
       }));
 
       /** Check for enemy mines hitting player ship */
-      this.collisionPairs.add(new CollisionPair(this, Groups.ENEMY_MINES, Groups.PLAYER_SHIP, {
+      this.collisionPairs.add(new CollisionPair(this, this.mines, this.players, {
 
         handleCollision: (mine:Entity, ship:Entity) => {
-          var bp:Position = this.pm.get(mine);
           var health:Health = this.hm.get(ship);
           var position:Position = this.pm.get(ship);
 
@@ -91,7 +101,7 @@ module example.systems {
           if (health.health < 0) {
             health.health = 0;
             ship.deleteFromWorld();
-            this.world.createEntityFromTemplate('huge', position.x, position.y).addToWorld();
+            world.createEntityFromTemplate('huge', position.x, position.y).addToWorld();
             var lives = this.groupManager.getEntities(Groups.PLAYER_LIVES);
             if (lives.size() === 0) {
               /** Game Over!! */
@@ -99,7 +109,7 @@ module example.systems {
               game.systems.stop();
               var gui = EntitySystem.blackBoard.getEntry<MenuView>('gui');
               gui.show();
-              //game.showLeaderboard(this.score.score);
+              Properties.setScore(this.score.score);
 
             } else {
               var life:Entity = lives.get(0);
@@ -107,7 +117,7 @@ module example.systems {
               this.groupManager.remove(life, Groups.PLAYER_LIVES);
               this.timer = new Timer(1, true);
               this.timer.execute = () => {
-                this.world.createEntityFromTemplate('player').addToWorld();
+                world.createEntityFromTemplate('player').addToWorld();
                 this.timer = null;
               };
             }
@@ -118,9 +128,30 @@ module example.systems {
 
 
     protected processEntities(entities:ImmutableBag<Entity>) {
-      for (var i = 0; this.collisionPairs.size() > i; i++) {
-        this.collisionPairs.get(i).checkForCollisions();
+
+      if (this.enemies.size() === 0) {
+        /**
+         * You cleared the screen
+         *
+         * Get a POWER-UP!!
+         *
+         */
+        var players = this.players;
+        if (players.size() > 0) {
+          var player = players.get(0);
+          var health:Health = this.hm.get(player);
+          var sprite:Sprite = this.sm.get(player);
+          health.health = health.maximumHealth;
+          sprite.sprite_.filters = null;
+        }
+      } else {
+
+        var collisionPairs = this.collisionPairs;
+        for (var i = 0, l = collisionPairs.size(); l > i; i++) {
+          collisionPairs.get(i).checkForCollisions();
+        }
       }
+
       if (this.timer) {
         this.timer.update(this.world.delta);
       }
@@ -139,20 +170,26 @@ module example.systems {
     private handler:CollisionHandler;
     private cs:CollisionSystem;
 
-    constructor(cs:CollisionSystem, group1:Groups, group2:Groups, handler:CollisionHandler) {
-      this.groupEntitiesA = cs.world.getManager<GroupManager>(GroupManager).getEntities(group1);
-      this.groupEntitiesB = cs.world.getManager<GroupManager>(GroupManager).getEntities(group2);
+    constructor(cs:CollisionSystem, group1, group2, handler:CollisionHandler) {
+      this.groupEntitiesA = group1;
+      this.groupEntitiesB = group2;
       this.handler = handler;
       this.cs = cs;
     }
 
     public checkForCollisions() {
-      for (var a = 0; this.groupEntitiesA.size() > a; a++) {
-        var entityA:Entity = this.groupEntitiesA.get(a);
-        for (var b = 0; this.groupEntitiesB.size() > b; b++) {
-          var entityB:Entity = this.groupEntitiesB.get(b);
+      var handler = this.handler;
+      var groupEntitiesA = this.groupEntitiesA;
+      var groupEntitiesB = this.groupEntitiesB;
+      var sizeA = groupEntitiesA.size();
+      var sizeB = groupEntitiesB.size();
+
+      for (var a = 0; sizeA > a; a++) {
+        var entityA:Entity = groupEntitiesA.get(a);
+        for (var b = 0; sizeB > b; b++) {
+          var entityB:Entity = groupEntitiesB.get(b);
           if (this.collisionExists(entityA, entityB)) {
-            this.handler.handleCollision(entityA, entityB);
+            handler.handleCollision(entityA, entityB);
           }
         }
       }
@@ -162,16 +199,20 @@ module example.systems {
 
       if (e1 === null || e2 === null) return false;
 
-      //NPE!!!
-      var p1:Position = this.cs.pm.get(e1);
-      var p2:Position = this.cs.pm.get(e2);
+      var pm = this.cs.pm;
+      var bm = this.cs.bm;
 
-      var b1:Bounds = this.cs.bm.get(e1);
-      var b2:Bounds = this.cs.bm.get(e2);
+      //NPE!!!
+      var p1:Position = pm.get(e1);
+      var p2:Position = pm.get(e2);
+
+      var b1:Bounds = bm.get(e1);
+      var b2:Bounds = bm.get(e2);
 
       var a = p1.x - p2.x;
       var b = p1.y - p2.y;
-      return Math.sqrt(a * a + b * b) - (b1.radius/Constants.RATIO) < (b2.radius/Constants.RATIO);
+      var r = Constants.RATIO;
+      return Math.sqrt(a * a + b * b) - (b1.radius/r) < (b2.radius/r);
     }
   }
 

@@ -96,13 +96,14 @@ module example.systems {
 
     public processEach(e:Entity) {
 
+      var world = this.world;
       var health:Health = this.hm.get(e);
       var vital:Vital = this.vm.get(this.status);
 
       vital.good.width = ~~Math.round(health.health / health.maximumHealth * 100);
 
       this.totalFrames++;
-      this.elapsedTime += this.world.delta;
+      this.elapsedTime += world.delta;
       if (this.elapsedTime > 1) {
         this.fps = this.totalFrames;
         this.totalFrames = 0;
@@ -112,9 +113,9 @@ module example.systems {
       this.framesPerSecond.text = `FPS: ${this.fps}`;
       this.totalScore.text = `Score: ${this.score.score}`;
       if (!Constants.isMobile) {
-        this.activeEntities.text = `Active entities: ${this.world.getEntityManager().getActiveEntityCount()}`;
-        this.totalCreated.text = `Total created: ${this.world.getEntityManager().getTotalCreated()}`;
-        this.totalDeleted.text = `Total deleted: ${this.world.getEntityManager().getTotalDeleted()}`;
+        this.activeEntities.text = `Active entities: ${world.getEntityManager().getActiveEntityCount()}`;
+        this.totalCreated.text = `Total created: ${world.getEntityManager().getTotalCreated()}`;
+        this.totalDeleted.text = `Total deleted: ${world.getEntityManager().getTotalDeleted()}`;
       }
 
     }

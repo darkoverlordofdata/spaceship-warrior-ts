@@ -12,6 +12,24 @@ module example.systems {
   import Constants = example.core.Constants;
   import Container = PIXI.Container;
 
+  class KeyPoll {
+
+    public states = {};
+    isDown = (keyCode) => this.states[keyCode];
+    isUp = (keyCode) => !this.states[keyCode];
+
+    constructor() {
+
+      window.addEventListener('keydown', (event) => {
+        this.states[event.keyCode] = true;
+      });
+
+      window.addEventListener('keyup',(event) => {
+        if (this.states[event.keyCode]) this.states[event.keyCode] = false;
+      });
+    }
+
+  }
   export class PlayerInputSystem extends EntityProcessingSystem  {
     private static FireRate = 0.1;
 
@@ -21,6 +39,7 @@ module example.systems {
     private shoot:boolean;
     private timeToFire:number=0;
     private mouseVector;
+    private kbd:KeyPoll;
 
     constructor() {
       super(Aspect.getAspectForAll(Position, Velocity, Player));
@@ -28,6 +47,8 @@ module example.systems {
 
 
     public initialize() {
+
+      this.kbd = new KeyPoll();
 
       document.addEventListener('touchstart', this.onTouchStart, true);
       document.addEventListener('touchmove', this.onTouchMove, true);
@@ -82,30 +103,31 @@ module example.systems {
     protected processEach(e:Entity) {
 
       if (this.mouseVector === undefined) return;
+      var mouseVector = this.mouseVector;
+      var world = this.world;
 
       var position:Position = this.pm.get(e);
-      var velocity:Velocity = this.vm.get(e);
 
-      var destinationX = this.mouseVector.x;
-      var destinationY = this.mouseVector.y;
+      var destinationX = mouseVector.x;
+      var destinationY = mouseVector.y;
 
       if (destinationX === undefined || destinationY === undefined) return;
 
-      position.x = this.mouseVector.x;
-      position.y = this.mouseVector.y-60;
+      position.x = mouseVector.x;
+      position.y = mouseVector.y-60;
 
 
-      if (this.shoot) {
+      if (this.shoot || this.kbd.isDown(' '.charCodeAt(0))) {
         if (this.timeToFire <= 0) {
 
           var s = ~~(24/Constants.RATIO);
-          this.world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
-          this.world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
+          world.createEntityFromTemplate('bullet', position.x - s, position.y + 2).addToWorld();
+          world.createEntityFromTemplate('bullet', position.x + s, position.y + 2).addToWorld();
           this.timeToFire = PlayerInputSystem.FireRate;
         }
       }
       if (this.timeToFire > 0) {
-        this.timeToFire -= this.world.delta;
+        this.timeToFire -= world.delta;
         if (this.timeToFire < 0) {
           this.timeToFire = 0;
         }

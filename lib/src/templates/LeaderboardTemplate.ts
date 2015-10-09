@@ -41,19 +41,17 @@ module example.templates {
       entity.addComponent(Sprite, 'panel', (sprite:Sprite) => {
         var s:PIXI.Sprite = sprite.sprite_;
 
-        var data = Properties.getLeaderboard(3);
+        var data = Properties.getLeaderboard(6);
         for (var k in data) {
           var row = data[k];
           var i = parseInt(k) + 1;
           var mmddyyyy = row.date.substr(4, 2) + '/' + row.date.substr(6, 2) + '/' + row.date.substr(0, 4);
 
           var text = new PIXI.extras.BitmapText(mmddyyyy+'', font);
-          //text.anchor.set(0);
           text.position.set(-(x/2)-(100*f1),-(y/2)+(i*40));
           s.addChild(text);
 
           var text = new PIXI.extras.BitmapText(row.score+'', font);
-          //text.anchor.set(0);
           text.position.set(-(x/2)+200+(100*f2),-(y/2)+(i*40));
           s.addChild(text);
 
@@ -62,7 +60,7 @@ module example.templates {
         s.width = window.innerWidth * .75;
         s.height = window.innerHeight/2;
         s.position.set(~~x, ~~y);
-        sprite.layer = 5;
+        sprite.layer = Layer.GUI;
         sprite.addTo(EntitySystem.blackBoard.getEntry<Container>('sprites'));
       });
       world.getManager<GroupManager>(GroupManager).add(entity, Groups.GUI_LEADERBOARD);
