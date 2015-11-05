@@ -14,7 +14,7 @@ module example.components {
 		//	this.max = max;
      // this.speed = speed;
      // this.repeat = repeat;
-     // this.active = active;
+     // this.active = actmive;
 		//}
 
 		public min:number;

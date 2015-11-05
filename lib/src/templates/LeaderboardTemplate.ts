@@ -27,7 +27,7 @@ module example.templates {
       tint: 0xfffff
     };
 
-    @EntityTemplate('leaderboard')
+  @EntityTemplate('leaderboard')
   export class LeaderboardTemplate implements IEntityTemplate {
 
     public buildEntity(entity:Entity, world:World):Entity {

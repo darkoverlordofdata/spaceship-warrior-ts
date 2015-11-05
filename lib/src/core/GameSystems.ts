@@ -66,9 +66,9 @@ module example.core {
       world.setSystem(new ScaleAnimationSystem());
       world.setSystem(new RemoveOffscreenShipsSystem());
 
-      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem(), true);
-      this.healthRenderSystem = world.setSystem(new HealthRenderSystem(), true);
-      this.hudRenderSystem = world.setSystem(new HudRenderSystem(), true);
+      this.spriteRenderSystem = world.setSystem(new SpriteRenderSystem());//, true);
+      this.healthRenderSystem = world.setSystem(new HealthRenderSystem());//, true);
+      this.hudRenderSystem = world.setSystem(new HudRenderSystem());//, true);
 
       world.initialize();
 
@@ -128,9 +128,9 @@ module example.core {
       this.world.setDelta(delta);
       this.world.process();
 
-      this.spriteRenderSystem.process();
-      this.healthRenderSystem.process();
-      this.hudRenderSystem.process();
+      //this.spriteRenderSystem.process();
+      //this.healthRenderSystem.process();
+      //this.hudRenderSystem.process();
     }
   }
 }

@@ -43,6 +43,8 @@ module example.templates {
         scaleAnimation.min = scale/(100*(Constants.RATIO*2));
         scaleAnimation.speed = -3.0;
         scaleAnimation.repeat = false;
+
+        console.log('scaleAnimation.max', scaleAnimation.max, scaleAnimation.min);
       });
       return entity;
     }

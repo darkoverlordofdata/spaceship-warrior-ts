@@ -29,12 +29,13 @@ module example.systems {
 				sprite.scale.y = sprite.scale.x;
 	
 				if (sprite.scale.x > scaleAnimation.max) {
-					sprite.scale.x = scaleAnimation.max;
+					sprite.scale.y = sprite.scale.x = scaleAnimation.max;
 					scaleAnimation.active = false;
 				} else if (sprite.scale.x < scaleAnimation.min) {
-					sprite.scale.x = scaleAnimation.min;
+					sprite.scale.y = sprite.scale.x = scaleAnimation.min;
 					scaleAnimation.active = false;
 				}
+				console.log('ScaleAnimationSystem', sprite.scale.x, sprite.scale.y);
 			}
 		}
 	
