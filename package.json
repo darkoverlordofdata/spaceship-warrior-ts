@@ -53,6 +53,7 @@
     "liquid.coffee": "^0.1.1",
     "mocha": "~2.0.1",
     "morgan": "^1.6.1",
+    "nw": "^0.17.1",
     "walker": "^1.0.7"
   },
   "dependencies": {}
